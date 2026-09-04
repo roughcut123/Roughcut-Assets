@@ -6,7 +6,7 @@ import {PaperCard} from '../lib/paper';
 import {HEIGHT, WIDTH, tones, type ToneName} from '../lib/theme';
 
 export const transitionSchema = z.object({
-  tone: z.enum(['tissue', 'manila', 'kraft', 'slate']),
+  tone: z.enum(['vellum', 'foxed', 'parchment', 'oxblood', 'nocturne']),
   /** Total length of the sweep. The cut point sits in the middle. */
   seconds: z.number().min(0.4).max(4).step(0.1),
 });
@@ -116,8 +116,8 @@ export const PaperStrips: React.FC<TransitionProps> = ({tone}) => {
 };
 
 export const transitionDefaults: Record<string, TransitionProps> = {
-  PaperSweep: {tone: 'tissue', seconds: 0.9},
-  PaperStrips: {tone: 'manila', seconds: 1.2},
+  PaperSweep: {tone: 'vellum', seconds: 0.9},
+  PaperStrips: {tone: 'foxed', seconds: 1.2},
 };
 
 export const toneOf = (t: ToneName) => tones[t];

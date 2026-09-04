@@ -17,7 +17,7 @@ export const overlaySchema = z.object({
   eyebrow: z.string(),
   headline: z.array(z.string()),
   note: z.string(),
-  tone: z.enum(['tissue', 'manila', 'kraft', 'slate']),
+  tone: z.enum(['vellum', 'foxed', 'parchment', 'oxblood', 'nocturne']),
   accent: zColor(),
 });
 
@@ -49,6 +49,7 @@ export const Overlay: React.FC<OverlayProps & {spec: OverlaySpec}> = ({
         <Card
           layout={spec.layout}
           eyebrow={eyebrow}
+          eyebrowStyle={spec.eyebrowStyle}
           headline={headline}
           note={note}
           value={spec.value}

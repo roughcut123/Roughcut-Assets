@@ -3,12 +3,56 @@
 Twenty animated sewing overlays and two paper transitions for 4K YouTube
 videos, built with [Remotion](https://remotion.dev). Everything renders at
 3840x2160 with a **transparent background**, so you drop a clip on the track
-above your footage and it just sits there.
+above your footage and it sits there.
 
-The overlays are designed for the **top-left** of the frame. They are laid out
-as hand-cut paper - torn edges, a real cast shadow, tailor's marks - to sit
-with the workbench and print-room footage rather than on top of it like a
-graphic.
+The overlays are designed for the **top-left** of the frame.
+
+---
+
+## The design language
+
+Taken from the Roughcut YouTube design board.
+
+**Type** is four faces, each doing one job:
+
+- **Cinzel** — the headline, in Roman inscriptional capitals. This is the
+  lettering of *RELIC FROM THE PAST CRAFTED IN THE PRESENT*: cut, not written.
+- **Pinyon Script** — the small label, in the engraved hand of the garment
+  authentication certificate.
+- **EB Garamond** — the note underneath, matching the old-style text set
+  beneath the Dürer plates.
+- **UnifrakturMaguntia** — Textura blackletter, **reserved for the RoughCut
+  wordmark itself** (`eyebrowStyle: 'gothic'`, used on `LeaveItRaw`).
+  Blackletter as a general-purpose label turns into pastiche fast.
+
+**Colour** is pigment, not screen colour. The grounds are washed papers as
+they come off a scan — *vellum*, *foxed*, *parchment* — plus two deep grounds:
+*oxblood*, after the relic cover, and *nocturne*, from the darkest of the
+paintings. The accents:
+
+| Token | Pigment | Hex |
+|---|---|---|
+| `gilt` | the gold Roman capitals, the halo, the frames | `#C0982F` |
+| `sanguine` | red chalk, terracotta | `#A85C43` |
+| `bole` | the red-brown laid under gold leaf | `#6E2B26` |
+| `verdigris` | the teal of the woodblock waves | `#2F5F58` |
+| `rose` | the pink of the woodblock sky | `#B4726C` |
+| `lapis` | deep blue | `#274A70` |
+
+`gilt` is kept for the two deep grounds, where it sings; on pale paper it
+hasn't the contrast to carry small text.
+
+**The paper is aged, not just textured.** Three layers: broad uneven staining,
+sparse rust-brown foxing spots, and a fine grain. That is what makes it read
+as a scan of an old page rather than a coloured rectangle.
+
+**And it wobbles.** The outline is genuinely irregular, corners included, and
+it *boils*: the sheet is re-cut every four frames from a small set of
+variants, the way a physical papercut gets nudged between exposures in stop
+motion. Turn it off per card with `boil={false}` if a shot needs to be still.
+
+The two deep grounds, `oxblood` and `nocturne`, are the ones for bright shots
+— a pale card can get lost against a blown-out white wall.
 
 ---
 
@@ -33,8 +77,7 @@ Files land in `out/`. Already-rendered files are skipped, so you can stop and
 restart a long render.
 
 **Budget roughly 2 minutes and 130 MB per overlay** for ProRes on a normal
-laptop. If you only want a few, name them. `out/` is gitignored - these files
-are far too big to commit.
+laptop. `out/` is gitignored — these files are far too big to commit.
 
 ### Which format
 
@@ -44,7 +87,7 @@ are far too big to commit.
 | **WebM / VP9** (`--webm`) | CapCut, DaVinci web, anything browser-based | ~10 MB each |
 
 Both carry a real alpha channel. If your editor shows a black box instead of
-transparency, you have imported the file but not enabled the alpha channel -
+transparency, you have imported the file but not enabled the alpha channel —
 in Premiere that is *Interpret Footage > Alpha Channel > Straight*.
 
 ---
@@ -53,41 +96,39 @@ in Premiere that is *Interpret Footage > Alpha Channel > Straight*.
 
 Ordered the way you actually hit them making a garment.
 
-| # | Composition | Says | Motion |
-|---|---|---|---|
-| 01 | `ToileFirst` | Toile it in calico | slide |
-| 02 | `Grainline` | Follow the selvedge | cut |
-| 03 | `CuttingFabric` | Cut in a single layer | cut |
-| 04 | `SeamAllowance` | 1/4" - keep it the same | stamp |
-| 05 | `RightSidesTogether` | Right sides together | slide |
-| 06 | `BasteFirst` | Baste it first | drop |
-| 07 | `JerseyNeedle` | Ballpoint for jersey | stamp |
-| 08 | `Backstitch` | Backstitch both ends | drop |
-| 09 | `Staystitch` | 1/2" from the raw edge | stamp |
-| 10 | `ClipTheCurves` | Clip in, notch out | cut |
-| 11 | `EaseTheSleeve` | Ease it, don't gather | drop |
-| 12 | `Interfacing` | Bumpy side down | cut |
-| 13 | `PressSeamsOpen` | Press seams open | unfold |
-| 14 | `Topstitch` | 1/8" from the seam | slide |
-| 15 | `BarTack` | Bar tack it | stamp |
-| 16 | `FinishTheEdge` | Overlock or zigzag | slide |
-| 17 | `BiasBinding` | Cut at 45 degrees | cut |
-| 18 | `DoubleFoldHem` | Turn it twice | unfold |
-| 19 | `Unpick` | Unpick it | drop |
-| 20 | `LeaveItRaw` | Leave the seam raw | cut |
+| # | Composition | Says | Ground | Motion |
+|---|---|---|---|---|
+| 01 | `ToileFirst` | Toile it in calico | foxed | slide |
+| 02 | `Grainline` | Follow the selvedge | vellum | cut |
+| 03 | `CuttingFabric` | Cut in a single layer | vellum | cut |
+| 04 | `SeamAllowance` | 1/4" — keep it the same | vellum | stamp |
+| 05 | `RightSidesTogether` | Right sides together | parchment | slide |
+| 06 | `BasteFirst` | Baste it first | parchment | drop |
+| 07 | `JerseyNeedle` | Ballpoint for jersey | nocturne | stamp |
+| 08 | `Backstitch` | Backstitch both ends | vellum | drop |
+| 09 | `Staystitch` | 1/2" from the raw edge | vellum | stamp |
+| 10 | `ClipTheCurves` | Clip in, notch out | vellum | cut |
+| 11 | `EaseTheSleeve` | Ease it, don't gather | foxed | drop |
+| 12 | `Interfacing` | Bumpy side down | vellum | cut |
+| 13 | `PressSeamsOpen` | Press seams open | vellum | unfold |
+| 14 | `Topstitch` | 1/8" from the seam | foxed | slide |
+| 15 | `BarTack` | Bar tack it | nocturne | stamp |
+| 16 | `FinishTheEdge` | Overlock or zigzag | vellum | slide |
+| 17 | `BiasBinding` | Cut at 45 degrees | vellum | cut |
+| 18 | `DoubleFoldHem` | Turn it twice | foxed | unfold |
+| 19 | `Unpick` | Unpick it | parchment | drop |
+| 20 | `LeaveItRaw` | Leave the seam raw | oxblood | cut |
 
 Each is 4.33 seconds by default: about 0.9s in, 2.8s holding, 0.7s out.
 
-See `preview.jpg` for what they all look like standing still. To watch them
-move, either open the Studio, or render the showreel - all twenty in order
-over a still from the workshop:
+`preview.jpg` shows all twenty standing still. To watch them move:
 
 ```bash
 npx remotion render src/index.ts Showreel out/showreel.mp4 --codec=h264 --scale=0.5
 ```
 
-`Showreel` is preview only: it has no alpha channel and `npm run render`
-deliberately skips it.
+`Showreel` is preview only — no alpha channel — and `npm run render`
+deliberately skips it. Its backdrop is generated in code, not a photograph.
 
 ---
 
@@ -98,41 +139,42 @@ Full-frame paper wipes with alpha. Put the transition on the track above and
 
 | Composition | Length | Fully covers | Cut on |
 |---|---|---|---|
-| `PaperSweep` | 27 frames (0.9s) | frames 9-16 | **frame 13** |
-| `PaperStrips` | 36 frames (1.2s) | frames 12-25 | **frame 19** |
+| `PaperSweep` | 27 frames (0.9s) | frames 9–16 | **frame 13** |
+| `PaperStrips` | 36 frames (1.2s) | frames 12–25 | **frame 19** |
 
-(Those coverage windows were measured off the rendered frames, not estimated -
-if you change `seconds` in the Studio they will move.)
+Those coverage windows were measured off the rendered alpha, not estimated —
+if you change `seconds` in the Studio they will move.
 
 ---
 
 ## Changing the words
 
-Open the Studio, pick a composition, and use the props panel on the right. You
-can edit, per overlay, without touching any code:
+Open the Studio, pick a composition, and use the props panel on the right. Per
+overlay, without touching code:
 
-- **eyebrow** - the small tracked label
-- **headline** - a list; each entry is one line
-- **note** - the mono line underneath
-- **tone** - `tissue` / `manila` / `kraft` / `slate`
-- **accent** - the colour of the label and stitching
-- **holdSeconds** - how long it sits on screen before leaving
+- **eyebrow** — the script label (blackletter on the wordmark card)
+- **headline** — a list; each entry is one line
+- **note** — the line underneath
+- **tone** — `vellum` / `foxed` / `parchment` / `oxblood` / `nocturne`
+- **accent** — the pigment used for the script and the stitching
+- **holdSeconds** — how long it sits on screen before leaving
 
 The clip gets longer or shorter automatically when you change `holdSeconds`.
 
 Two things to know:
 
-- **Keep the note to about 35 characters.** Cards are sized to their default
+- **Keep the note to about 40 characters.** Cards are sized to their default
   copy. A longer note wraps to a second line, which still fits but looks
-  looser. If you want a much longer note, bump that overlay's `width` in
+  looser. For much longer copy, bump that overlay's `width` in
   `src/overlays/specs.ts`.
-- **`slate` is the one for bright shots.** The dark card holds up against a
-  blown-out white studio wall where a pale card can get lost.
+- **Headlines are set in capitals automatically.** Cinzel is an
+  inscriptional face drawn for caps, so type them in normal sentence case
+  and the layout will set them.
 
 ### Adding a 21st overlay
 
 Add an entry to the array in `src/overlays/specs.ts`. It gets picked up
-automatically - composition, Studio entry, and render. Pick a `layout`
+automatically — composition, Studio entry, and render. Pick a `layout`
 (`measure`, `instruction`, `tag`, `diagram`), a `motif`, an `anim`, and a
 `tone`, and it will match the rest.
 
@@ -143,8 +185,8 @@ automatically - composition, Studio entry, and render. Pick a `layout`
 ```
 src/
   lib/
-    theme.ts      palette, type scale, timings - change global look here
-    paper.tsx     the paper itself: torn outline, grain, shadow, punched holes
+    theme.ts      pigments, type scale, timings - change the global look here
+    paper.tsx     the paper: cut outline, the boil, staining, foxing, shadow
     anim.ts       the five entrance/exit styles
     motifs.tsx    the fourteen tailor's marks
     layouts.tsx   the four card layouts
@@ -154,18 +196,23 @@ src/
     Overlay.tsx   binds a spec to the animation and the card
   transitions/
     Transitions.tsx
+  preview/
+    Showreel.tsx  preview only
 ```
 
 A few decisions worth knowing about if you come back to this later:
 
-**Randomness is seeded.** Every torn edge and every frayed thread comes from
-Remotion's `random(seed)`, never `Math.random()`. Remotion renders frames
-across several parallel processes, so an unseeded random would give each frame
-a different edge and the paper would boil in the export.
+**Randomness is seeded.** Every cut edge and every frayed thread comes from
+Remotion's `random(seed)`, never `Math.random()`. That matters twice over:
+Remotion renders frames across several parallel processes, so an unseeded
+random would give each frame a different edge; and the boil depends on being
+able to ask for a *specific* variant of an edge and get the same one back
+every time. Sampling noise per frame instead gives television static, not
+handmade animation.
 
-**Fonts are vendored.** Archivo and IBM Plex Mono live in `public/fonts` rather
-than being pulled from Google at render time, so a render never depends on the
-network and always produces identical type. Both are SIL Open Font Licence.
+**Fonts are vendored.** All four families live in `public/fonts` with their
+OFL licences rather than being pulled from Google at render time, so a render
+never depends on the network and always produces identical type.
 
 **Cards are sized by hand, not measured at runtime.** Measuring text in the
 browser would let cards auto-fit any copy, but it races with font loading and
@@ -174,6 +221,9 @@ Fixed sizes with headroom are the boring, reliable choice.
 
 **Everything is authored at 4K.** To make a 1080p version, render the same
 composition with `--scale=0.25` rather than editing any numbers.
+
+**No photography is used anywhere in this project** — the showreel backdrop is
+drawn in code.
 
 ---
 

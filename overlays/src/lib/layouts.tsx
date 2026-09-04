@@ -95,16 +95,34 @@ const BigValue: React.FC<{value: Value; size: number; color: string}> = ({value,
   </div>
 );
 
-const Eyebrow: React.FC<{children: React.ReactNode; color: string}> = ({children, color}) => (
+export type EyebrowStyle = 'script' | 'gothic';
+
+/**
+ * The small label. `script` is the engraved hand from the authentication
+ * certificate and is the default; `gothic` is the Textura of the RoughCut
+ * wordmark and is reserved for the name itself - blackletter used as a
+ * general-purpose label turns into pastiche very quickly.
+ */
+const Eyebrow: React.FC<{
+  children: React.ReactNode;
+  color: string;
+  variant?: EyebrowStyle;
+}> = ({children, color, variant = 'script'}) => (
   <div
-    style={{
-      fontFamily: font.mono,
-      fontSize: type.eyebrow,
-      fontWeight: 600,
-      letterSpacing: type.eyebrowTrack,
-      textTransform: 'uppercase',
-      color,
-    }}
+    style={
+      variant === 'gothic'
+        ? {fontFamily: font.gothic, fontSize: type.gothic, lineHeight: 1.0, letterSpacing: 1, color}
+        : {
+            fontFamily: font.script,
+            fontSize: type.script,
+            fontWeight: 400,
+            lineHeight: 0.9,
+            // Pinyon's glyphs overhang their boxes; a small inset keeps a
+            // capital's swash from hanging outside the text column.
+            paddingLeft: 6,
+            color,
+          }
+    }
   >
     {children}
   </div>
@@ -120,12 +138,11 @@ const Headline: React.FC<{lines: string[]; color: string; size?: number}> = ({
       fontFamily: font.display,
       fontSize: size,
       fontWeight: 700,
-      lineHeight: 0.98,
-      letterSpacing: -size * 0.014,
-      // Archivo Bold in caps sets its word gaps tight; open them back up so
-      // two-word lines don't read as one long word at a glance.
-      wordSpacing: size * 0.06,
+      // Cinzel is an inscriptional face: it is drawn for capitals and wants
+      // the letters spaced apart, the way they are cut into stone.
       textTransform: 'uppercase',
+      lineHeight: 1.06,
+      letterSpacing: size * type.headlineTrack,
       color,
     }}
   >
@@ -138,10 +155,10 @@ const Headline: React.FC<{lines: string[]; color: string; size?: number}> = ({
 const Note: React.FC<{children: React.ReactNode; color: string}> = ({children, color}) => (
   <div
     style={{
-      fontFamily: font.mono,
+      fontFamily: font.text,
       fontSize: type.note,
-      fontWeight: 500,
-      lineHeight: 1.32,
+      fontWeight: 400,
+      lineHeight: 1.24,
       color,
     }}
   >
@@ -152,6 +169,7 @@ const Note: React.FC<{children: React.ReactNode; color: string}> = ({children, c
 export type CardContent = {
   layout: Layout;
   eyebrow?: string;
+  eyebrowStyle?: EyebrowStyle;
   headline?: string[];
   note?: string;
   value?: Value;
@@ -199,7 +217,7 @@ export const Card: React.FC<CardContent> = (c) => {
       {c.layout === 'measure' ? (
         <>
           <div style={{display: 'flex', flexDirection: 'column', gap: 26, flex: '0 0 auto'}}>
-            {c.eyebrow ? <Eyebrow color={c.accent}>{c.eyebrow}</Eyebrow> : null}
+            {c.eyebrow ? <Eyebrow color={c.accent} variant={c.eyebrowStyle}>{c.eyebrow}</Eyebrow> : null}
             <BigValue value={c.value ?? {}} size={type.big} color={t.text} />
           </div>
           <div
@@ -224,7 +242,7 @@ export const Card: React.FC<CardContent> = (c) => {
       {c.layout === 'instruction' ? (
         <>
           <div style={{display: 'flex', flexDirection: 'column', gap: 24, flex: '1 1 auto'}}>
-            {c.eyebrow ? <Eyebrow color={c.accent}>{c.eyebrow}</Eyebrow> : null}
+            {c.eyebrow ? <Eyebrow color={c.accent} variant={c.eyebrowStyle}>{c.eyebrow}</Eyebrow> : null}
             {c.headline ? <Headline lines={c.headline} color={t.text} /> : null}
             <StitchRule width={c.width * 0.42} color={c.accent} progress={c.detail} />
             {c.note ? <Note color={t.textSoft}>{c.note}</Note> : null}
@@ -242,8 +260,8 @@ export const Card: React.FC<CardContent> = (c) => {
           {c.index ? (
             <div
               style={{
-                fontFamily: font.mono,
-                fontSize: 82,
+                fontFamily: font.text,
+                fontSize: 88,
                 fontWeight: 600,
                 color: c.accent,
                 flex: '0 0 auto',
@@ -255,7 +273,7 @@ export const Card: React.FC<CardContent> = (c) => {
             </div>
           ) : null}
           <div style={{display: 'flex', flexDirection: 'column', gap: 22, flex: '1 1 auto'}}>
-            {c.eyebrow ? <Eyebrow color={c.accent}>{c.eyebrow}</Eyebrow> : null}
+            {c.eyebrow ? <Eyebrow color={c.accent} variant={c.eyebrowStyle}>{c.eyebrow}</Eyebrow> : null}
             {c.headline ? <Headline lines={c.headline} color={t.text} size={type.headlineSm} /> : null}
             <StitchRule width={c.width * 0.34} color={c.accent} progress={c.detail} />
             {c.note ? <Note color={t.textSoft}>{c.note}</Note> : null}
@@ -265,7 +283,7 @@ export const Card: React.FC<CardContent> = (c) => {
 
       {c.layout === 'diagram' ? (
         <div style={{display: 'flex', flexDirection: 'column', gap: 26, width: '100%'}}>
-          {c.eyebrow ? <Eyebrow color={c.accent}>{c.eyebrow}</Eyebrow> : null}
+          {c.eyebrow ? <Eyebrow color={c.accent} variant={c.eyebrowStyle}>{c.eyebrow}</Eyebrow> : null}
           <div style={{display: 'flex', alignItems: 'center', gap: 60, width: '100%'}}>
             <div style={{flex: '1 1 auto', display: 'flex', flexDirection: 'column', gap: 20}}>
               {c.headline ? <Headline lines={c.headline} color={t.text} size={type.headlineSm} /> : null}

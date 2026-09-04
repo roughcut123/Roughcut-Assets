@@ -1,9 +1,9 @@
 /**
  * Roughcut overlay design system.
  *
- * Everything is authored at 4K (3840x2160). All sizes below are in 4K pixels,
- * so a value of 100px is ~4.6% of frame height. To render a 1080p version,
- * reuse the same composition with `--scale=0.25` instead of editing numbers.
+ * Authored at 4K (3840x2160). All sizes are in 4K pixels, so 100px is ~4.6%
+ * of frame height. For a 1080p version, render the same composition with
+ * `--scale=0.25` rather than editing these numbers.
  */
 
 export const FPS = 30;
@@ -20,86 +20,100 @@ export const OUT_FRAMES = 20;
 export const DEFAULT_HOLD_SECONDS = 2.8;
 
 /**
- * Palette pulled from the studio footage: warm dark wood, raw calico, kraft
- * paper, tailor's chalk, and the rust / indigo that recur in the prints.
+ * The palette is taken from the Roughcut board: the gilt Roman lettering on
+ * the oxblood "relic" cover, the washed paper of the Durer and manuscript
+ * scans, the tea-stained map, and the deep end of the oil paintings and
+ * ukiyo-e prints - oxblood, gilt, verdigris, rose, lapis.
+ *
+ * These are pigment names rather than screen names on purpose: the point of
+ * reference is a paint box and a print shop, not a colour picker.
  */
 export const palette = {
-  ink: '#17130F',
-  inkSoft: '#4B4238',
-  inkFaint: '#8C7F6E',
+  /* --- washed papers, as they come off a scan --- */
+  /** Pale vellum: the engraving plates. */
+  vellum: '#EDE2CA',
+  vellumEdge: '#D2C3A2',
+  /** Foxed and yellowed. */
+  foxed: '#DFCEAB',
+  foxedEdge: '#C0AA7E',
+  /** Tea-stained parchment: the map, the certificate. */
+  parchment: '#CDB894',
+  parchmentEdge: '#AB9268',
 
-  /** Pattern tissue - the default card. */
-  tissue: '#F3EDE0',
-  tissueEdge: '#D9CDB6',
+  /* --- deep grounds --- */
+  /** The oxblood of the relic cover. */
+  oxblood: '#4A1E1B',
+  oxbloodEdge: '#6B322C',
+  /** Night blue-black, from the darkest of the paintings. */
+  nocturne: '#141A22',
+  nocturneEdge: '#2B3644',
 
-  /** Manila pattern card - heavier, warmer. */
-  manila: '#E7D6B2',
-  manilaEdge: '#C9B084',
+  /* --- pigments --- */
+  /** Gilt: the Roman capitals, the halo, the frames. */
+  gilt: '#C0982F',
+  /** Sanguine: red chalk, terracotta. */
+  sanguine: '#A85C43',
+  /** Bole: the red-brown under gold leaf. */
+  bole: '#6E2B26',
+  /** Verdigris: the teal of the woodblock waves. */
+  verdigris: '#2F5F58',
+  /** Rose: the pink of the woodblock sky. */
+  rose: '#B4726C',
+  /** Lapis: deep blue. */
+  lapis: '#274A70',
 
-  /** Kraft swing tag. */
-  kraft: '#C6A277',
-  kraftEdge: '#A4805A',
-
-  /** Dark card, for when the shot behind is bright/blown out. */
-  slate: '#221E19',
-  slateEdge: '#3E372E',
-
-  /** Accents. */
-  thread: '#B03E29',
-  indigo: '#2E4A5C',
-  ochre: '#C2872C',
-  chalk: '#F7F4EC',
+  /* --- inks --- */
+  /** Iron gall: warm brown-black, never neutral. */
+  ink: '#241C14',
+  inkSoft: '#5E4F3D',
+  /** Chalk white, for text on the deep grounds. */
+  chalk: '#F0E6D2',
+  chalkSoft: '#B9A98D',
 } as const;
 
-export type ToneName = 'tissue' | 'manila' | 'kraft' | 'slate';
+export type ToneName = 'vellum' | 'foxed' | 'parchment' | 'oxblood' | 'nocturne';
 
 export type Tone = {
   base: string;
   edge: string;
-  /** Text colour that reads on this tone. */
   text: string;
   textSoft: string;
+  /** True for the deep grounds - some effects invert. */
+  dark: boolean;
 };
 
 export const tones: Record<ToneName, Tone> = {
-  tissue: {
-    base: palette.tissue,
-    edge: palette.tissueEdge,
-    text: palette.ink,
-    textSoft: palette.inkSoft,
-  },
-  manila: {
-    base: palette.manila,
-    edge: palette.manilaEdge,
-    text: palette.ink,
-    textSoft: palette.inkSoft,
-  },
-  kraft: {
-    base: palette.kraft,
-    edge: palette.kraftEdge,
-    text: palette.ink,
-    textSoft: '#5A4632',
-  },
-  slate: {
-    base: palette.slate,
-    edge: palette.slateEdge,
-    text: palette.chalk,
-    textSoft: '#B3A896',
-  },
+  vellum: {base: palette.vellum, edge: palette.vellumEdge, text: palette.ink, textSoft: palette.inkSoft, dark: false},
+  foxed: {base: palette.foxed, edge: palette.foxedEdge, text: palette.ink, textSoft: palette.inkSoft, dark: false},
+  parchment: {base: palette.parchment, edge: palette.parchmentEdge, text: palette.ink, textSoft: '#584732', dark: false},
+  oxblood: {base: palette.oxblood, edge: palette.oxbloodEdge, text: palette.chalk, textSoft: '#C7A98F', dark: true},
+  nocturne: {base: palette.nocturne, edge: palette.nocturneEdge, text: palette.chalk, textSoft: '#9FAAB8', dark: true},
 };
 
 export const font = {
-  display: '"Archivo", "Helvetica Neue", Arial, sans-serif',
-  mono: '"IBM Plex Mono", "SF Mono", Menlo, monospace',
+  /** Cinzel - Roman inscriptional capitals, after the gilt "RELIC" lettering. */
+  display: '"Cinzel", "Trajan Pro", Georgia, serif',
+  /** EB Garamond - the old-style text of the engraving plates. */
+  text: '"EB Garamond", Georgia, "Times New Roman", serif',
+  /** Pinyon Script - the engraved hand of the authentication certificate. */
+  script: '"Pinyon Script", "Snell Roundhand", cursive',
+  /** Textura blackletter - the RoughCut wordmark. Used only for the name. */
+  gothic: '"UnifrakturMaguntia", "Blackletter", serif',
 } as const;
 
-/** Type scale, in 4K px. */
+/**
+ * Type scale, in 4K px. Cinzel is set in caps and wants tracking; Garamond
+ * and Pinyon both have small x-heights, so the text sizes run larger than a
+ * sans would.
+ */
 export const type = {
-  eyebrow: 34,
-  eyebrowTrack: 7,
-  headline: 116,
-  headlineSm: 92,
-  note: 44,
+  script: 68,
+  gothic: 66,
+  headline: 104,
+  headlineSm: 86,
+  /** Roman capitals need air between them. */
+  headlineTrack: 0.02,
+  note: 52,
   big: 300,
   bigSm: 220,
   unit: 78,
