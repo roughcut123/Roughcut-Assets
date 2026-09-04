@@ -1,6 +1,6 @@
 # Roughcut overlay pack
 
-Twenty animated sewing overlays and two paper transitions for 4K YouTube
+Twenty-two animated sewing overlays and three paper transitions for 4K YouTube
 videos, built with [Remotion](https://remotion.dev). Everything renders at
 3840x2160 with a **transparent background**, so you drop a clip on the track
 above your footage and it sits there.
@@ -46,6 +46,12 @@ hasn't the contrast to carry small text.
 sparse rust-brown foxing spots, and a fine grain. That is what makes it read
 as a scan of an old page rather than a coloured rectangle.
 
+**Cards can be sewn on, not just laid down.** `stitched` runs a sashiko
+running stitch just inside the cut edge, in the card's accent colour — the way
+the patches are sewn onto the bags. It boils with the outline, so the thread
+moves with the paper rather than floating over it. Used on `RelicLabel` and
+`PatchSheets`.
+
 **And it wobbles.** The outline is genuinely irregular, corners included, and
 it *boils*: the sheet is re-cut every four frames from a small set of
 variants, the way a physical papercut gets nudged between exposures in stop
@@ -67,7 +73,7 @@ npm run studio       # opens the visual editor at localhost:3000
 The Studio is where you preview, scrub and retype. To export:
 
 ```bash
-npm run render                      # all 22, ProRes 4444 with alpha (.mov)
+npm run render                      # all 25, ProRes 4444 with alpha (.mov)
 npm run render -- SeamAllowance     # just one
 npm run render -- --webm            # VP9 + alpha instead - a tenth the size
 npm run render -- --force           # re-render files that already exist
@@ -92,7 +98,7 @@ in Premiere that is *Interpret Footage > Alpha Channel > Straight*.
 
 ---
 
-## The twenty overlays
+## The overlays
 
 Ordered the way you actually hit them making a garment.
 
@@ -118,8 +124,16 @@ Ordered the way you actually hit them making a garment.
 | 18 | `DoubleFoldHem` | Turn it twice | foxed | unfold |
 | 19 | `Unpick` | Unpick it | parchment | drop |
 | 20 | `LeaveItRaw` | Leave the seam raw | oxblood | cut |
+| 21 | `RelicLabel` | Certificate of authentication | parchment | unfold |
+| 22 | `PatchSheets` | Patch sheets — link in the description | foxed | drop |
 
 Each is 4.33 seconds by default: about 0.9s in, 2.8s holding, 0.7s out.
+
+`RelicLabel` is the odd one out: a centred certificate after the Made in Italy
+garment label — heading, rule, body, `Garment No.` / `Final stitching.` rules
+to fill in by hand, and the wordmark at the foot. It is bigger than the rest
+(1320x940) and reads as an intro or outro card rather than a caption. Its own
+layout, `label`, takes `body`, `fields` and `signature` in place of a note.
 
 `preview.jpg` shows all twenty standing still. To watch them move:
 
@@ -141,6 +155,13 @@ Full-frame paper wipes with alpha. Put the transition on the track above and
 |---|---|---|---|
 | `PaperSweep` | 27 frames (0.9s) | frames 9–16 | **frame 13** |
 | `PaperStrips` | 36 frames (1.2s) | frames 12–25 | **frame 19** |
+| `MosaicBuild` | 48 frames (1.6s) | frames 20–29 | **frame 25** |
+
+`MosaicBuild` is the mosaic note from the board: 390 tesserae fly in, settle
+into a gold ground, hold, then scatter. All of them live in one SVG — giving
+each its own paper card would mean 390 sets of filters per frame, which is not
+something you can render. The tiles overlap by 10px so a landed mosaic has no
+pinholes of video showing through it.
 
 Those coverage windows were measured off the rendered alpha, not estimated —
 if you change `seconds` in the Studio they will move.
@@ -175,8 +196,9 @@ Two things to know:
 
 Add an entry to the array in `src/overlays/specs.ts`. It gets picked up
 automatically — composition, Studio entry, and render. Pick a `layout`
-(`measure`, `instruction`, `tag`, `diagram`), a `motif`, an `anim`, and a
-`tone`, and it will match the rest.
+(`measure`, `instruction`, `tag`, `diagram`, `label`), a `motif`, an `anim`,
+and a `tone`, and it will match the rest. Add `stitched: true` if it should
+read as sewn on.
 
 ---
 

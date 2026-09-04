@@ -3,7 +3,7 @@ import {AbsoluteFill, Easing, interpolate, random, useCurrentFrame, useVideoConf
 import {z} from 'zod';
 import {zColor} from '@remotion/zod-types';
 import {PaperCard} from '../lib/paper';
-import {HEIGHT, WIDTH, tones, type ToneName} from '../lib/theme';
+import {HEIGHT, WIDTH, palette, tones, type ToneName} from '../lib/theme';
 
 export const transitionSchema = z.object({
   tone: z.enum(['vellum', 'foxed', 'parchment', 'oxblood', 'nocturne']),
@@ -118,6 +118,97 @@ export const PaperStrips: React.FC<TransitionProps> = ({tone}) => {
 export const transitionDefaults: Record<string, TransitionProps> = {
   PaperSweep: {tone: 'vellum', seconds: 0.9},
   PaperStrips: {tone: 'foxed', seconds: 1.2},
+  MosaicBuild: {tone: 'parchment', seconds: 1.6},
 };
 
 export const toneOf = (t: ToneName) => tones[t];
+
+/* ------------------------------------------------------------------ */
+
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+const easeOutCubic = (x: number) => 1 - (1 - x) ** 3;
+
+/** Tesserae are drawn from the gold-ground palette of a Ravenna mosaic:
+ *  mostly gilt and parchment, with scattered bole, lapis and verdigris. */
+const TESSERA = [
+  palette.gilt, palette.gilt, palette.gilt,
+  palette.parchment, palette.parchment,
+  palette.foxed,
+  palette.bole,
+  palette.lapis,
+  palette.verdigris,
+  palette.oxblood,
+];
+
+const COLS = 26;
+const ROWS = 15;
+/** Tiles overlap slightly, so a landed mosaic has no pinholes of video in it. */
+const OVERLAP = 10;
+
+/**
+ * A mosaic that lays itself: tesserae fly in, settle into a full gold ground,
+ * hold, then scatter. From the note on the board about mosaics animating to
+ * build a painting.
+ *
+ * All 390 tiles live in one SVG - giving each its own PaperCard would mean
+ * 390 sets of filters per frame, which is not a thing you can render.
+ */
+export const MosaicBuild: React.FC<TransitionProps> = () => {
+  const frame = useCurrentFrame();
+  const {durationInFrames} = useVideoConfig();
+  const t = frame / (durationInFrames - 1);
+
+  const tw = WIDTH / COLS;
+  const th = HEIGHT / ROWS;
+
+  const tiles: React.ReactNode[] = [];
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const i = r * COLS + c;
+      const s = `m${i}`;
+
+      const inDelay = random(`${s}-d`) * 0.28;
+      const inT = easeOutCubic(clamp01((t - inDelay) / 0.17));
+      const outDelay = random(`${s}-o`) * 0.26;
+      const outT = easeOutCubic(clamp01((t - 0.62 - outDelay) / 0.16));
+
+      if (inT <= 0) continue;
+
+      const ang = random(`${s}-a`) * Math.PI * 2;
+      const dist = 420 + random(`${s}-r`) * 620;
+      const ox = Math.cos(ang) * dist * (1 - inT) + Math.cos(ang) * dist * 0.8 * outT;
+      const oy = Math.sin(ang) * dist * (1 - inT) + Math.sin(ang) * dist * 0.8 * outT;
+      const rot = (random(`${s}-t`) - 0.5) * 90 * (1 - inT) + (random(`${s}-t2`) - 0.5) * 70 * outT;
+      const scale = (0.3 + 0.7 * inT) * (1 - 0.75 * outT);
+
+      const x = c * tw - OVERLAP / 2;
+      const y = r * th - OVERLAP / 2;
+      const w = tw + OVERLAP;
+      const h = th + OVERLAP;
+      const j = (k: string) => (random(`${s}-${k}`) - 0.5) * 9;
+
+      tiles.push(
+        <g
+          key={i}
+          transform={`translate(${x + w / 2 + ox} ${y + h / 2 + oy}) rotate(${rot}) scale(${scale}) translate(${-w / 2} ${-h / 2})`}
+          opacity={Math.min(inT * 2, 1) * (1 - outT)}
+        >
+          <path
+            d={`M ${j('a')} ${j('b')} L ${w + j('c')} ${j('d')} L ${w + j('e')} ${h + j('f')} L ${j('g')} ${h + j('h')} Z`}
+            fill={TESSERA[Math.floor(random(`${s}-col`) * TESSERA.length)]}
+            stroke="rgba(0,0,0,0.35)"
+            strokeWidth={3}
+          />
+        </g>,
+      );
+    }
+  }
+
+  return (
+    <AbsoluteFill>
+      <svg width={WIDTH} height={HEIGHT} style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
+        {tiles}
+      </svg>
+    </AbsoluteFill>
+  );
+};

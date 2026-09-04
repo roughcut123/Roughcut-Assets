@@ -3,7 +3,7 @@ import {font, tones, type ToneName, type} from './theme';
 import {PaperCard, type Edge, type Punch} from './paper';
 import {StitchRule, motifs, type MotifName} from './motifs';
 
-export type Layout = 'measure' | 'instruction' | 'tag' | 'diagram';
+export type Layout = 'measure' | 'instruction' | 'tag' | 'diagram' | 'label';
 
 export type Value = {
   /** Whole number, e.g. "1" in 1 1/2. Optional. */
@@ -175,12 +175,20 @@ export type CardContent = {
   value?: Value;
   motif?: MotifName;
   index?: string;
+  /** `label` layout: the body paragraph, one entry per line. */
+  body?: string[];
+  /** `label` layout: fill-in-by-hand rules, e.g. "Garment No." */
+  fields?: string[];
+  /** `label` layout: the wordmark at the foot, set in Textura. */
+  signature?: string;
   tone: ToneName;
   accent: string;
   width: number;
   height: number;
   seed: string;
   torn?: Edge[];
+  /** Sew a sashiko running stitch just inside the edge. */
+  stitched?: boolean;
   /** 0 -> 1 progress for the detail pass (stitching, diagrams). */
   detail: number;
 };
@@ -204,6 +212,8 @@ export const Card: React.FC<CardContent> = (c) => {
       tone={c.tone}
       torn={c.torn}
       punch={punch}
+      stitched={c.stitched}
+      threadColor={c.accent}
       contentStyle={{
         display: 'flex',
         alignItems: 'center',
@@ -279,6 +289,68 @@ export const Card: React.FC<CardContent> = (c) => {
             {c.note ? <Note color={t.textSoft}>{c.note}</Note> : null}
           </div>
         </>
+      ) : null}
+
+      {c.layout === 'label' ? (
+        // Centred, unlike every other card here - which is what makes it read
+        // as a certificate rather than a caption. Modelled on the Made in
+        // Italy garment label: heading, rule, body, fields to fill in by hand,
+        // and the wordmark at the foot.
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 26,
+            width: '100%',
+            textAlign: 'center',
+          }}
+        >
+          {c.eyebrow ? <Eyebrow color={c.accent} variant={c.eyebrowStyle}>{c.eyebrow}</Eyebrow> : null}
+          {c.headline ? <Headline lines={c.headline} color={t.text} size={type.headlineSm * 0.74} /> : null}
+          <StitchRule width={c.width * 0.46} color={c.accent} progress={c.detail} />
+          {c.body ? (
+            <div
+              style={{
+                fontFamily: font.text,
+                fontSize: type.note * 0.86,
+                fontStyle: 'italic',
+                lineHeight: 1.4,
+                color: t.textSoft,
+                maxWidth: c.width * 0.82,
+              }}
+            >
+              {c.body.map((l, i) => (
+                <div key={i}>{l}</div>
+              ))}
+            </div>
+          ) : null}
+          {c.fields?.length ? (
+            <div style={{display: 'flex', flexDirection: 'column', gap: 18, width: c.width * 0.66, marginTop: 8}}>
+              {c.fields.map((f, i) => (
+                <div key={i} style={{display: 'flex', alignItems: 'flex-end', gap: 16}}>
+                  <span
+                    style={{
+                      fontFamily: font.text,
+                      fontStyle: 'italic',
+                      fontSize: type.note * 0.82,
+                      color: t.text,
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {f}
+                  </span>
+                  <span style={{flex: 1, borderBottom: `3px solid ${t.textSoft}`, opacity: 0.65, marginBottom: 10}} />
+                </div>
+              ))}
+            </div>
+          ) : null}
+          {c.signature ? (
+            <div style={{fontFamily: font.gothic, fontSize: type.gothic * 0.92, color: t.text, marginTop: 4}}>
+              {c.signature}
+            </div>
+          ) : null}
+        </div>
       ) : null}
 
       {c.layout === 'diagram' ? (

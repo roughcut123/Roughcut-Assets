@@ -13,6 +13,7 @@ import {Showreel, SHOWREEL_DURATION} from './preview/Showreel';
 import {
   PaperSweep,
   PaperStrips,
+  MosaicBuild,
   transitionDefaults,
   transitionSchema,
   type TransitionProps,
@@ -44,6 +45,7 @@ export const RemotionRoot: React.FC = () => (
       [
         ['PaperSweep', PaperSweep],
         ['PaperStrips', PaperStrips],
+        ['MosaicBuild', MosaicBuild],
       ] as const
     ).map(([id, component]) => (
       <Composition

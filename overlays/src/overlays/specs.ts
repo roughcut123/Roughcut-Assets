@@ -18,6 +18,12 @@ export type OverlaySpec = {
   value?: Value;
   motif?: MotifName;
   index?: string;
+  /** `label` layout only. */
+  body?: string[];
+  fields?: string[];
+  signature?: string;
+  /** Sew a running stitch just inside the edge. */
+  stitched?: boolean;
   tone: ToneName;
   accent: string;
   anim: AnimStyle;
@@ -354,5 +360,46 @@ export const specs: OverlaySpec[] = [
     width: 1440,
     height: 610,
     restAngle: -1,
+  },
+  {
+    id: 'RelicLabel',
+    file: '21-relic-label',
+    layout: 'label',
+    eyebrow: 'Certificate of authentication',
+    headline: ['Relic from the past', 'crafted in the present'],
+    note: '',
+    body: [
+      'Designed, cut and sewn by hand in the',
+      'south of England. Inspired by the ruins,',
+      'the paintings and the archaeology.',
+      'No two will ever be the same.',
+    ],
+    fields: ['Garment No.', 'Final stitching.'],
+    signature: 'RoughCut',
+    stitched: true,
+    tone: 'parchment',
+    accent: palette.bole,
+    anim: 'unfold',
+    torn: ['right', 'bottom'],
+    width: 1320,
+    height: 940,
+    restAngle: -0.6,
+  },
+  {
+    id: 'PatchSheets',
+    file: '22-patch-sheets',
+    layout: 'tag',
+    eyebrow: 'From the archive',
+    headline: ['Patch sheets'],
+    note: 'The ones I use. Link in the description.',
+    index: 'RC',
+    stitched: true,
+    tone: 'foxed',
+    accent: palette.sanguine,
+    anim: 'drop',
+    torn: ['right'],
+    width: 1240,
+    height: 470,
+    restAngle: 0.9,
   },
 ];

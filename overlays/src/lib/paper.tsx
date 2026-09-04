@@ -118,6 +118,9 @@ const circleSubpath = ({cx, cy, r}: Punch) =>
 export const BOIL_EVERY = 4;
 export const BOIL_VARIANTS = 3;
 
+/** How far the running stitch sits in from the cut edge, in px. */
+const STITCH_INSET = 34;
+
 /**
  * A piece of paper: hand-cut outline, paper grain, a soft sheen and a real
  * two-part cast shadow.
@@ -143,6 +146,10 @@ export const PaperCard: React.FC<{
   wobble?: number;
   /** Stop-motion edge boil. */
   boil?: boolean;
+  /** A sashiko running stitch just inside the edge, as on the patched bags. */
+  stitched?: boolean;
+  /** Thread colour for that stitch. */
+  threadColor?: string;
   children?: React.ReactNode;
   contentStyle?: React.CSSProperties;
 }> = ({
@@ -156,6 +163,8 @@ export const PaperCard: React.FC<{
   tornAmp,
   wobble,
   boil = true,
+  stitched = false,
+  threadColor,
   children,
   contentStyle,
 }) => {
@@ -168,6 +177,15 @@ export const PaperCard: React.FC<{
   // stains stay put on the page while the cut edge moves.
   const stainSeed = numSeed(seed);
   const foxSeed = numSeed(`${seed}-fox`);
+
+  const stitchPath = stitched
+    ? cutRectPath({
+        w: width - STITCH_INSET * 2,
+        h: height - STITCH_INSET * 2,
+        seed: `${cutSeed}-stitch`,
+        wobble: 9,
+      })
+    : '';
 
   const pad = 160;
   const outline = cutRectPath({w: width, h: height, seed: cutSeed, torn, tornAmp, wobble});
@@ -298,6 +316,31 @@ export const PaperCard: React.FC<{
           clipPath={`url(#${gid}clip)`}
         />
         <path d={d} fill="none" stroke={t.edge} strokeWidth={3} strokeOpacity={0.9} />
+        {/* Sashiko: a running stitch set in from the edge, the way the
+            patches are sewn onto the bags. It boils with the outline, so the
+            thread moves with the paper rather than floating over it. */}
+        {stitched ? (
+          <>
+            <path
+              d={stitchPath}
+              fill="none"
+              stroke={t.dark ? 'rgba(0,0,0,0.45)' : 'rgba(0,0,0,0.28)'}
+              strokeWidth={7}
+              strokeDasharray="30 22"
+              strokeLinecap="round"
+              transform={`translate(${STITCH_INSET} ${STITCH_INSET + 4})`}
+            />
+            <path
+              d={stitchPath}
+              fill="none"
+              stroke={threadColor ?? (t.dark ? '#D8C9AE' : '#6B5B45')}
+              strokeWidth={6}
+              strokeDasharray="30 22"
+              strokeLinecap="round"
+              transform={`translate(${STITCH_INSET} ${STITCH_INSET})`}
+            />
+          </>
+        ) : null}
       </svg>
 
       <div style={{position: 'absolute', inset: 0, ...contentStyle}}>{children}</div>
