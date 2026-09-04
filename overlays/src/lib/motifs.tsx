@@ -456,6 +456,73 @@ export const FrayEdge: React.FC<MotifProps> = ({width, height, color, progress, 
   );
 };
 
+
+/** A tape measure: graduated ticks along a rule. */
+export const MeasureRule: React.FC<MotifProps> = ({width, height, color, progress, accent}) => {
+  const id = useSvgId('rule');
+  const y = height * 0.62;
+  const n = 11;
+  return (
+    <svg width={width} height={height} style={{display: 'block', overflow: 'visible'}}>
+      <defs>
+        <clipPath id={id}>
+          <rect x={-10} y={-20} width={width * progress + 10} height={height + 40} />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${id})`} strokeLinecap="round">
+        <line x1={0} y1={y} x2={width} y2={y} stroke={color} strokeWidth={8} />
+        {Array.from({length: n}).map((_, i) => {
+          const x = (width / (n - 1)) * i;
+          const major = i % 5 === 0;
+          return (
+            <line
+              key={i}
+              x1={x}
+              y1={y}
+              x2={x}
+              y2={y - height * (major ? 0.42 : 0.22)}
+              stroke={major ? accent ?? color : color}
+              strokeWidth={major ? 8 : 5}
+              opacity={major ? 1 : 0.7}
+            />
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
+
+/** Water: prewashing, before a single cut is made. */
+export const WashWaves: React.FC<MotifProps> = ({width, height, color, progress, accent}) => {
+  const id = useSvgId('wash');
+  const rows = [0, 1, 2];
+  return (
+    <svg width={width} height={height} style={{display: 'block', overflow: 'visible'}}>
+      <defs>
+        <clipPath id={id}>
+          <rect x={-10} y={-20} width={width * progress + 10} height={height + 40} />
+        </clipPath>
+      </defs>
+      <g clipPath={`url(#${id})`} fill="none" strokeLinecap="round">
+        {rows.map((i) => {
+          const y = height * 0.3 + i * height * 0.22;
+          const a = height * 0.09;
+          const w = width / 3;
+          return (
+            <path
+              key={i}
+              d={`M 0 ${y} q ${w / 4} ${-a} ${w / 2} 0 t ${w / 2} 0 t ${w / 2} 0 t ${w / 2} 0 t ${w / 2} 0 t ${w / 2} 0`}
+              stroke={i === 1 ? accent ?? color : color}
+              strokeWidth={i === 1 ? 7 : 6}
+              opacity={i === 1 ? 1 : 0.6}
+            />
+          );
+        })}
+      </g>
+    </svg>
+  );
+};
+
 export const motifs = {
   grainline: GrainlineArrow,
   seamOpen: SeamOpen,
@@ -471,6 +538,8 @@ export const motifs = {
   cutLine: CutLine,
   pressArrow: PressArrow,
   fray: FrayEdge,
+  rule: MeasureRule,
+  wash: WashWaves,
 } as const;
 
 export type MotifName = keyof typeof motifs;

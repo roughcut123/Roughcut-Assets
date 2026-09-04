@@ -1,6 +1,6 @@
 # Roughcut overlay pack
 
-Twenty-two animated sewing overlays and three paper transitions for 4K YouTube
+Twenty-four animated sewing overlays and four paper transitions for 4K YouTube
 videos, built with [Remotion](https://remotion.dev). Everything renders at
 3840x2160 with a **transparent background**, so you drop a clip on the track
 above your footage and it sits there.
@@ -73,7 +73,7 @@ npm run studio       # opens the visual editor at localhost:3000
 The Studio is where you preview, scrub and retype. To export:
 
 ```bash
-npm run render                      # all 25, ProRes 4444 with alpha (.mov)
+npm run render                      # all 28, ProRes 4444 with alpha (.mov)
 npm run render -- SeamAllowance     # just one
 npm run render -- --webm            # VP9 + alpha instead - a tenth the size
 npm run render -- --force           # re-render files that already exist
@@ -126,6 +126,8 @@ Ordered the way you actually hit them making a garment.
 | 20 | `LeaveItRaw` | Leave the seam raw | oxblood | cut |
 | 21 | `RelicLabel` | Certificate of authentication | parchment | unfold |
 | 22 | `PatchSheets` | Patch sheets — link in the description | foxed | drop |
+| 23 | `BuyEnoughFabric` | Buy extra fabric | foxed | slide |
+| 24 | `PrewashFabric` | Prewash the fabric | vellum | drop |
 
 Each is 4.33 seconds by default: about 0.9s in, 2.8s holding, 0.7s out.
 
@@ -156,6 +158,13 @@ Full-frame paper wipes with alpha. Put the transition on the track above and
 | `PaperSweep` | 27 frames (0.9s) | frames 9–16 | **frame 13** |
 | `PaperStrips` | 36 frames (1.2s) | frames 12–25 | **frame 19** |
 | `MosaicBuild` | 48 frames (1.6s) | frames 20–29 | **frame 25** |
+| `CentreReveal` | 45 frames (1.5s) | frames 16–23 | **frame 20** |
+
+`CentreReveal` opens from the centre of frame, covers, then tears apart to
+uncover — for revealing a finished garment. It is two sheets throughout rather
+than one that splits: they grow together (overlapping at the middle, so the
+torn seam reads as a join rather than a gap) and then part. Swapping one
+element for two mid-shot always shows.
 
 `MosaicBuild` is the mosaic note from the board: 390 tesserae fly in, settle
 into a gold ground, hold, then scatter. All of them live in one SVG — giving

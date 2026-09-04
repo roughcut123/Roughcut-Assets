@@ -14,6 +14,7 @@ import {
   PaperSweep,
   PaperStrips,
   MosaicBuild,
+  CentreReveal,
   transitionDefaults,
   transitionSchema,
   type TransitionProps,
@@ -46,6 +47,7 @@ export const RemotionRoot: React.FC = () => (
         ['PaperSweep', PaperSweep],
         ['PaperStrips', PaperStrips],
         ['MosaicBuild', MosaicBuild],
+        ['CentreReveal', CentreReveal],
       ] as const
     ).map(([id, component]) => (
       <Composition

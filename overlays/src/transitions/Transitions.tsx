@@ -119,6 +119,7 @@ export const transitionDefaults: Record<string, TransitionProps> = {
   PaperSweep: {tone: 'vellum', seconds: 0.9},
   PaperStrips: {tone: 'foxed', seconds: 1.2},
   MosaicBuild: {tone: 'parchment', seconds: 1.6},
+  CentreReveal: {tone: 'vellum', seconds: 1.5},
 };
 
 export const toneOf = (t: ToneName) => tones[t];
@@ -209,6 +210,88 @@ export const MosaicBuild: React.FC<TransitionProps> = () => {
       <svg width={WIDTH} height={HEIGHT} style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
         {tiles}
       </svg>
+    </AbsoluteFill>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+
+/**
+ * Opens from the centre of frame, covers, then tears apart to uncover -
+ * for revealing the finished garment.
+ *
+ * It is two sheets throughout, not one that splits: they grow together as a
+ * single sheet (they overlap at the middle, so the torn seam between them
+ * reads as a join rather than a gap), then part left and right. Building it
+ * that way avoids swapping one element for two mid-shot, which always shows.
+ */
+export const CentreReveal: React.FC<TransitionProps> = ({tone}) => {
+  const frame = useCurrentFrame();
+  const {durationInFrames} = useVideoConfig();
+  const t = frame / (durationInFrames - 1);
+
+  const grow = interpolate(t, [0, 0.4], [0.04, 1], {
+    extrapolateRight: 'clamp',
+    easing: Easing.bezier(0.3, 0, 0.15, 1),
+  });
+  const rot = interpolate(t, [0, 0.4], [-9, -1.2], {extrapolateRight: 'clamp'});
+  const part = interpolate(t, [0.58, 1], [0, 1], {
+    extrapolateLeft: 'clamp',
+    easing: Easing.bezier(0.5, 0, 0.6, 1),
+  });
+
+  const halfW = WIDTH * 0.56;
+  const h = HEIGHT * 1.25;
+  const top = (HEIGHT - h) / 2;
+  const OVER = 40;
+
+  return (
+    <AbsoluteFill>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          transformOrigin: 'center center',
+          transform: `scale(${grow}) rotate(${rot}deg)`,
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: WIDTH / 2 + OVER - halfW,
+            top,
+            transform: `translateX(${-part * WIDTH * 0.8}px)`,
+          }}
+        >
+          <PaperCard
+            width={halfW}
+            height={h}
+            seed="centre-left"
+            tone={tone}
+            torn={['right']}
+            tornAmp={95}
+            grain={false}
+          />
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            left: WIDTH / 2 - OVER,
+            top,
+            transform: `translateX(${part * WIDTH * 0.8}px)`,
+          }}
+        >
+          <PaperCard
+            width={halfW}
+            height={h}
+            seed="centre-right"
+            tone={tone}
+            torn={['left']}
+            tornAmp={95}
+            grain={false}
+          />
+        </div>
+      </div>
     </AbsoluteFill>
   );
 };
