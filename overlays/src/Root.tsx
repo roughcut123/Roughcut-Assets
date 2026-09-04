@@ -9,6 +9,7 @@ import {
   registerOverlayComponent,
   type OverlayProps,
 } from './overlays/Overlay';
+import {Showreel, SHOWREEL_DURATION} from './preview/Showreel';
 import {
   PaperSweep,
   PaperStrips,
@@ -60,5 +61,14 @@ export const RemotionRoot: React.FC = () => (
         })}
       />
     ))}
+
+    <Composition
+      id="Showreel"
+      component={Showreel}
+      width={WIDTH}
+      height={HEIGHT}
+      fps={FPS}
+      durationInFrames={SHOWREEL_DURATION}
+    />
   </>
 );

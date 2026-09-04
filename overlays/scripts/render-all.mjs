@@ -55,7 +55,10 @@ const codecArgs = webm
 
 const ext = webm ? 'webm' : 'mov';
 
-const all = listCompositions();
+/** Preview-only compositions: no alpha, not for a timeline. */
+const PREVIEW_ONLY = ['Showreel'];
+
+const all = listCompositions().filter((c) => !PREVIEW_ONLY.includes(c));
 const targets = only.length ? all.filter((c) => only.includes(c)) : all;
 
 if (only.length) {

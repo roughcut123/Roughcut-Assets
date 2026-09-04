@@ -78,7 +78,16 @@ Ordered the way you actually hit them making a garment.
 
 Each is 4.33 seconds by default: about 0.9s in, 2.8s holding, 0.7s out.
 
-See `preview.jpg` for what they all look like.
+See `preview.jpg` for what they all look like standing still. To watch them
+move, either open the Studio, or render the showreel - all twenty in order
+over a still from the workshop:
+
+```bash
+npx remotion render src/index.ts Showreel out/showreel.mp4 --codec=h264 --scale=0.5
+```
+
+`Showreel` is preview only: it has no alpha channel and `npm run render`
+deliberately skips it.
 
 ---
 
