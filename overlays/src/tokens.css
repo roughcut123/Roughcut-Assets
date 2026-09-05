@@ -1,0 +1,21 @@
+/*
+ * ROUGHCUT DESIGN TOKENS  —  spec §3.2
+ *
+ * Single source of truth for colour. No hex codes inline in components.
+ *
+ * --rc-annotation is RESERVED: it marks exactly one thing per asset (a circle,
+ * an arrow, an underline). Two red marks in one asset means one is wrong.
+ */
+:root {
+  --rc-paper:       #EFE5D2;  /* card grounds, aged paper                */
+  --rc-paper-deep:  #DCCDB0;  /* secondary paper, shadow side            */
+  --rc-ink:         #3B2E22;  /* body text, engraved line work           */
+  --rc-mahogany:    #4A2C1A;  /* full-frame transition grounds           */
+  --rc-oxblood:     #3E2118;  /* book-cover ground, title cards          */
+  --rc-gold:        #C79A34;  /* illuminated caps, tagline text          */
+  --rc-indigo:      #33455C;  /* denim, selvedge accents                 */
+  --rc-terracotta:  #9C4A2F;  /* Pompeii fresco accent                   */
+  --rc-fresco:      #A8BCC4;  /* pale sky blue, sparing                  */
+  --rc-lamp:        #E2703A;  /* the studio lamp orange, sparing         */
+  --rc-annotation:  #B3202A;  /* red hand-annotation ONLY - one per asset */
+}

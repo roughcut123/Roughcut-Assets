@@ -18,6 +18,13 @@ const faces: {family: string; file: string; weight: string; style?: string}[] = 
   {family: 'EB Garamond', file: 'EBGaramond-Italic.woff2', weight: '400', style: 'italic'},
   {family: 'Pinyon Script', file: 'PinyonScript-Regular.woff2', weight: '400'},
   {family: 'UnifrakturMaguntia', file: 'UnifrakturMaguntia-Regular.woff2', weight: '400'},
+  // Spec §3.3 roles. Playfair Display SC is the engraved serif and carries
+  // real small caps, which the spec requires; Courier Prime is the typewriter
+  // register that all popup copy is set in.
+  {family: 'Playfair Display SC', file: 'PlayfairDisplaySC-Regular.woff2', weight: '400'},
+  {family: 'Playfair Display SC', file: 'PlayfairDisplaySC-Bold.woff2', weight: '700'},
+  {family: 'Courier Prime', file: 'CourierPrime-Regular.woff2', weight: '400'},
+  {family: 'Courier Prime', file: 'CourierPrime-Bold.woff2', weight: '700'},
 ];
 
 export const loadOverlayFonts = () => {
