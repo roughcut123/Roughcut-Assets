@@ -8,8 +8,8 @@ import {
   SeamAllowanceDemo,
 } from './diagrams';
 import {
-  BullseyeDemo,
   FormatsDemo,
+  PageOrderDemo,
   SizingDemo,
   TestSquareDemo,
   TilingDemo,
@@ -50,9 +50,9 @@ export const demos: DemoAsset[] = [
   demo('PRESSSEAMSOPEN', 'Press seams open', 'Lift and lower. Never drag the iron.', PressSeamsDemo, [180, 400]),
 
   // §8.2 pattern literacy — the booklet walkthrough (§4 rows 4, 5, 6, 8).
-  demo('TILING', 'Tiling', 'Overlap to the bleed line. Never butt pages.', TilingDemo, [20, 500]),
-  demo('BULLSEYE', 'Alignment darts', 'Corner bullseyes sit on top of each other.', BullseyeDemo, [40, 556]),
-  demo('TESTSQUARE', '2 × 2 in test square', 'Print page one. Measure before anything else.', TestSquareDemo, [14, 520]),
+  demo('TILING', 'Tiling', 'Overlap onto the alignment line. Never butt.', TilingDemo, [20, 470]),
+  demo('PAGEORDER', 'Page order', 'A–B–C across. 1–2–3 down. A1 is top left.', PageOrderDemo, [30, 520]),
+  demo('TESTSQUARE', '2 × 2 in test square', 'Actual size, 100%, no scaling. Then measure.', TestSquareDemo, [10, 540]),
   demo('FORMATS', 'Formats', 'A4 · US Letter · A0. A0 needs no tiling.', FormatsDemo, [100, 545]),
   demo('SIZING', 'Garment measurements', 'Not body. Measure a garment that fits.', SizingDemo, [60, 510]),
 ];

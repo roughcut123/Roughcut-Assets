@@ -429,6 +429,77 @@ set by the cut's merge distance, not by taste.
 
 ---
 
+## 4e. WHAT THE REAL PATTERN CHANGED
+
+You sent THE KIT DUFFLE BAG, US Letter edition. It is the first primary source
+in this repo, and it corrected four things the pattern demos had wrong. Recorded
+here because the next person will otherwise re-guess them.
+
+**What a Roughcut pattern page actually carries.** 73 pages: nine of booklet,
+sixty pattern tiles (pp.10–69), four of back matter. Every tile has exactly one
+alignment rectangle, inset **36pt — half an inch — on all four sides**, solid
+hairline, not dashed. Behind the artwork sits the grid reference set very
+large in light grey: **Helvetica Neue Black, 140pt on a 612×792pt page,
+#d4d4d6**, roughly centred and a little low. Tile A1 also carries the title
+block — the circular Roughcut mark, fill-in rules for the garment name,
+"SEAM ALLOWANCE: 1/4 of an INCH - EXCEPT WHERE STATED.", and
+@ROUGHCUTOFFICIAL. Annotations on the tiles ("PLACEMENT REFERENCE",
+"ZIPPER END") are **Minion italic bold at 21pt**, and notches are drawn as a
+small triangle sitting on the line.
+
+**1. The page order was backwards.** The demo tiled A1, A2, A3 across. Step 3
+of the Print & Assembly Guide: *"Alphabetically (A–B–C…) horizontally, and
+Numerically (1–2–3…) vertically. So A1 is your top-left tile, B1 sits to its
+right, and A2 is directly below it."* It now tiles **A1, B1, C1**. THE KIT is
+twelve across by five down — A–L × 1–5, sixty tiles.
+
+**2. The overlap is not a decorative band — it is the alignment line.** The
+guide: *"The left edge of the page on the right overlaps the alignment line on
+the page to its left."* So the overlap **equals the alignment inset exactly**,
+and the incoming page's paper edge and the outgoing page's printed line are
+the same line. The demo now sets `OVERLAP = BLEED` for that reason, and the red
+mark is on the coincidence rather than on a band. Half an inch of eight and a
+half is about 6% of the page; it is drawn at 9% so the line, and the overlap
+that lands on it, survive being a fifteenth of a video frame.
+
+**3. There are no corner bullseyes.** §8.2 specifies `RC_POPUP_BULLSEYE` —
+"the corner bullseyes should sit directly on top of each other" — and
+`RC_DEMO_BULLSEYE` was built to it. The pattern has none: the alignment is the
+rectangle plus the printed lines matching across the join. Shipping a popup
+teaching a mark that is not on the page would send viewers looking for it, so
+that demo is **parked** (still in `pattern.tsx`, still working, one line to
+reinstate) and **`RC_DEMO_PAGEORDER` replaces it** — the assembly map, which is
+a thing the guide actually prints.
+
+**4. The test square wording.** The guide's Step 1 is *"Actual Size / 100% /
+No Scaling"*, which is the real instruction; measuring the square is the check,
+not the instruction. The caption now says so. The square is two inches on an
+eight-and-a-half inch page, so it is drawn at a quarter of the page width and
+no bigger — draw it larger and it stops being the thing the viewer is about to
+hold a ruler against.
+
+### Three things in the PDF for you to look at
+
+- **The guide contradicts itself on page order.** Step 2 says the pages
+  *"should follow a clear grid: (A1, A2, A3 … then B1, B2 …)"*, which is down a
+  column. Step 3 says letters run horizontally, so the reading order is A1, B1,
+  C1 … That makes Step 2 wrong as printed. The overlays follow Step 3.
+- **"Alignment line" or "bleed line"?** The pattern says *alignment line* for
+  the mark you overlap onto and *bleed area* for the margin. §8.2 of the spec
+  says *"Overlap each page to the black bleed line."* The overlays now use the
+  pattern's word, because that is the word on the sheet in the viewer's hands —
+  but the spec still says the other thing, and one of the two should change.
+- **The test square is on tile C1, not on the first sheet out of the printer**,
+  though Step 1 calls it "the 2 × 2 inch test square on Page 1". The demo
+  labels the page C1, which is where it is in THE KIT. If the square moves per
+  pattern, the label should come out.
+
+Everything else is unchanged, and the five pattern demos verify the same way as
+the rest: at frames 24/70/110, no enclosed holes, no ink within 3px of a
+transparent pixel, straight alpha throughout.
+
+---
+
 ### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone
