@@ -7,8 +7,9 @@ All files are **3840×2160 ProRes 4444, 25 fps, straight (unpremultiplied)
 alpha, no audio track.** DaVinci Resolve reads the alpha natively — if you see a
 black box, the clip's alpha is set to premultiplied; switch it to straight.
 
-Every asset also ships a **`_LOOP`** version with the hold extended to 10s, for
-when Jack talks over a point longer than expected. Trim it — never stretch.
+Every asset except `RC_FABRIC_SEQUENCE` also ships a **`_LOOP`** version with
+the hold extended to 10s, for when Jack talks over a point longer than
+expected. Trim it — never stretch.
 
 Assets marked **‡** are parameterised and may arrive in several versions per
 build (different zip lengths, thread weights, garment names, timestamps).
@@ -53,6 +54,16 @@ Transitions cover the frame across their middle. Put your cut under the hold.
 | `RC_POPUP_THREAD.mov` ‡ | C · popup | 137f / 5.48s | top-left | Technique note. |
 | `RC_POPUP_FABRICWEIGHT.mov` ‡ | C · popup | 137f / 5.48s | top-left | Technique note. |
 | `RC_POPUP_PIECECODE.mov` ‡ | C · popup | 137f / 5.48s | top-left | Technique note. |
+| `RC_DEMO_SEAMALLOWANCE.mov` | C · demonstration popup | 137f / 5.48s | top-left | Shows the ¼in gap between needle and raw edge. |
+| `RC_DEMO_RIGHTSIDESTOGETHER.mov` | C · demonstration popup | 137f / 5.48s | top-left | Panel turns over and lands print to print. |
+| `RC_DEMO_BACKSTITCH.mov` | C · demonstration popup | 137f / 5.48s | top-left | Three forward, three back, then away. |
+| `RC_DEMO_GRAINLINE.mov` | C · demonstration popup | 137f / 5.48s | top-left | Arrow swings parallel to the selvedge. |
+| `RC_DEMO_PRESSSEAMSOPEN.mov` | C · demonstration popup | 137f / 5.48s | top-left | Allowances stand, iron lands, they lie open. |
+| `RC_DEMO_TILING.mov` | C · demonstration popup | 137f / 5.48s | top-left | Each page's edge lands on the previous page's alignment line. |
+| `RC_DEMO_PAGEORDER.mov` | C · demonstration popup | 137f / 5.48s | top-left | The assembly map: letters across, numbers down, A1 first. |
+| `RC_DEMO_TESTSQUARE.mov` | C · demonstration popup | 137f / 5.48s | top-left | Print at 100%, then measure the two-inch square. |
+| `RC_DEMO_FORMATS.mov` | C · demonstration popup | 137f / 5.48s | top-left | A4, US Letter, A0 — and the sixteen pages A0 replaces. |
+| `RC_DEMO_SIZING.mov` | C · demonstration popup | 137f / 5.48s | top-left | Measured across the finished garment, laid flat. |
 | `RC_TRANS_PATTERN_A.mov` | A · chapter transition | 62f / 2.48s | full frame | Cover / hold / uncover into  chapter transition. |
 | `RC_TRANS_PATTERN_B.mov` | A · chapter transition | 62f / 2.48s | full frame | Cover / hold / uncover into  chapter transition. |
 | `RC_TRANS_FABRIC_A.mov` | A · chapter transition | 62f / 2.48s | full frame | Cover / hold / uncover into  chapter transition. |
@@ -122,5 +133,5 @@ Transitions cover the frame across their middle. Put your cut under the hold.
 | `RC_REVEAL_LOWER.mov` ‡ | G · final reveal | 170f / 6.80s | centre / lower-left | Slim strip for try-on B-roll: pattern name and price. |
 | `RC_FABRIC_SEQUENCE.mov` | §5 · fabric segment | 1471f / 58.84s | left, vertically centred | The whole fabric monologue. DROP IN UNCHANGED. |
 
-_100 assets. Generated from the compositions themselves — if this
+_110 assets. Generated from the compositions themselves — if this
 table and the files disagree, the files are right._
