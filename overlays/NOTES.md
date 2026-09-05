@@ -641,6 +641,17 @@ cloth it is laying, it vanished into it — same colour, same twill, no roll. It
 now carries an ink overlay at 26%, which is true as well as legible: a wound
 bolt is dozens of thicknesses and a laid piece is one.
 
+**The twill was checked at the resolutions people actually watch at**, because
+fine high-frequency diagonals across a whole 4K frame are exactly the thing
+that shimmers once YouTube has had it. A hold frame downscaled to 1080p and to
+720p shows the ridge clean at both, with no moiré, and the selvedge band, its
+ticks and the ID line all still crisp. The tile stays at 20x40.
+
+It does cost something in file size: the denim masters are 411MB against 101MB
+for the same shot in plain cloth, because ProRes has a great deal more detail
+to carry. Two assets, so ~800MB — worth knowing before a full library render
+is budgeted, not worth changing.
+
 Verified on rendered frames: 100% opaque across the whole hold, both variants.
 
 ---
