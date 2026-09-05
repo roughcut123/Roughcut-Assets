@@ -376,6 +376,59 @@ requires.
 `src/demos/papercut.ts`, the v2 shape generator, is deleted rather than left
 lying around for someone to wire back in.
 
+## 4d. PATTERN-LITERACY DEMONSTRATIONS
+
+The booklet-walkthrough beats — §4 spine rows 4, 5, 6 and 8 — built in the
+same sticker-cut register: `RC_DEMO_TILING`, `RC_DEMO_BULLSEYE`,
+`RC_DEMO_TESTSQUARE`, `RC_DEMO_FORMATS`, `RC_DEMO_SIZING`. Copy is §8.2's,
+trimmed to fit one mono line. The §8 field-sheet versions of the same beats
+still exist and still render; nothing was replaced.
+
+**Sheets are filled, not outlined.** This is the one structural decision worth
+knowing. A page drawn as an outline does two bad things at once: the cut comes
+out as a frame with a hole in the middle of it, so video shows through the
+sheet — the one thing a sheet must not do — and a page laid on a page does not
+cover it, so the lines underneath show through and the overlap is unreadable.
+Filling each sheet in the same white the cut floods fixes both at once, and
+costs nothing visually because the fill is the paper.
+
+**Pages are named.** Three pages tiled edge to edge read as one wide rectangle,
+not as three pages, however carefully the bleed lines are drawn. Printing the
+grid reference on each page — A1, A2, A3, where Jack prints it — is what makes
+the picture legible in the second and a half it gets on screen.
+
+**Tiling is three big pages, not a six-page grid.** A 3×2 grid fits the 940×560
+authoring box only at about 180px a page, and at that size the bleed line, the
+darts and the overlap are all too fine to survive being an overlay on video.
+Three pages left to right is also what §6 M3 actually describes.
+
+**The pattern panel spans the pages.** It is the reason the overlap has to be
+right — butt the pages instead and the panel is wrong by the width of two
+margins — so it draws on last, unbroken, across all three.
+
+**RC_DEMO_FORMATS is a formats chart, not a scale drawing.** A0 really is four
+times A4 across; drawn honestly it either does not fit the frame or shrinks A4
+to a stamp. The three sheets therefore stand at a common height, and the 4×4
+grid inside A0 carries the ratio as notation — the red mark is one cell of it,
+which is one A4 page. A4 and US Letter differ by 6mm across and 18mm down: a
+sliver a few pixels wide at any size that fits on screen, so that difference is
+carried by the names rather than by a dimension nobody could see. **If you want
+the true 4× relationship shown, it needs its own asset** — a full-frame plate,
+not a 15% corner overlay.
+
+Verified like the universal five, at frames 12/26/45/70/110: no enclosed holes
+in the paper, no ink within 3px of a transparent pixel, every partial-alpha
+edge pixel holding RGB 255,255,255.
+
+One layout note that will bite again: `RC_DEMO_BULLSEYE` first came out with a
+6,000px transparent pocket in it, because the artwork block and the caption
+block sat just close enough to fuse at their left and right ends and not in the
+middle — which encloses a window. Two stickers must either clearly join or
+clearly separate; the distance that does neither is the one to avoid, and it is
+set by the cut's merge distance, not by taste.
+
+---
+
 ### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone
