@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, interpolate, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, interpolate, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W} from '../lib/spec';
 import {MONO, Rule, Sheet} from '../lib/sheet';
 import {drawOn, exitRamp, paperAngle} from '../lib/motion';
@@ -19,7 +19,7 @@ const PAD = 58;
 /** §11: end of a session. Lamp-orange light falling, the studio going dark. */
 export const DayEnd: React.FC<{day: number; sub: string; variant: number}> = ({day, sub, variant}) => {
   const frame = useCurrentFrame();
-  const total = 75; // §11 says 3s
+  const {durationInFrames: total} = useVideoConfig(); // §11 base is 3s
   const H = 470;
   const place = drawOn(frame, 0, 4);
   const exit = exitRamp(frame, total - 14, 14);
@@ -94,7 +94,7 @@ export const DayEnd: React.FC<{day: number; sub: string; variant: number}> = ({d
 /** §11: the next morning. Cold light, and the stamp lands hard. */
 export const DayStamp: React.FC<{day: number; variant: number}> = ({day, variant}) => {
   const frame = useCurrentFrame();
-  const total = 50; // §11 says 2s
+  const {durationInFrames: total} = useVideoConfig(); // §11 base is 2s
   const H = 380;
   const place = drawOn(frame, 0, 3);
   const exit = exitRamp(frame, total - 10, 10);

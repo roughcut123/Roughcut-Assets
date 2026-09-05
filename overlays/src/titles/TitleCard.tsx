@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, TIMING} from '../lib/spec';
 import {MONO, Rule, Sheet} from '../lib/sheet';
 import {drawOn, exitRamp} from '../lib/motion';
@@ -42,8 +42,9 @@ export const TitleCard: React.FC<TitleCardProps> = ({
   variant,
 }) => {
   const frame = useCurrentFrame();
-  const {in: inF, hold, out} = TIMING.title;
-  const exitStart = inF + hold;
+  const {durationInFrames} = useVideoConfig();
+  const {out} = TIMING.title;
+  const exitStart = durationInFrames - out;
 
   const first = chapterName.slice(0, 1).toUpperCase();
   const rest = chapterName.slice(1);

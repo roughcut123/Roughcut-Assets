@@ -3,7 +3,7 @@
 Open questions and deviations, per spec §16: *"If a decision isn't covered here,
 log it in `NOTES.md` and stop. Don't guess."*
 
-Status: **§15 steps 1–11 complete. 100 assets + 100 `_LOOP` variants built.**
+Status: **§15 steps 1–11 complete. 100 assets + 99 `_LOOP` variants built.**
 
 Built to spec but **not batch-rendered** — see §5 below.
 
@@ -212,6 +212,34 @@ distributed across the five assets rather than stacked on one card.
 **§11 durations.** §11 gives 3s for the sign-off and 2s for the morning
 stamp; §13's table gives a single 50f row for the family. §11's explicit
 numbers win, so `RC_DAY_END` is 75f and `RC_DAY_02/03/04` are 50f.
+
+---
+
+## 4b. CORRECTION — `_LOOP` COVERAGE AND A TIMING BUG
+
+An earlier note claimed every asset shipped a `_LOOP` variant. That was
+wrong on two counts, both now fixed.
+
+**Only 40 of 100 assets actually had one.** Popups and fabric beats did;
+transitions, title cards, corrections, asides, cross-references, day breaks
+and the reveal did not. All are registered now — 99 `_LOOP` variants against
+100 base assets. The single exception is `RC_FABRIC_SEQUENCE`, deliberately:
+a looped 59-second monologue makes no sense.
+
+**The `_LOOP` variants would have been broken anyway.** Every component
+computed its exit as `in + hold` from the §13 table — a fixed distance from
+the START. A `_LOOP` is the same component with a longer duration, so it
+animated on the short schedule and then sat there: a transition would have
+uncovered at frame 37 of 300 and left 263 frames of empty canvas.
+
+Exit timing is now derived as `durationInFrames - out`, a fixed distance from
+the END, in every family including the transition mechanics. Verified on
+rendered frames: `RC_TRANS_POCKETS_A_LOOP` is 100% opaque at frame 150 and
+clearing by 290; `RC_CORR_DONTCOPY_LOOP` still holds its card at 150 and is
+gone by 266.
+
+The lesson is worth keeping: any timing measured from the start of a
+composition is a bug waiting for a variant-length render.
 
 ---
 

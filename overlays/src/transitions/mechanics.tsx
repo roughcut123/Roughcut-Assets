@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, random, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, random, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {drawOn} from '../lib/motion';
 import {tornRectPath} from '../lib/masks';
@@ -17,8 +17,15 @@ import {tornRectPath} from '../lib/masks';
  * pinhole in it is worthless, because the cut underneath shows through.
  */
 
-const {in: COVER, hold: HOLD} = TIMING.transition;
-const UNCOVER_AT = COVER + HOLD;
+const {in: COVER, out: UNCOVER} = TIMING.transition;
+
+/**
+ * The uncover starts a fixed distance from the END of the composition, not a
+ * fixed distance from the start. A _LOOP variant is this same component with
+ * a longer duration, so a hardcoded cover+hold would leave it covering on
+ * schedule and then sitting blank for the remainder.
+ */
+const useUncoverAt = () => useVideoConfig().durationInFrames - UNCOVER;
 
 export type MechanicProps = {
   /** A/B variants differ by seed, so no two runs share a silhouette (§3.4). */
@@ -26,9 +33,9 @@ export type MechanicProps = {
 };
 
 /** 0 -> 1 across the cover phase; 0 -> 1 again across the uncover phase. */
-const phases = (frame: number) => ({
+const phases = (frame: number, uncoverAt: number) => ({
   cover: drawOn(frame, 0, COVER),
-  uncover: drawOn(frame, UNCOVER_AT, TIMING.transition.out),
+  uncover: drawOn(frame, uncoverAt, UNCOVER),
 });
 
 /* ------------------------------------------------------------------ M1 */
@@ -53,6 +60,7 @@ const TESSERA = [
 
 export const M1Mosaic: React.FC<MechanicProps> = ({seed}) => {
   const frame = useCurrentFrame();
+  const uncoverAt = useUncoverAt();
   const cols = 26;
   const rows = 15;
   const tw = CANVAS_W / cols;
@@ -67,7 +75,7 @@ export const M1Mosaic: React.FC<MechanicProps> = ({seed}) => {
       // Every tile must be home by the end of the cover phase.
       const inDelay = random(`${s}-d`) * (COVER * 0.5);
       const inT = drawOn(frame, inDelay, COVER - inDelay);
-      const outT = drawOn(frame, UNCOVER_AT + random(`${s}-o`) * 10, 14);
+      const outT = drawOn(frame, uncoverAt + random(`${s}-o`) * 10, 14);
       if (inT <= 0) continue;
 
       const ang = random(`${s}-a`) * Math.PI * 2;
@@ -118,7 +126,7 @@ export const M1Mosaic: React.FC<MechanicProps> = ({seed}) => {
  */
 export const M2Excavation: React.FC<MechanicProps> = ({seed}) => {
   const frame = useCurrentFrame();
-  const {cover, uncover} = phases(frame);
+  const {cover, uncover} = phases(frame, useUncoverAt());
 
   // The drift front: an irregular vertical boundary that advances, then
   // retreats off the far side.
@@ -192,6 +200,7 @@ export const M2Excavation: React.FC<MechanicProps> = ({seed}) => {
  */
 export const M3Tiling: React.FC<MechanicProps> = ({seed}) => {
   const frame = useCurrentFrame();
+  const uncoverAt = useUncoverAt();
   const cols = 5;
   const rows = 3;
   const pw = CANVAS_W / cols;
@@ -207,7 +216,7 @@ export const M3Tiling: React.FC<MechanicProps> = ({seed}) => {
       const order = c * rows + r;
       const delay = (order / (cols * rows)) * (COVER * 0.7);
       const inT = drawOn(frame, delay, Math.max(4, COVER - delay));
-      const outT = drawOn(frame, UNCOVER_AT + random(`${s}-o`) * 9, 15);
+      const outT = drawOn(frame, uncoverAt + random(`${s}-o`) * 9, 15);
       if (inT <= 0) continue;
 
       const x = c * pw - BLEED / 2;
@@ -262,7 +271,7 @@ export const M3Tiling: React.FC<MechanicProps> = ({seed}) => {
  */
 export const M4Stitch: React.FC<MechanicProps> = ({seed}) => {
   const frame = useCurrentFrame();
-  const {cover, uncover} = phases(frame);
+  const {cover, uncover} = phases(frame, useUncoverAt());
 
   const needle = cover * (CANVAS_W + 420) - 210;
   const exit = uncover * (CANVAS_W + 900);
@@ -319,7 +328,7 @@ export const M4Stitch: React.FC<MechanicProps> = ({seed}) => {
  */
 export const M5Torn: React.FC<MechanicProps> = ({seed}) => {
   const frame = useCurrentFrame();
-  const {cover, uncover} = phases(frame);
+  const {cover, uncover} = phases(frame, useUncoverAt());
 
   // The sheet is oversized and rotated so its torn edge crosses the frame
   // on the diagonal rather than vertically.

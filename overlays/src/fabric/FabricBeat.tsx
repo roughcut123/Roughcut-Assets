@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H} from '../lib/spec';
 import {MONO, MONO_ADVANCE, Rule, Sheet, wrapMono} from '../lib/sheet';
 import {drawOn, exitRamp, jitter1, paperAngle} from '../lib/motion';
@@ -47,7 +47,8 @@ export const FabricBeat: React.FC<FabricBeatProps> = ({
   annotateLine,
 }) => {
   const frame = useCurrentFrame();
-  const exitStart = timing.in + timing.hold;
+  const {durationInFrames} = useVideoConfig();
+  const exitStart = durationInFrames - timing.out;
   const inner = BEAT_W - PAD_X * 2;
   const cols = Math.floor(inner / (MONO_ADVANCE * BODY_PX));
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W, POPUP, TIMING} from '../lib/spec';
 import {MONO, MONO_ADVANCE, Rule, Sheet, wrapMono} from '../lib/sheet';
 import {drawOn, exitRamp, jitter1, paperAngle} from '../lib/motion';
@@ -33,8 +33,9 @@ export const Correction: React.FC<{
   mark: MarkKind;
 }> = ({label, lines, variant, mark}) => {
   const frame = useCurrentFrame();
-  const {in: inF, hold, out} = TIMING.correction;
-  const exitStart = inF + hold;
+  const {durationInFrames} = useVideoConfig();
+  const {in: inF, out} = TIMING.correction;
+  const exitStart = durationInFrames - out;
   const inner = W - PAD_X * 2;
   const cols = Math.floor(inner / (MONO_ADVANCE * BODY_PX));
   const visual = lines.flatMap((l) => wrapMono(l, cols));
@@ -187,9 +188,9 @@ export const Correction: React.FC<{
  */
 export const Aside: React.FC<{text: string}> = ({text}) => {
   const frame = useCurrentFrame();
-  const total = 75; // 3s at 25fps
+  const {durationInFrames} = useVideoConfig();
   const place = drawOn(frame, 0, 3);
-  const exit = exitRamp(frame, total - 10, 10);
+  const exit = exitRamp(frame, durationInFrames - 10, 10);
   return (
     <AbsoluteFill>
       <div

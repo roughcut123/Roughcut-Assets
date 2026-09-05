@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, random, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, random, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {MONO, Rule, Sheet} from '../lib/sheet';
 import {drawOn, exitRamp, paperAngle} from '../lib/motion';
@@ -50,8 +50,9 @@ const FIELDS = (p: RevealCertProps): [string, string][] => [
 export const RevealCert: React.FC<RevealCertProps> = (props) => {
   const {variant, taglineTail} = props;
   const frame = useCurrentFrame();
-  const {in: inF, hold, out} = TIMING.reveal;
-  const exitStart = inF + hold;
+  const {durationInFrames} = useVideoConfig();
+  const {in: inF, out} = TIMING.reveal;
+  const exitStart = durationInFrames - out;
 
   // Resolve out of the mosaic across the entrance.
   const resolve = drawOn(frame, inF * 0.45, inF * 0.55);
@@ -261,11 +262,12 @@ export const RevealLower: React.FC<{pattern: string; price: string; variant: num
   variant,
 }) => {
   const frame = useCurrentFrame();
-  const {in: inF, hold, out} = TIMING.reveal;
+  const {durationInFrames} = useVideoConfig();
+  const {out} = TIMING.reveal;
   const LW = 1720;
   const LH = 190;
   const place = drawOn(frame, 0, 4);
-  const exit = exitRamp(frame, inF + hold, out);
+  const exit = exitRamp(frame, durationInFrames - out, out);
   const angle = paperAngle(`lower-${variant}`);
   return (
     <AbsoluteFill>

@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Img, random, staticFile, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Img, random, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {MONO, Sheet} from '../lib/sheet';
 import {drawOn, exitRamp, paperAngle} from '../lib/motion';
@@ -43,8 +43,9 @@ export type CrossRefProps = {
 
 export const CrossRef: React.FC<CrossRefProps> = ({title, timestamp, thumbnail, variant}) => {
   const frame = useCurrentFrame();
-  const {in: inF, hold, out} = TIMING.crossref;
-  const exitStart = inF + hold;
+  const {durationInFrames} = useVideoConfig();
+  const {out} = TIMING.crossref;
+  const exitStart = durationInFrames - out;
 
   const H = PAD * 2 + MAP_H + 130;
   const place = drawOn(frame, 0, 4);

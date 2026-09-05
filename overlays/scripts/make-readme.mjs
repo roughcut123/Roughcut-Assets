@@ -62,8 +62,9 @@ All files are **3840×2160 ProRes 4444, ${fps} fps, straight (unpremultiplied)
 alpha, no audio track.** DaVinci Resolve reads the alpha natively — if you see a
 black box, the clip's alpha is set to premultiplied; switch it to straight.
 
-Every asset also ships a **\`_LOOP\`** version with the hold extended to 10s, for
-when Jack talks over a point longer than expected. Trim it — never stretch.
+Every asset except \`RC_FABRIC_SEQUENCE\` also ships a **\`_LOOP\`** version with
+the hold extended to 10s, for when Jack talks over a point longer than
+expected. Trim it — never stretch.
 
 Assets marked **‡** are parameterised and may arrive in several versions per
 build (different zip lengths, thread weights, garment names, timestamps).

@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H} from '../lib/spec';
 import {MONO, Rule, Sheet} from '../lib/sheet';
 import {drawOn, exitRamp, jitter1, paperAngle} from '../lib/motion';
@@ -35,7 +35,8 @@ export const SwatchBeat: React.FC<{
   timing: BeatTiming;
 }> = ({label, rows, variant, timing}) => {
   const frame = useCurrentFrame();
-  const exitStart = timing.in + timing.hold;
+  const {durationInFrames} = useVideoConfig();
+  const exitStart = durationInFrames - timing.out;
   const inner = BEAT_W - PAD_X * 2;
 
   const headH = PAD_TOP + 6 + 20 + LABEL_PX * 1.06 + 14 + 6 + 26;

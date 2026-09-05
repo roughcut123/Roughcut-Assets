@@ -124,19 +124,29 @@ export const RemotionRoot: React.FC = () => (
     {/* FAMILY A - chapter transitions, spec §6. 62 frames: 25 cover,
         12 hold, 25 uncover. Two variants each so a repeated chapter in a
         long build never plays identically. */}
-    {transitions.map((t) => {
+    {transitions.flatMap((t) => {
       const M = MECHANICS[t.mechanic];
-      return (
+      const C = () => <M seed={t.seed} />;
+      return [
         <Composition
           key={t.id}
           id={t.id}
-          component={() => <M seed={t.seed} />}
+          component={C}
           width={CANVAS_W}
           height={CANVAS_H}
           fps={SPEC_FPS}
           durationInFrames={TIMING.transition.total}
-        />
-      );
+        />,
+        <Composition
+          key={`${t.id}-LOOP`}
+          id={`${t.id}-LOOP`}
+          component={C}
+          width={CANVAS_W}
+          height={CANVAS_H}
+          fps={SPEC_FPS}
+          durationInFrames={TIMING.transition.in + LOOP_HOLD_FRAMES + TIMING.transition.out}
+        />,
+      ];
     })}
 
     {/* THE FABRIC SEGMENT - spec §5. Eight beat assets plus one continuous
@@ -166,93 +176,83 @@ export const RemotionRoot: React.FC = () => (
     {/* FAMILY B - chapter title cards, spec §7. Parameterised on
         chapterName / garmentName / skillLevel so a new pattern needs no new
         render pipeline. */}
-    {titles.map((t) => (
-      <Composition
-        key={t.id}
-        id={t.id}
-        component={TitleCard}
-        defaultProps={{
-          chapterName: t.chapter,
-          garmentName: DEFAULT_GARMENT,
-          skillLevel: DEFAULT_SKILL,
-          variant: t.variant,
-        }}
-        width={CANVAS_W}
-        height={CANVAS_H}
-        fps={SPEC_FPS}
-        durationInFrames={TIMING.title.total}
-      />
-    ))}
+    {titles.flatMap((t) => {
+      const props = {
+        chapterName: t.chapter,
+        garmentName: DEFAULT_GARMENT,
+        skillLevel: DEFAULT_SKILL,
+        variant: t.variant,
+      };
+      return [
+        <Composition key={t.id} id={t.id} component={TitleCard} defaultProps={props}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={TIMING.title.total} />,
+        <Composition key={`${t.id}-LOOP`} id={`${t.id}-LOOP`} component={TitleCard} defaultProps={props}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS}
+          durationInFrames={TIMING.title.in + LOOP_HOLD_FRAMES + TIMING.title.out} />,
+      ];
+    })}
 
     {/* FAMILY D - corrections and asides, spec §9. */}
-    {corrections.map((c) => (
-      <Composition
-        key={c.id}
-        id={c.id}
-        component={Correction}
-        defaultProps={{label: c.label, lines: c.lines, variant: c.variant, mark: c.mark}}
-        width={CANVAS_W}
-        height={CANVAS_H}
-        fps={SPEC_FPS}
-        durationInFrames={TIMING.correction.total}
-      />
-    ))}
-    {asides.map((a) => (
-      <Composition
-        key={a.id}
-        id={a.id}
-        component={Aside}
-        defaultProps={{text: a.text}}
-        width={CANVAS_W}
-        height={CANVAS_H}
-        fps={SPEC_FPS}
-        durationInFrames={75}
-      />
-    ))}
+    {corrections.flatMap((c) => {
+      const props = {label: c.label, lines: c.lines, variant: c.variant, mark: c.mark};
+      return [
+        <Composition key={c.id} id={c.id} component={Correction} defaultProps={props}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={TIMING.correction.total} />,
+        <Composition key={`${c.id}-LOOP`} id={`${c.id}-LOOP`} component={Correction} defaultProps={props}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS}
+          durationInFrames={TIMING.correction.in + LOOP_HOLD_FRAMES + TIMING.correction.out} />,
+      ];
+    })}
+    {asides.flatMap((a) => [
+      <Composition key={a.id} id={a.id} component={Aside} defaultProps={{text: a.text}}
+        width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={75} />,
+      <Composition key={`${a.id}-LOOP`} id={`${a.id}-LOOP`} component={Aside} defaultProps={{text: a.text}}
+        width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={LOOP_HOLD_FRAMES + 13} />,
+    ])}
 
     {/* FAMILY E - cross-references, spec §10. */}
-    {crossrefs.map((x) => (
-      <Composition
-        key={x.id}
-        id={x.id}
-        component={CrossRef}
-        defaultProps={{title: x.title, timestamp: x.timestamp, thumbnail: undefined, variant: x.variant}}
-        width={CANVAS_W}
-        height={CANVAS_H}
-        fps={SPEC_FPS}
-        durationInFrames={TIMING.crossref.total}
-      />
-    ))}
+    {crossrefs.flatMap((x) => {
+      const props = {title: x.title, timestamp: x.timestamp, thumbnail: undefined, variant: x.variant};
+      return [
+        <Composition key={x.id} id={x.id} component={CrossRef} defaultProps={props}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={TIMING.crossref.total} />,
+        <Composition key={`${x.id}-LOOP`} id={`${x.id}-LOOP`} component={CrossRef} defaultProps={props}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS}
+          durationInFrames={TIMING.crossref.in + LOOP_HOLD_FRAMES + TIMING.crossref.out} />,
+      ];
+    })}
 
     {/* FAMILY F - day breaks, spec §11. §11 gives 3s for the sign-off and 2s
         for the morning stamp, which overrides §13's single 50f row. */}
-    <Composition
-      id="RC-DAY-END"
-      component={DayEnd}
-      defaultProps={{day: 1, sub: "It'll be a click of the fingers for you.", variant: 1}}
-      width={CANVAS_W}
-      height={CANVAS_H}
-      fps={SPEC_FPS}
-      durationInFrames={75}
-    />
-    {[2, 3, 4].map((d) => (
-      <Composition
-        key={`RC-DAY-${d}`}
-        id={`RC-DAY-0${d}`}
-        component={DayStamp}
+    {([['RC-DAY-END', 75], ['RC-DAY-END-LOOP', LOOP_HOLD_FRAMES + 25]] as [string, number][]).map(
+      ([id, dur]) => (
+        <Composition
+          key={id}
+          id={id}
+          component={DayEnd}
+          defaultProps={{day: 1, sub: "It'll be a click of the fingers for you.", variant: 1}}
+          width={CANVAS_W}
+          height={CANVAS_H}
+          fps={SPEC_FPS}
+          durationInFrames={dur}
+        />
+      ),
+    )}
+    {[2, 3, 4].flatMap((d) => [
+      <Composition key={`RC-DAY-0${d}`} id={`RC-DAY-0${d}`} component={DayStamp}
         defaultProps={{day: d, variant: (d + 2) % 8}}
-        width={CANVAS_W}
-        height={CANVAS_H}
-        fps={SPEC_FPS}
-        durationInFrames={50}
-      />
-    ))}
+        width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={50} />,
+      <Composition key={`RC-DAY-0${d}-LOOP`} id={`RC-DAY-0${d}-LOOP`} component={DayStamp}
+        defaultProps={{day: d, variant: (d + 2) % 8}}
+        width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={LOOP_HOLD_FRAMES + 15} />,
+    ])}
 
     {/* FAMILY G - the final reveal, spec §12. */}
-    <Composition
-      id="RC-REVEAL-CERT"
-      component={RevealCert}
-      defaultProps={{
+    {([['RC-REVEAL-CERT', TIMING.reveal.total],
+       ['RC-REVEAL-CERT-LOOP', TIMING.reveal.in + LOOP_HOLD_FRAMES + TIMING.reveal.out]] as [string, number][]
+    ).map(([id, dur]) => (
+      <Composition key={id} id={id} component={RevealCert}
+        defaultProps={{
         pattern: DEFAULT_GARMENT,
         skillLevel: DEFAULT_SKILL,
         fabric: '14 oz Japanese selvedge denim',
@@ -260,20 +260,15 @@ export const RemotionRoot: React.FC = () => (
         taglineTail: 'in the present',
         variant: 0,
       }}
-      width={CANVAS_W}
-      height={CANVAS_H}
-      fps={SPEC_FPS}
-      durationInFrames={TIMING.reveal.total}
-    />
-    <Composition
-      id="RC-REVEAL-LOWER"
-      component={RevealLower}
-      defaultProps={{pattern: DEFAULT_GARMENT, price: '£38', variant: 5}}
-      width={CANVAS_W}
-      height={CANVAS_H}
-      fps={SPEC_FPS}
-      durationInFrames={TIMING.reveal.total}
-    />
+        width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={dur} />
+    ))}
+    {([['RC-REVEAL-LOWER', TIMING.reveal.total],
+       ['RC-REVEAL-LOWER-LOOP', TIMING.reveal.in + LOOP_HOLD_FRAMES + TIMING.reveal.out]] as [string, number][]
+    ).map(([id, dur]) => (
+      <Composition key={id} id={id} component={RevealLower}
+        defaultProps={{pattern: DEFAULT_GARMENT, price: '£38', variant: 5}}
+        width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={dur} />
+    ))}
 
     <Composition
       id="RC-FABRIC-SEQUENCE"

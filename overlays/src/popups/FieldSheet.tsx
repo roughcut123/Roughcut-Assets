@@ -1,5 +1,5 @@
 import React from 'react';
-import {AbsoluteFill, Easing, interpolate, random, useCurrentFrame} from 'remotion';
+import {AbsoluteFill, Easing, interpolate, random, useCurrentFrame, useVideoConfig} from 'remotion';
 import {tornRectPath} from '../lib/masks';
 import {MIN_TEXT_PX, POPUP, TIMING} from '../lib/spec';
 
@@ -84,8 +84,11 @@ export const FieldSheet: React.FC<FieldSheetProps> = ({
   bar,
 }) => {
   const frame = useCurrentFrame();
-  const {in: inF, hold, out} = TIMING.popup;
-  const exitStart = inF + hold;
+  const {durationInFrames} = useVideoConfig();
+  const {in: inF, out} = TIMING.popup;
+  // Derived, not hardcoded: the _LOOP variants are the same component with a
+  // longer duration, and must exit at the end of THAT, not of the base hold.
+  const exitStart = durationInFrames - out;
 
   const W = POPUP.maxWidth;
   const inner = W - PAD_X * 2;
