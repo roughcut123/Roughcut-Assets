@@ -14,6 +14,8 @@ import {Showreel, SHOWREEL_DURATION} from './preview/Showreel';
 import {FieldSheet} from './popups/FieldSheet';
 import {popups} from './popups/popups';
 import {CANVAS_H, CANVAS_W, LOOP_HOLD_FRAMES, SPEC_FPS, TIMING} from './lib/spec';
+import {BEATS, FabricSequence, SEQUENCE_FRAMES} from './fabric/fabric';
+import {beatFrames} from './fabric/FabricBeat';
 import {
   PaperSweep,
   PaperStrips,
@@ -106,6 +108,39 @@ export const RemotionRoot: React.FC = () => (
         durationInFrames={TIMING.popup.in + LOOP_HOLD_FRAMES + TIMING.popup.out}
       />,
     ])}
+
+    {/* THE FABRIC SEGMENT - spec §5. Eight beat assets plus one continuous
+        timed version. Each beat also ships a _LOOP variant per §13; the
+        sequence does not, since a looped monologue makes no sense. */}
+    {BEATS.flatMap((b) => [
+      <Composition
+        key={b.id}
+        id={b.id}
+        component={() => <>{b.render()}</>}
+        width={CANVAS_W}
+        height={CANVAS_H}
+        fps={SPEC_FPS}
+        durationInFrames={beatFrames(b.timing)}
+      />,
+      <Composition
+        key={`${b.id}-LOOP`}
+        id={`${b.id}-LOOP`}
+        component={() => <>{b.render()}</>}
+        width={CANVAS_W}
+        height={CANVAS_H}
+        fps={SPEC_FPS}
+        durationInFrames={b.timing.in + LOOP_HOLD_FRAMES + b.timing.out}
+      />,
+    ])}
+
+    <Composition
+      id="RC-FABRIC-SEQUENCE"
+      component={FabricSequence}
+      width={CANVAS_W}
+      height={CANVAS_H}
+      fps={SPEC_FPS}
+      durationInFrames={SEQUENCE_FRAMES}
+    />
 
     <Composition
       id="Showreel"

@@ -3,7 +3,7 @@
 Open questions and deviations, per spec §16: *"If a decision isn't covered here,
 log it in `NOTES.md` and stop. Don't guess."*
 
-Status: **§15 step 1 complete — stopped for approval.**
+Status: **§15 steps 1 and 2 complete — stopped for approval.**
 
 ---
 
@@ -122,11 +122,62 @@ until §1.1 above is decided, so nothing silently re-times.
 
 ---
 
-## 3. NOT YET RAISED WITH YOU
+## 3. STEP 2 — THE FABRIC SEGMENT (§5)
 
-- §5 fabric segment names five fabrics (denim, hickory stripe, canvas, cotton
-  drill, twill) and asks for a swatch card per fabric masked to a selvedge
-  edge. Swatches want **real fabric texture**; same sourcing question as §1.2.
+Built: eight beat assets cut to the eight beats, plus `RC_FABRIC_SEQUENCE`,
+the continuous version (1471 frames, 58.8s).
+
+### 3.1 BLOCKING — beat 6 copy is not in the spec
+
+§5 beat 6 is *"Per-fabric character: lighter cotton / heavier canvas / hickory
+/ denim"*. That names four **categories** but not the words Jack uses for each.
+§16 forbids inventing phrasing, so the four rows are built with their swatches
+and names and an **empty character line**.
+
+`RC_FABRIC_06_CHARACTER` is therefore structurally complete but textually
+blank. **Send me the four character lines and it is a one-line change.**
+
+### 3.2 Timings are reading-paced, not conformed to the VO
+
+§5 asks for "one continuous **timed** version". I do not have the voice-over,
+so each beat's hold is set from how long its copy takes to read, and the
+sequence is those beats end to end. The individual beat assets exist precisely
+so Vince can re-space them if the sequence does not sit on the audio.
+
+If you send the segment audio, or the in/out timecodes from one video that
+contains it, I will conform the sequence to it.
+
+### 3.3 Swatches are weave notation, not photographed cloth
+
+§3.6 limits imagery to Jack's own material and public-domain scans, and §16
+forbids synthesising pastiche — so photographic-looking swatches are out on
+both counts. Each cloth is drawn as its **weave**: twill runs for denim, a
+steeper run for drill, plain-weave crosshatch for canvas and cotton with the
+repeat coarsened for the heavier cloth, stripe repeat for hickory. Each sits
+behind a selvedge band with the regular tick marks §3.4 calls for.
+
+This is also the right register — a field record, not a fabric shop. If you
+would rather they were real cloth, supply photographs of the five fabrics and
+they drop into the same masks.
+
+### 3.4 Beat labels are structural
+
+The short field names on each block — `FABRIC`, `THE CLOTH`, `ORIGIN`, `WEAR`,
+`BUYING`, `CHARACTER`, `IN THE PATTERN`, `AND SO` — are mine, not quoted from
+§5. They are the form's field names rather than spoken copy. Say the word and
+they change.
+
+### 3.5 The whole segment is set in the mono
+
+§3.3 assigns "all labels" and the field-sheet register to the typewriter. The
+fabric segment is a page from a field record rather than a chapter title, so
+it uses one typeface throughout — well inside the three-per-asset ceiling.
+Variety comes from container shape and palette instead.
+
+---
+
+## 4. NOT YET RAISED WITH YOU
+
 - §7 title cards need an **illuminated drop cap** "drawn from manuscript
   reference" — again real scans (§1.2).
 - §10 cross-references take a **thumbnail path** per target video. Those

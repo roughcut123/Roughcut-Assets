@@ -36,7 +36,20 @@ const remotion = (extra) =>
 
 /** id -> delivered filename, and the frame count for the contact sheet. */
 const ASSETS = [
+  // §8 popups
   {id: 'RC-POPUP-SEAMALLOWANCE', file: 'RC_POPUP_SEAMALLOWANCE', frames: 137},
+
+  // §5 fabric segment - eight beats plus the continuous version. The
+  // sequence gets no _LOOP variant: a looped monologue makes no sense.
+  {id: 'RC-FABRIC-01-INTRO', file: 'RC_FABRIC_01_INTRO', frames: 137},
+  {id: 'RC-FABRIC-02-CLOTH', file: 'RC_FABRIC_02_CLOTH', frames: 237},
+  {id: 'RC-FABRIC-03-ORIGIN', file: 'RC_FABRIC_03_ORIGIN', frames: 147},
+  {id: 'RC-FABRIC-04-WEAR', file: 'RC_FABRIC_04_WEAR', frames: 167},
+  {id: 'RC-FABRIC-05-BUYING', file: 'RC_FABRIC_05_BUYING', frames: 157},
+  {id: 'RC-FABRIC-06-CHARACTER', file: 'RC_FABRIC_06_CHARACTER', frames: 212},
+  {id: 'RC-FABRIC-07-INPATTERN', file: 'RC_FABRIC_07_INPATTERN', frames: 222},
+  {id: 'RC-FABRIC-08-CADENCE', file: 'RC_FABRIC_08_CADENCE', frames: 192},
+  {id: 'RC-FABRIC-SEQUENCE', file: 'RC_FABRIC_SEQUENCE', frames: 1471, noLoop: true},
 ];
 
 const DELIVERY = [
@@ -71,7 +84,7 @@ for (const a of targets) {
     ]);
   }
 
-  if (!noLoop) {
+  if (!noLoop && !a.noLoop) {
     // §13: every asset also ships a _LOOP variant, hold extended to 10s.
     remotion(['render', 'src/index.ts', `${a.id}-LOOP`, join(OUT, `${a.file}_LOOP.mov`), ...DELIVERY]);
   }
