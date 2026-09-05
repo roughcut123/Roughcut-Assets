@@ -12,6 +12,8 @@ import {
 } from './overlays/Overlay';
 import {Showreel, SHOWREEL_DURATION} from './preview/Showreel';
 import {FieldSheet} from './popups/FieldSheet';
+import {demos} from './demos/demos';
+import {DEMO_TIMING} from './demos/DemoFrame';
 import {popups} from './popups/popups';
 import {CANVAS_H, CANVAS_W, LOOP_HOLD_FRAMES, SPEC_FPS, TIMING} from './lib/spec';
 import {BEATS, FabricSequence, SEQUENCE_FRAMES} from './fabric/fabric';
@@ -120,6 +122,21 @@ export const RemotionRoot: React.FC = () => (
         durationInFrames={TIMING.popup.in + LOOP_HOLD_FRAMES + TIMING.popup.out}
       />,
     ])}
+
+    {/* STANDALONE DEMONSTRATION POPUPS. A deliberate departure from §8's
+        field-sheet container, at the client's direction: these show the
+        thing rather than captioning it. Same 137f total as the §8 popups so
+        they drop in interchangeably. */}
+    {demos.flatMap((d) => {
+      const C = () => <>{d.render()}</>;
+      return [
+        <Composition key={d.id} id={d.id} component={C}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS} durationInFrames={DEMO_TIMING.total} />,
+        <Composition key={`${d.id}-LOOP`} id={`${d.id}-LOOP`} component={C}
+          width={CANVAS_W} height={CANVAS_H} fps={SPEC_FPS}
+          durationInFrames={DEMO_TIMING.in + LOOP_HOLD_FRAMES + DEMO_TIMING.out} />,
+      ];
+    })}
 
     {/* FAMILY A - chapter transitions, spec §6. 62 frames: 25 cover,
         12 hold, 25 uncover. Two variants each so a repeated chapter in a

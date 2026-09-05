@@ -243,6 +243,45 @@ composition is a bug waiting for a variant-length render.
 
 ---
 
+## 4c. STANDALONE DEMONSTRATION POPUPS — A DELIBERATE §8 DEPARTURE
+
+Five universal popups rebuilt at your direction as standalone animations
+rather than field-sheet blocks: `RC_DEMO_SEAMALLOWANCE`,
+`RC_DEMO_RIGHTSIDESTOGETHER`, `RC_DEMO_BACKSTITCH`, `RC_DEMO_GRAINLINE`,
+`RC_DEMO_PRESSSEAMSOPEN`.
+
+**This knowingly breaks §8's container rule.** §8 specifies an Artifact
+Expedition Dispatch field-sheet block for every popup; these have no
+container at all. Logged rather than quietly done. The §8 field-sheet
+versions of the same five still exist and still render — nothing was
+deleted, so both registers are available.
+
+Everything else in the design language is unchanged: mono only, tokens for
+colour, no rounded corners, no gradient decoration, no drop shadow, no UI
+easing, every line drawing on by stroke-dashoffset, and exactly one red mark
+per asset — placed on the fact being taught (the 6mm gap, the reverse run,
+the correction, the seam).
+
+They keep the §13 popup total of 137 frames so they drop in interchangeably
+with the field-sheet versions, but the split is different: 40 in / 72 hold /
+25 out rather than 12 / 100 / 25, because a demonstration needs time to play
+where a caption does not.
+
+### Legibility: the problem the paper was solving
+
+A field-sheet block carries its own paper, so contrast is free. Standalone
+line work has nothing behind it, and cream chalk on the bright print-room
+footage has almost no contrast of its own.
+
+Every stroke is therefore painted twice: an opaque dark keyline first, the
+chalk line over it. That is an outline on line art, not a drop shadow on a
+floating card, so §3.4 still holds — and it is what the work actually looks
+like, since Jack marks cloth in chalk. Checked against both a dark bench and
+a blown-out white ground; the first attempt used a 55% keyline and vanished
+on the bright one.
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on
