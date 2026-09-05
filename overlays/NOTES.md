@@ -471,6 +471,13 @@ that demo is **parked** (still in `pattern.tsx`, still working, one line to
 reinstate) and **`RC_DEMO_PAGEORDER` replaces it** — the assembly map, which is
 a thing the guide actually prints.
 
+**`RC_POPUP_BULLSEYE` still ships and still says it.** The §8 field-sheet popup
+carries the same §8.2 line, and it has the same problem — it would send a
+viewer looking for a mark that is not on their sheet. It is left in place
+rather than quietly deleted, because it is a spec'd asset and the call is
+yours: retire it, or reword it to the alignment rectangle. Whichever you pick,
+§8.2 of the spec should change too, or the next person builds it again.
+
 **4. The test square wording.** The guide's Step 1 is *"Actual Size / 100% /
 No Scaling"*, which is the real instruction; measuring the square is the check,
 not the instruction. The caption now says so. The square is two inches on an
@@ -603,6 +610,34 @@ far longer. The cloth over-covers by 420px top and bottom to pay for it: 3840
 across at five degrees drops the far corner by 336px.
 
 Verified on rendered frames: 100% opaque across the whole hold, both variants.
+
+---
+
+## 4h. TWO THINGS THAT LOOK LIKE DELIVERY FAULTS AND ARE NOT
+
+Both of these will come up the first time anyone QCs the masters, so they are
+written down rather than rediscovered.
+
+**The files report `yuva444p12le`, not the `yuva444p10le` §1 asks for.** ProRes
+4444 is a 12-bit format; the encoder is given 10-bit and packs it into the
+codec's native 12-bit representation, so that is what a decoder reports back.
+Requesting `yuva444p10le` is correct and is what the render command does. There
+is no 10-bit ProRes 4444 file to produce. Every asset in the library reports
+this, not just the demonstrations.
+
+**Sampling alpha during a fade-in makes straight alpha look premultiplied.**
+A first pass at verifying the masters read partial-alpha pixels at frame 2 and
+found RGB values down to 31, which looks alarming. Frame 2 is inside the
+five-frame placement ramp, when the WHOLE overlay is partially transparent —
+ink included — so the dark ink is legitimately a partial-alpha dark pixel. It
+is in fact the proof the alpha is straight: at 78% opacity the ink comes back
+as its own colour (59,46,34), where premultiplied would have scaled it to
+(46,36,27).
+
+Sample a hold frame instead. There the only partial-alpha pixels are the cut
+edge, and they read 254-255 across all three channels — white paper, held at
+full value under partial alpha, which is what straight alpha means. The 254
+rather than 255 is ProRes's DCT, not the alpha.
 
 ---
 
