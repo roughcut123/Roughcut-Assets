@@ -1,8 +1,9 @@
 import React from 'react';
-import {AbsoluteFill, Img, random, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, interpolate, random, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {drawOn} from '../lib/motion';
 import {TORN_VARIANTS, tornRectPath} from '../lib/masks';
+import {PaperCutFilter, useCutVariant} from '../lib/papercut';
 
 /**
  * FAMILY A — chapter transitions. Spec §6.
@@ -419,12 +420,259 @@ export const M5Torn: React.FC<MechanicProps> = ({seed}) => {
   );
 };
 
+
+/* ------------------------------------------------------------------ M6 */
+
+/**
+ * M6 — Bolt unroll. A roll of cloth crosses the frame and the fabric unspools
+ * behind it until the screen is covered; it holds; then a second roll crosses
+ * the same way and takes the cloth back up, revealing the next chapter.
+ *
+ * The cloth already laid down never moves — which is what actually happens
+ * when you unroll a bolt across a cutting table. Only the two edges travel, so
+ * the weave and the fold lines stay put and the motion reads as cloth rather
+ * than as a sliding rectangle.
+ *
+ * THE BOLT HAS TO TURN, or the whole thing is a wipe with a stripe on it. The
+ * wound layers are placed at evenly spaced ANGLES and projected — x = cx +
+ * R sin(theta) — so they crowd towards the edges the way a cylinder's surface
+ * does, and the phase is driven by distance travelled over circumference. It
+ * rolls because it is rolling, not because it is sliding with lines on it.
+ *
+ * The contour is the sticker cut (see lib/papercut). It matters here more than
+ * anywhere: for most of the shot the only thing the viewer sees against the
+ * outgoing footage IS the leading edge, so that edge has to be a torn white
+ * paper cut and not a straight line. Once the frame is covered the cut is
+ * off-screen, which is the point — it does its work during the wipe.
+ *
+ * The filter region is absolute rather than a percentage of the bounding box.
+ * At the start of the wipe the band is a few hundred pixels wide, and 14% of
+ * that is less than the cut margin, so a percentage region clips the cut off
+ * exactly when it is the only thing on screen.
+ */
+const ROLL_R = 420;
+const ROLL_CIRC = 2 * Math.PI * ROLL_R;
+/**
+ * The whole thing runs off true by a few degrees. Nobody unrolls a bolt square
+ * to the edge of the table, and off-square puts far more of the cut edge on
+ * screen for far longer — which is the only part of this the viewer sees
+ * against the outgoing footage.
+ */
+const TILT = -5;
+/** Cloth over-covers well past the frame so its long edges never show, tilt
+ *  included: 3840 across at 5 degrees drops the far corner by 336px. */
+const CLOTH_TOP = -420;
+const CLOTH_BOTTOM = CANVAS_H + 420;
+/** Travel: fully off one side to fully off the other. */
+const RUN_FROM = -900;
+const RUN_TO = CANVAS_W + 900;
+const TOP = CLOTH_TOP - 80;
+const BOT = CLOTH_BOTTOM + 80;
+
+/** Silhouette of the bolt — what the paper is cut around. */
+const boltBody = (cx: number, fill: string) => (
+  <rect x={cx - ROLL_R} y={TOP} width={ROLL_R * 2} height={BOT - TOP} fill={fill} />
+);
+
+/** The bolt itself, turning. `travel` is how far it has rolled. */
+const bolt = (cx: number, travel: number, key: string) => {
+  const phase = (travel / ROLL_CIRC) * Math.PI * 2;
+  // Evenly spaced in ANGLE, projected to x. They crowd towards both edges the
+  // way a cylinder's surface does, and the phase advances with the distance
+  // rolled — so it turns because it is turning, not because it is sliding
+  // with lines painted on it.
+  const layers = Array.from({length: 44})
+    .map((_, k) => phase + (k * Math.PI) / 22)
+    .filter((t) => Math.cos(t) > 0.02);
+
+  return (
+    <g key={key}>
+      {boltBody(cx, 'var(--rc-paper-deep)')}
+      {layers.map((t, i) => (
+        <line
+          key={i}
+          x1={cx + ROLL_R * Math.sin(t)}
+          y1={TOP}
+          x2={cx + ROLL_R * Math.sin(t)}
+          y2={BOT}
+          stroke="var(--rc-ink)"
+          strokeWidth={3}
+          // A cylinder is darkest where it turns away, not in the middle.
+          // Getting this the wrong way round is what made the first version
+          // read as a flat striped band.
+          opacity={0.05 + 0.42 * (1 - Math.cos(t))}
+        />
+      ))}
+      {/* the two edges of the cylinder, and the line the cloth leaves on */}
+      <line x1={cx - ROLL_R} y1={TOP} x2={cx - ROLL_R} y2={BOT} stroke="var(--rc-ink)" strokeWidth={8} />
+      <line x1={cx + ROLL_R} y1={TOP} x2={cx + ROLL_R} y2={BOT} stroke="var(--rc-ink)" strokeWidth={8} />
+      <line
+        x1={cx - ROLL_R + 26}
+        y1={TOP}
+        x2={cx - ROLL_R + 26}
+        y2={BOT}
+        stroke="var(--rc-ink)"
+        strokeWidth={4}
+        opacity={0.4}
+      />
+    </g>
+  );
+};
+
+export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
+  const frame = useCurrentFrame();
+  const uncoverAt = useUncoverAt();
+  const variant = useCutVariant();
+  const fid = `unroll-${seed}-${variant}`;
+
+  // Constant speed, then a short settle — a bolt rolls at whatever speed you
+  // push it, and stops when it runs out of push. drawOn's ease-out is right
+  // for paper being placed and wrong here: it puts two thirds of the run into
+  // the first third of the shot, so the wipe bolts across and then stalls.
+  const roll = (start: number, dur: number) =>
+    interpolate(frame, [start, start + dur - 5, start + dur], [0, 0.94, 1], {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    });
+
+  const head = RUN_FROM + roll(0, COVER) * (RUN_TO - RUN_FROM);
+  const tail = RUN_FROM + roll(uncoverAt, UNCOVER) * (RUN_TO - RUN_FROM);
+  if (head <= tail) return null;
+
+  const clothW = head - tail;
+  const headIn = head < RUN_TO;
+  const tailIn = tail > RUN_FROM;
+
+  // Fold lines are set ON THE CLOTH, not on the frame, so they stay put while
+  // the edges travel. Seeded, so a variant is folded differently.
+  const folds = Array.from({length: 11}).map(
+    (_, i) => RUN_FROM + 420 + i * 372 + random(`${seed}-c${i}`) * 90,
+  );
+  const weave = Math.ceil((BOT - TOP) / 96);
+  const warp = Math.ceil((RUN_TO - RUN_FROM) / 96);
+
+  return (
+    <AbsoluteFill>
+      <svg
+        width={CANVAS_W}
+        height={CANVAS_H}
+        viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
+        style={{position: 'absolute', inset: 0, overflow: 'visible'}}
+      >
+        <defs>
+          <PaperCutFilter
+            id={fid}
+            variant={variant}
+            blur={40}
+            tear={56}
+            userSpace
+            region={{x: -520, y: -520, width: CANVAS_W + 1040, height: CANVAS_H + 1040}}
+          />
+          <clipPath id={`${fid}-cloth`}>
+            <rect x={tail} y={CLOTH_TOP} width={clothW} height={CLOTH_BOTTOM - CLOTH_TOP} />
+          </clipPath>
+        </defs>
+
+        {/* PASS 1 — the paper, cut from the cloth's own outline. */}
+        <g transform={`rotate(${TILT} ${CANVAS_W / 2} ${CANVAS_H / 2})`} filter={`url(#${fid})`}>
+          <rect
+            x={tail}
+            y={CLOTH_TOP}
+            width={clothW}
+            height={CLOTH_BOTTOM - CLOTH_TOP}
+            fill="#FFFFFF"
+          />
+          {headIn ? boltBody(head, '#FFFFFF') : null}
+          {tailIn ? boltBody(tail, '#FFFFFF') : null}
+        </g>
+
+        {/* PASS 2 — the cloth. Plain weave: warp and weft, both faint, which
+            is what makes it read as woven rather than as ruled paper. */}
+        <g transform={`rotate(${TILT} ${CANVAS_W / 2} ${CANVAS_H / 2})`}>
+        <rect
+          x={tail}
+          y={CLOTH_TOP}
+          width={clothW}
+          height={CLOTH_BOTTOM - CLOTH_TOP}
+          fill="var(--rc-paper)"
+        />
+        <g clipPath={`url(#${fid}-cloth)`}>
+          {Array.from({length: weave}).map((_, i) => (
+            <line
+              key={`w${i}`}
+              x1={tail}
+              y1={TOP + i * 96}
+              x2={head}
+              y2={TOP + i * 96}
+              stroke="var(--rc-ink)"
+              strokeWidth={3}
+              opacity={0.18}
+            />
+          ))}
+          {Array.from({length: warp}).map((_, i) => (
+            <line
+              key={`p${i}`}
+              x1={RUN_FROM + i * 96}
+              y1={CLOTH_TOP}
+              x2={RUN_FROM + i * 96}
+              y2={CLOTH_BOTTOM}
+              stroke="var(--rc-ink)"
+              strokeWidth={3}
+              opacity={0.12}
+            />
+          ))}
+          {/* Twill ticks — the house notation for cloth, and the thing that
+              stops a big flat field reading as a sheet of graph paper. */}
+          {Array.from({length: weave}).map((_, r) =>
+            Array.from({length: warp}).map((_, c) =>
+              (r + c) % 2 ? null : (
+                <line
+                  key={`t${r}-${c}`}
+                  x1={RUN_FROM + c * 96 + 22}
+                  y1={TOP + r * 96 + 70}
+                  x2={RUN_FROM + c * 96 + 74}
+                  y2={TOP + r * 96 + 26}
+                  stroke="var(--rc-ink)"
+                  strokeWidth={5}
+                  opacity={0.16}
+                />
+              ),
+            ),
+          )}
+          {/* The folds it was wound on, and the drape they leave: a wound
+              bolt does not come off flat, so the fold lines bow. */}
+          {folds.map((x, i) => {
+            const bow = (random(`${seed}-b${i}`) - 0.5) * 150;
+            return (
+              <path
+                key={`f${i}`}
+                d={`M ${x} ${CLOTH_TOP} C ${x + bow} ${CLOTH_TOP + 700} ${x - bow} ${
+                  CLOTH_BOTTOM - 700
+                } ${x + bow * 0.3} ${CLOTH_BOTTOM}`}
+                fill="none"
+                stroke="var(--rc-ink)"
+                strokeWidth={10}
+                opacity={0.22}
+              />
+            );
+          })}
+        </g>
+
+        {headIn ? bolt(head, head - RUN_FROM, 'H') : null}
+        {tailIn ? bolt(tail, tail - RUN_FROM, 'T') : null}
+        </g>
+      </svg>
+    </AbsoluteFill>
+  );
+};
+
 export const MECHANICS = {
   M1: M1Mosaic,
   M2: M2Excavation,
   M3: M3Tiling,
   M4: M4Stitch,
   M5: M5Torn,
+  M6: M6Unroll,
 } as const;
 
 export type MechanicName = keyof typeof MECHANICS;

@@ -21,7 +21,11 @@ export type TransitionAsset = {
 
 const T: {name: string; mechanic: MechanicName; chapter: string}[] = [
   {name: 'PATTERN', mechanic: 'M3', chapter: 'pattern walkthrough'},
-  {name: 'FABRIC', mechanic: 'M4', chapter: 'fabric segment'},
+  // §6 assigns M4 here. Replaced at the client's direction with M6, the bolt
+  // unroll — a fabric chapter that opens with a stitch and not with cloth was
+  // the wrong picture. M4 still runs FLY and WAISTBAND, so the mechanic is not
+  // lost. Logged in NOTES.md.
+  {name: 'FABRIC', mechanic: 'M6', chapter: 'fabric segment'},
   {name: 'CUTTING', mechanic: 'M5', chapter: 'cutting'},
   {name: 'POCKETS', mechanic: 'M1', chapter: 'pockets'},
   {name: 'FLY', mechanic: 'M4', chapter: 'fly / zip'},

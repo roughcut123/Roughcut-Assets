@@ -547,6 +547,65 @@ afterwards.
 
 ---
 
+## 4g. M6 — THE BOLT UNROLL
+
+A new mechanic at your direction, and a departure from §6 that is worth
+stating plainly: **§6 assigns M4, the stitch wipe, to the fabric chapter.
+`RC_TRANS_FABRIC` now uses M6 instead** — a fabric chapter that opens with a
+stitch and not with cloth was the wrong picture. M4 is not lost; it still runs
+`RC_TRANS_FLY` and `RC_TRANS_WAISTBAND`.
+
+A roll of cloth crosses the frame and the fabric unspools behind it until the
+screen is covered; it holds; then a second roll crosses the same way and takes
+the cloth back up, revealing the next chapter.
+
+**The cloth already laid down never moves.** Only the two edges travel. That is
+what actually happens when you unroll a bolt across a cutting table, and it is
+what makes the weave and the fold lines stay put instead of sliding — which is
+the difference between cloth and a moving rectangle.
+
+**The sticker cut is now shared code.** `lib/papercut.tsx` holds the filter the
+demonstration popups use, so the transition and the popups cut the same way by
+construction rather than by two copies agreeing. Both hard-won lessons are
+written into that file so they are read before anyone changes it: feMorphology
+costs four seconds a frame at 4K, and growing paper by stroking wide makes
+Skia's stroker self-intersect and punch holes through thin shapes.
+
+The cut earns its place here more than anywhere. For most of the shot the only
+thing the viewer sees against the outgoing footage IS the leading edge, so that
+edge has to be torn paper and not a straight line. Once the frame is covered
+the cut is off-screen — it does its work during the wipe and then gets out of
+the way.
+
+### Four things that were wrong first, and why
+
+- **The bolt did not turn.** Painting stripes on a sliding bar is a wipe with a
+  stripe on it. The wound layers are now placed at evenly spaced ANGLES and
+  projected — `x = cx + R sin(theta)` — so they crowd towards the edges the way
+  a cylinder's surface does, and the phase is driven by distance travelled over
+  circumference. It rolls because it is rolling.
+- **The cylinder was shaded inside out.** Opacity peaked at the centre, which
+  is what a flat striped band looks like. A cylinder is darkest where it turns
+  away from you. One sign flip.
+- **`drawOn` is the wrong motion for a roll.** Its ease-out is right for paper
+  being placed and wrong for something being pushed: it put two thirds of the
+  run into the first third of the shot, so the wipe bolted across and then
+  stalled. The travel is now constant speed with a five-frame settle, which is
+  physical and stays inside §3.5's ban on UI easing.
+- **The filter region cannot be a percentage of the bounding box.** At the
+  start of the wipe the band is a few hundred pixels wide and 14% of that is
+  less than the cut margin, so the cut got clipped exactly when it was the only
+  thing on screen. It is absolute here.
+
+The run is also off true by five degrees. Nobody unrolls a bolt square to the
+edge of the table, and off-square puts far more of the cut edge on screen for
+far longer. The cloth over-covers by 420px top and bottom to pay for it: 3840
+across at five degrees drops the far corner by 336px.
+
+Verified on rendered frames: 100% opaque across the whole hold, both variants.
+
+---
+
 ### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone
