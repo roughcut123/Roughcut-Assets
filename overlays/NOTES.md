@@ -652,6 +652,46 @@ for the same shot in plain cloth, because ProRes has a great deal more detail
 to carry. Two assets, so ~800MB — worth knowing before a full library render
 is budgeted, not worth changing.
 
+### v2, against the reference photographs
+
+Four photographs of real selvedge denim came back with "it needs to look more
+realistic". They corrected three things, and two of the three are facts about
+the cloth rather than matters of taste.
+
+**The roll is PALE, not indigo.** Cloth is rolled face-in to protect the face,
+so the outside of a bolt of denim is the back — and the back of indigo denim is
+a pale blue-grey, because only the warp is dyed. The reference shows exactly
+that: dark navy face, grey back on the outside of the roll. It is now
+`--rc-fresco`. This also retires a cheat: v1 had an indigo roll laying indigo
+cloth, which vanished into it and needed an ink wash at 26% to be visible at
+all. The true colour does the job the wash was faking.
+
+**The ID line is DOTTED.** In the reference it is unmistakably a run of dots
+and dashes — a thread appearing at intervals through the weave, not something
+printed on. A continuous line is what made v1 read as a stripe painted on blue
+paper. It is also now `--rc-annotation` rather than `--rc-terracotta`: §3.2
+reserves that red for one mark per asset, and here the one red thing IS the
+selvedge line. Red-line selvedge is the defining mark of the cloth and nothing
+else in the asset is red, so the rule is kept rather than broken.
+
+**The face is flecked.** Raw denim is covered in tiny white specks where the
+weft shows through. A flat indigo field with clean diagonals on it reads as
+wallpaper, and this is the single biggest difference between v1 and the
+reference. The flecks need their OWN pattern tile, much larger than the
+twill's: put them in with the twill and they repeat every 20px, which is a
+grid of dots and worse than no flecks at all.
+
+**And one self-inflicted error worth recording.** Enlarging the twill tile from
+20x40 to 120x240 to fit the flecks in, without scaling the run of the diagonal
+to match, stood the ridge up from 63 degrees to about 85 — and a vertical ridge
+is not a twill, it is a pinstripe. The tile IS the angle: 20 across per 40 up.
+Hence two patterns rather than one.
+
+The selvedge also carries on over the roll now, clipped to the cloth AND the
+bolts. It runs the length of the cloth, so it wraps the bolt at the same height
+it lies at on the laid piece; stopping it dead at the roll's edge is the one
+place the eye checks.
+
 Verified on rendered frames: 100% opaque across the whole hold, both variants.
 
 ---

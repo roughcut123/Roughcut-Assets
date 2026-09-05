@@ -484,16 +484,42 @@ const SELVEDGE_AT = [560, 1780];
 const SELVEDGE_W = 84;
 
 /**
- * Right-hand twill, which is what denim is: the ridge climbs left to right at
- * about 63 degrees. Drawn as a tiled pattern rather than a few hundred long
- * diagonals, and in the weft's undyed thread — a denim ridge is pale because
- * only the warp is dyed.
+ * Denim's surface, in two patterns that layer.
+ *
+ * TWILL. Right-hand, which is what denim is: the ridge climbs left to right at
+ * about 63 degrees, and it is PALE, because only the warp is dyed and the ridge
+ * is where the undyed weft crosses. The tile is 20 wide by 40 tall, which IS
+ * the angle — 20 across per 40 up. Enlarging the tile without scaling the run
+ * to match is what stood the ridge up to nearly vertical on the first attempt,
+ * and a vertical ridge is not a twill at all.
+ *
+ * SLUBS. Raw selvedge denim is flecked with tiny white specks where the weft
+ * shows through. A flat indigo field with clean diagonals on it reads as
+ * wallpaper; the flecks are the single biggest difference between the first
+ * pass and the reference. They need their own, much larger tile — put them in
+ * with the twill and they repeat every 20px, which is a grid of dots.
  */
 const twill = (id: string) => (
   <pattern id={id} patternUnits="userSpaceOnUse" width={20} height={40}>
-    <line x1={0} y1={40} x2={20} y2={0} stroke="var(--rc-paper)" strokeWidth={7} opacity={0.15} />
-    <line x1={-20} y1={40} x2={0} y2={0} stroke="var(--rc-paper)" strokeWidth={7} opacity={0.15} />
-    <line x1={0} y1={20} x2={20} y2={20} stroke="var(--rc-ink)" strokeWidth={3} opacity={0.1} />
+    <line x1={0} y1={40} x2={20} y2={0} stroke="var(--rc-paper)" strokeWidth={7} opacity={0.16} />
+    <line x1={-20} y1={40} x2={0} y2={0} stroke="var(--rc-paper)" strokeWidth={7} opacity={0.16} />
+    <line x1={0} y1={20} x2={20} y2={20} stroke="var(--rc-ink)" strokeWidth={3} opacity={0.09} />
+  </pattern>
+);
+
+/** Irregular on purpose: a grid of flecks is worse than no flecks. */
+const SLUBS: [number, number, number][] = [
+  [17, 26, 3.4], [74, 11, 2.4], [126, 44, 3.0], [45, 71, 2.6], [104, 88, 3.6],
+  [9, 116, 2.4], [63, 134, 3.2], [141, 155, 2.6], [35, 172, 3.4], [92, 191, 2.4],
+  [119, 213, 3.0], [52, 231, 2.6], [14, 249, 3.4], [81, 61, 2.4], [149, 104, 2.8],
+  [28, 199, 2.4], [113, 262, 3.2], [66, 279, 2.6], [136, 291, 2.4], [23, 305, 3.0],
+];
+
+const slubs = (id: string) => (
+  <pattern id={id} patternUnits="userSpaceOnUse" width={160} height={320}>
+    {SLUBS.map(([x, y, r], i) => (
+      <circle key={i} cx={x} cy={y} r={r} fill="var(--rc-paper)" opacity={0.55} />
+    ))}
   </pattern>
 );
 
@@ -502,7 +528,17 @@ const boltBody = (cx: number, fill: string) => (
   <rect x={cx - ROLL_R} y={TOP} width={ROLL_R * 2} height={BOT - TOP} fill={fill} />
 );
 
-/** The bolt itself, turning. `travel` is how far it has rolled. */
+/**
+ * The bolt itself, turning. `travel` is how far it has rolled.
+ *
+ * It is PALE, not indigo, and that is not a legibility fudge — cloth is rolled
+ * face-in to protect the face, so the outside of a bolt of denim is the back,
+ * and the back of indigo denim is a pale blue-grey because only the warp is
+ * dyed. The reference photographs show exactly this: dark navy face, grey back
+ * on the outside of the roll. It also happens to solve the problem an earlier
+ * pass solved by cheating — an indigo bolt laying indigo cloth simply vanished
+ * into it, and got an ink wash to bring it back.
+ */
 const bolt = (cx: number, travel: number, twillId: string, key: string) => {
   const phase = (travel / ROLL_CIRC) * Math.PI * 2;
   const layers = Array.from({length: 44})
@@ -511,19 +547,9 @@ const bolt = (cx: number, travel: number, twillId: string, key: string) => {
 
   return (
     <g key={key}>
-      {boltBody(cx, 'var(--rc-indigo)')}
+      {boltBody(cx, 'var(--rc-fresco)')}
       {boltBody(cx, `url(#${twillId})`)}
-      {/* A wound bolt is many layers deep, so it is darker than the single
-          thickness it is laying down. Without this the roll is the same
-          indigo as the cloth and simply disappears into it. */}
-      <rect
-        x={cx - ROLL_R}
-        y={TOP}
-        width={ROLL_R * 2}
-        height={BOT - TOP}
-        fill="var(--rc-ink)"
-        opacity={0.26}
-      />
+      {boltBody(cx, `url(#${twillId}-slub)`)}
       {layers.map((t, i) => (
         <line
           key={i}
@@ -533,7 +559,7 @@ const bolt = (cx: number, travel: number, twillId: string, key: string) => {
           y2={BOT}
           stroke="var(--rc-ink)"
           strokeWidth={3}
-          opacity={0.05 + 0.42 * (1 - Math.cos(t))}
+          opacity={0.04 + 0.34 * (1 - Math.cos(t))}
         />
       ))}
       <line x1={cx - ROLL_R} y1={TOP} x2={cx - ROLL_R} y2={BOT} stroke="var(--rc-ink)" strokeWidth={8} />
@@ -543,36 +569,49 @@ const bolt = (cx: number, travel: number, twillId: string, key: string) => {
 };
 
 /**
- * The finished woven band where two widths overlap: the undyed edge, its
- * regular tick marks (§3.4's "selvedge edge — the woven band, with its regular
- * tick marks"), and the coloured ID line woven down it.
+ * The finished woven band where two widths overlap: the undyed cream edge, the
+ * regular tick marks §3.4 asks for, and the ID line woven down it.
  *
- * The ID line is `--rc-terracotta`, NOT `--rc-annotation`. Red-line selvedge is
- * the iconic one and the temptation is obvious, but §3.2 reserves the
- * annotation red for exactly one mark per asset and a line running the width of
- * the frame is not that mark.
+ * The ID line is DOTTED. In the reference it is unmistakably a run of dots and
+ * dashes rather than a drawn line — it is a thread appearing at intervals
+ * through the weave, not something printed on — and getting that wrong is what
+ * made the first pass read as a stripe painted on blue paper.
+ *
+ * It is also `--rc-annotation`, which §3.2 reserves for one mark per asset.
+ * That reservation is respected rather than broken: in this transition the one
+ * red thing IS the selvedge line. Red-line selvedge is the defining mark of
+ * the cloth, and nothing else in the asset is red.
  */
 const selvedge = (y: number, key: string) => {
   const ticks = Math.ceil((RUN_TO - RUN_FROM) / 40);
   return (
     <g key={key}>
-      <rect x={RUN_FROM} y={y - SELVEDGE_W} width={RUN_TO - RUN_FROM} height={SELVEDGE_W} fill="var(--rc-paper)" opacity={0.82} />
-      <line x1={RUN_FROM} y1={y - SELVEDGE_W} x2={RUN_TO} y2={y - SELVEDGE_W} stroke="var(--rc-ink)" strokeWidth={4} opacity={0.5} />
+      <rect x={RUN_FROM} y={y - SELVEDGE_W} width={RUN_TO - RUN_FROM} height={SELVEDGE_W} fill="var(--rc-paper)" />
+      <line x1={RUN_FROM} y1={y - SELVEDGE_W} x2={RUN_TO} y2={y - SELVEDGE_W} stroke="var(--rc-ink)" strokeWidth={4} opacity={0.45} />
       {/* the overlapped edge of the width lying on top */}
-      <line x1={RUN_FROM} y1={y} x2={RUN_TO} y2={y} stroke="var(--rc-ink)" strokeWidth={6} opacity={0.6} />
+      <line x1={RUN_FROM} y1={y} x2={RUN_TO} y2={y} stroke="var(--rc-ink)" strokeWidth={6} opacity={0.55} />
       {Array.from({length: ticks}).map((_, i) => (
         <line
           key={i}
           x1={RUN_FROM + i * 40}
-          y1={y - SELVEDGE_W + 8}
+          y1={y - SELVEDGE_W + 7}
           x2={RUN_FROM + i * 40}
-          y2={y - 8}
+          y2={y - 7}
           stroke="var(--rc-ink)"
-          strokeWidth={6}
-          opacity={0.42}
+          strokeWidth={5}
+          opacity={0.3}
         />
       ))}
-      <line x1={RUN_FROM} y1={y - SELVEDGE_W * 0.5} x2={RUN_TO} y2={y - SELVEDGE_W * 0.5} stroke="var(--rc-terracotta)" strokeWidth={11} />
+      <line
+        x1={RUN_FROM}
+        y1={y - SELVEDGE_W * 0.46}
+        x2={RUN_TO}
+        y2={y - SELVEDGE_W * 0.46}
+        stroke="var(--rc-annotation)"
+        strokeWidth={10}
+        strokeLinecap="round"
+        strokeDasharray="7 17"
+      />
     </g>
   );
 };
@@ -618,6 +657,7 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
       >
         <defs>
           {twill(tid)}
+          {slubs(`${tid}-slub`)}
           <PaperCutFilter
             id={fid}
             variant={variant}
@@ -628,6 +668,15 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
           />
           <clipPath id={`${fid}-cloth`}>
             <rect x={tail} y={CLOTH_TOP} width={clothW} height={CLOTH_BOTTOM - CLOTH_TOP} />
+          </clipPath>
+          {/* The selvedge runs the length of the cloth, so it carries on over
+              the roll — the band wraps the bolt at the same height it lies at
+              on the laid piece. Clipping to the cloth alone would stop it dead
+              at the roll's edge, which is the one place the eye checks. */}
+          <clipPath id={`${fid}-all`}>
+            <rect x={tail} y={CLOTH_TOP} width={clothW} height={CLOTH_BOTTOM - CLOTH_TOP} />
+            {headIn ? <rect x={head - ROLL_R} y={TOP} width={ROLL_R * 2} height={BOT - TOP} /> : null}
+            {tailIn ? <rect x={tail - ROLL_R} y={TOP} width={ROLL_R * 2} height={BOT - TOP} /> : null}
           </clipPath>
         </defs>
 
@@ -654,6 +703,17 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
             fill="var(--rc-indigo)"
           />
           <g clipPath={`url(#${fid}-cloth)`}>
+            {/* Raw denim is deeper than the token on its own. Tonal
+                separation from the palette rather than a new colour, the way
+                the fabric swatches do it. */}
+            <rect
+              x={tail}
+              y={CLOTH_TOP}
+              width={clothW}
+              height={CLOTH_BOTTOM - CLOTH_TOP}
+              fill="var(--rc-ink)"
+              opacity={0.22}
+            />
             <rect
               x={RUN_FROM}
               y={CLOTH_TOP}
@@ -661,7 +721,13 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
               height={CLOTH_BOTTOM - CLOTH_TOP}
               fill={`url(#${tid})`}
             />
-            {SELVEDGE_AT.map((y, i) => selvedge(y, `s${i}`))}
+            <rect
+              x={RUN_FROM}
+              y={CLOTH_TOP}
+              width={RUN_TO - RUN_FROM}
+              height={CLOTH_BOTTOM - CLOTH_TOP}
+              fill={`url(#${tid}-slub)`}
+            />
             {/* The folds it was wound on, and the drape they leave: a wound
                 bolt does not come off flat, so the fold lines bow. Lighter
                 than the ground, because a crease in indigo is where the dye
@@ -685,6 +751,10 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
 
           {headIn ? bolt(head, head - RUN_FROM, tid, 'H') : null}
           {tailIn ? bolt(tail, tail - RUN_FROM, tid, 'T') : null}
+
+          <g clipPath={`url(#${fid}-all)`}>
+            {SELVEDGE_AT.map((y, i) => selvedge(y, `s${i}`))}
+          </g>
         </g>
       </svg>
     </AbsoluteFill>
