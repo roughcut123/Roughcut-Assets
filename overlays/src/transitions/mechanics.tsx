@@ -1,8 +1,8 @@
 import React from 'react';
-import {AbsoluteFill, random, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, random, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
 import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {drawOn} from '../lib/motion';
-import {tornRectPath} from '../lib/masks';
+import {TORN_VARIANTS, tornRectPath} from '../lib/masks';
 
 /**
  * FAMILY A — chapter transitions. Spec §6.
@@ -193,72 +193,132 @@ export const M2Excavation: React.FC<MechanicProps> = ({seed}) => {
 /* ------------------------------------------------------------------ M3 */
 
 /**
- * M3 — Tiling wipe. Literally Jack's own tiling system: pattern pages land
- * left to right, each overlapping onto the black bleed line of the one
- * before — never butted — with alignment bullseyes at the corners. Then the
- * pages lift away.
+ * M3 — Tiling wipe, built from the real pattern.
+ *
+ * Four full pattern pages, lifted straight out of THE KIT DUFFLE BAG (US
+ * Letter), tear in one after another and layer up until the frame is covered;
+ * the mark stamps on during the hold; then they lift away. This is literally
+ * Jack's own tiling system, at the scale of the screen instead of the floor.
+ *
+ * The artwork is vendored as SVG in public/pattern — extracted from the PDF
+ * with text converted to paths, so a render depends on no font and no network,
+ * and recoloured from the pattern's near-black to `--rc-ink` and its grey grid
+ * reference to a warm tint that sits on `--rc-paper`. Nothing is redrawn or
+ * imitated: these are the pages.
+ *
+ * COVERAGE IS GEOMETRIC, NOT HOPEFUL, and the arithmetic is the reason the
+ * pages are the size they are. A page is 1900 wide, so at 2 degrees of tilt
+ * its edge never sits further in than 906px from its centre; three centres at
+ * 800 / 1920 / 3040 therefore reach past both sides of a 3840 frame and
+ * overlap each other by ~750px, which is twenty times the deepest tear. The
+ * page is 2459 tall against a 2160 frame for the same reason — a page exactly
+ * frame height leaves a 30px band at the top the moment it tilts. The fourth
+ * sheet is laid over the first join purely to layer.
+ *
+ * The consequence is that you see the full width of each page and about 88%
+ * of its height. Whole pages that also cover the frame is not a thing that
+ * exists: to see all of a page it can be at most frame height, and at frame
+ * height it cannot cover the frame once it tilts.
  */
+const PAGE_W = 1900;
+const PAGE_H = Math.round((PAGE_W * 11) / 8.5);
+
+/**
+ * Which tiles get used, and where each lands. The first three tile across the
+ * row left to right, as the pattern's own guide describes; the fourth is laid
+ * over the first join.
+ */
+const PAGE_SLOTS = [
+  {cx: 800, cy: 1080, rot: -2.0, fromX: -2600, fromY: -280, paper: 'var(--rc-paper)'},
+  {cx: 1920, cy: 1080, rot: 1.6, fromX: -1400, fromY: -900, paper: 'var(--rc-paper-deep)'},
+  {cx: 3040, cy: 1080, rot: -1.4, fromX: 2600, fromY: -320, paper: 'var(--rc-paper)'},
+  {cx: 1420, cy: 1000, rot: -7.0, fromX: -900, fromY: 2600, paper: 'var(--rc-paper-deep)'},
+] as const;
+
+/**
+ * Eight tiles are vendored; a variant takes four of them. §6 wants the A and B
+ * variants to differ by "underlying imagery", so the seed picks the pages as
+ * well as the torn edges — otherwise A and B would be the same four sheets
+ * with a different rip, which is not what a viewer would call different.
+ */
+const TILE_POOL = [
+  'tile-A1', 'tile-F2', 'tile-G1', 'tile-D2',
+  'tile-L3', 'tile-E2', 'tile-L2', 'tile-D1',
+] as const;
+
+const tilesFor = (seed: string) => {
+  const offset = Math.floor(random(`${seed}-tiles`) * TILE_POOL.length);
+  // Stride 3 against a pool of 8 (coprime), so the four are always distinct
+  // and no two slots ever land on the same page.
+  return PAGE_SLOTS.map((_, i) => TILE_POOL[(offset + i * 3) % TILE_POOL.length]);
+};
+
 export const M3Tiling: React.FC<MechanicProps> = ({seed}) => {
   const frame = useCurrentFrame();
   const uncoverAt = useUncoverAt();
-  const cols = 5;
-  const rows = 3;
-  const pw = CANVAS_W / cols;
-  const ph = CANVAS_H / rows;
-  const BLEED = 52;
-
-  const pages = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const i = r * cols + c;
-      const s = `${seed}-m3-${i}`;
-      // Column by column, so the frame fills left to right as pages are laid.
-      const order = c * rows + r;
-      const delay = (order / (cols * rows)) * (COVER * 0.7);
-      const inT = drawOn(frame, delay, Math.max(4, COVER - delay));
-      const outT = drawOn(frame, uncoverAt + random(`${s}-o`) * 9, 15);
-      if (inT <= 0) continue;
-
-      const x = c * pw - BLEED / 2;
-      const y = r * ph - BLEED / 2;
-      const w = pw + BLEED;
-      const h = ph + BLEED;
-      const ang = (random(`${s}-a`) - 0.5) * 2.2;
-      const drop = (1 - inT) * -90 + outT * -160;
-
-      pages.push(
-        <g
-          key={i}
-          transform={`translate(${x + w / 2} ${y + h / 2 + drop}) rotate(${ang}) translate(${-w / 2} ${-h / 2})`}
-          opacity={Math.min(inT * 2.5, 1) * (1 - outT)}
-        >
-          <rect x={0} y={0} width={w} height={h} fill="var(--rc-paper)" />
-          {/* the black bleed line the next page overlaps onto */}
-          <rect x={0} y={0} width={w} height={h} fill="none" stroke="var(--rc-ink)" strokeWidth={5} />
-          {/* alignment bullseyes at the corners (§8.2 ALIGNMENT DARTS) */}
-          {[
-            [BLEED, BLEED],
-            [w - BLEED, BLEED],
-            [BLEED, h - BLEED],
-            [w - BLEED, h - BLEED],
-          ].map(([bx, by], k) => (
-            <g key={k} fill="none" stroke="var(--rc-ink)" strokeWidth={4}>
-              <circle cx={bx} cy={by} r={26} />
-              <circle cx={bx} cy={by} r={11} />
-              <line x1={bx - 42} y1={by} x2={bx + 42} y2={by} />
-              <line x1={bx} y1={by - 42} x2={bx} y2={by + 42} />
-            </g>
-          ))}
-        </g>,
-      );
-    }
-  }
+  const tiles = tilesFor(seed);
+  const stamp = drawOn(frame, COVER + 2, 6);
+  const stampOut = drawOn(frame, uncoverAt, 8);
 
   return (
     <AbsoluteFill>
-      <svg width={CANVAS_W} height={CANVAS_H} style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
-        {pages}
-      </svg>
+      {PAGE_SLOTS.map((page, i) => {
+        // Staggered in, and out again in the reverse order — the last sheet
+        // laid down is the first one lifted.
+        const inT = drawOn(frame, i * 4, COVER - i * 4);
+        const outT = drawOn(frame, uncoverAt + (PAGE_SLOTS.length - 1 - i) * 4, UNCOVER - 10);
+        if (inT <= 0) return null;
+
+        const v = Math.floor(random(`${seed}-m3-${i}`) * TORN_VARIANTS);
+        const dx = (1 - inT) * page.fromX + outT * page.fromX * 1.15;
+        const dy = (1 - inT) * page.fromY + outT * page.fromY * 1.15;
+        const rot = page.rot + (1 - inT) * -4 + outT * 5;
+
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: page.cx - PAGE_W / 2,
+              top: page.cy - PAGE_H / 2,
+              width: PAGE_W,
+              height: PAGE_H,
+              transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`,
+              transformOrigin: '50% 50%',
+              // Hand-torn on every side, a different silhouette per page and
+              // per variant seed, so no two transitions share an edge (§3.4).
+              clipPath: `path('${tornRectPath({
+                w: PAGE_W,
+                h: PAGE_H,
+                variant: v,
+                torn: ['top', 'right', 'bottom', 'left'],
+                tornAmp: 26,
+                wobble: 14,
+                segments: 26,
+              })}')`,
+              background: page.paper,
+            }}
+          >
+            <Img
+              src={staticFile(`pattern/${tiles[i]}.svg`)}
+              style={{width: '100%', height: '100%', display: 'block'}}
+            />
+          </div>
+        );
+      })}
+
+      {/* The mark, stamped on the covered frame during the hold. */}
+      <AbsoluteFill style={{alignItems: 'center', justifyContent: 'center'}}>
+        <Img
+          src={staticFile('pattern/mark.svg')}
+          style={{
+            width: 720,
+            height: 720,
+            opacity: stamp * (1 - stampOut),
+            transform: `rotate(${-2.5 + (1 - stamp) * 5}deg) scale(${0.94 + stamp * 0.06})`,
+          }}
+        />
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };

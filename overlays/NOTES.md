@@ -500,6 +500,53 @@ transparent pixel, straight alpha throughout.
 
 ---
 
+## 4f. M3 REBUILT FROM THE REAL PATTERN
+
+§6 M3 is "pattern pages overlap onto the bleed line ... literally Jack's own
+tiling system." It was built from invented pages with invented corner
+bullseyes. It is now built from the pages: `RC_TRANS_PATTERN_A` and `_B` lay
+four sheets out of THE KIT DUFFLE BAG across the frame, hold with the mark
+stamped on, and lift them away.
+
+**Where the artwork comes from.** `public/pattern/` holds eight tiles and the
+circular mark, extracted from the PDF with pymupdf, **text converted to
+paths** so a render depends on no font and no network, and recoloured from the
+pattern's near-black `#231f20` to `--rc-ink`, and its `#d4d4d6` grid reference
+to `#CFC4B2` so the grey sits on `--rc-paper` instead of on white. 288KB for
+the set. Nothing is redrawn or imitated — these are the pages. The mark needed
+one extra pass: it carries a white filled disc behind the scribble, invisible
+on a white page and a punched white hole on aged paper, so those fills are
+stripped.
+
+**Coverage is arithmetic, not hope.** A page is 1900 wide, so at 2° of tilt its
+edge never sits further in than 906px from its centre; three centres at 800 /
+1920 / 3040 reach past both sides of a 3840 frame and overlap by ~750px, which
+is twenty times the deepest tear. The page is 2459 tall against a 2160 frame
+for the same reason: a page at exactly frame height leaves a 30px band at the
+top the moment it tilts. Verified on rendered frames — 100% opaque across the
+whole hold on both variants.
+
+**Whole pages that also cover the frame do not exist.** To see all of a page it
+can be at most frame height; at frame height it cannot cover the frame once it
+tilts. So you see the full width of each page and about 88% of its height. The
+first version had pages at 2500 wide, which covered easily and read as
+wallpaper — you could not tell it was a pattern page at all.
+
+**A and B differ by pages, not just by rip.** §6 wants the variants to differ
+by "underlying imagery". The seed picks four tiles out of the eight on a
+stride of 3 against a pool of 8 — coprime, so no two slots ever land on the
+same page — as well as picking the torn edges.
+
+### One thing to fix in the pattern itself
+
+The annotation on tiles G1 and G2 reads **"(LENGHT FOR WEBBING AND FABRIC
+HANDLES)"** — LENGHT for LENGTH. It is set in the pattern artwork, so it is in
+every printed copy and it is now legible on screen in this transition. Worth a
+correction pass on the PDF; the tiles here can be re-extracted in seconds
+afterwards.
+
+---
+
 ### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone
