@@ -692,6 +692,12 @@ bolts. It runs the length of the cloth, so it wraps the bolt at the same height
 it lies at on the laid piece; stopping it dead at the roll's edge is the one
 place the eye checks.
 
+Checked again at the resolutions people watch at. At 4K 1:1 the flecks read a
+touch large and round — closer to dots than to slubs — but 4K 1:1 is not how
+anyone watches this, and at 1080p and 720p they read exactly as flecking, with
+the twill ridge intact and no moiré at either. Sized for the delivery rather
+than for the master, deliberately. Masters are 424MB each.
+
 Verified on rendered frames: 100% opaque across the whole hold, both variants.
 
 ---
