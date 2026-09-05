@@ -8,6 +8,7 @@
  */
 :root {
   --rc-paper:       #EFE5D2;  /* card grounds, aged paper                */
+  --rc-paper-white: #F7F5F0;  /* the standalone papercut - white, not cream */
   --rc-paper-deep:  #DCCDB0;  /* secondary paper, shadow side            */
   --rc-ink:         #3B2E22;  /* body text, engraved line work           */
   --rc-mahogany:    #4A2C1A;  /* full-frame transition grounds           */

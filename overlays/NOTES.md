@@ -267,7 +267,38 @@ with the field-sheet versions, but the split is different: 40 in / 72 hold /
 25 out rather than 12 / 100 / 25, because a demonstration needs time to play
 where a caption does not.
 
-### Legibility: the problem the paper was solving
+### v2 — the wobbling papercut
+
+Revised at your direction. The chalk-on-nothing version was too light and the
+mono caption did not read as Roughcut. Now:
+
+- A **hand-cut white paper scrap** sits behind each drawing — organic, no two
+  alike, and it **wobbles**: re-cut every four frames from three seeded
+  variants, the way a physical papercut is nudged between exposures. Built by
+  perturbing a radius around a centre, not by wobbling the sides of a box; a
+  box perturbed at its edges still reads as a box.
+- A **white outline** around it: the scrap is filled pure white with a
+  slightly warmer paper inset, so the rim reads as a cut-out border. Filling
+  and stroking in the same white gives no border at all, which is what the
+  first attempt did.
+- The drawing and type are now **ink on white**, which is the only reliable
+  way to survive both the dark bench and the bright print room.
+- **Type is Cinzel at its heaviest** for the heading — the Roman
+  inscriptional face of "RELIC FROM THE PAST CRAFTED IN THE PRESENT" — with
+  the technical sub-line in bold typewriter. This overrides §8's "popups use
+  mono only": mono alone does not read as Roughcut.
+- Coverage is **14–19% of frame**, against the ~15% asked for. It varies by
+  asset because the scrap is irregular by design.
+
+**The overflow is now impossible, not unlikely.** An irregular outline cannot
+be laid out against its bounding box — a caption drops off whichever lobe came
+in short on that seed, which is exactly what happened first time. The
+generator now takes a safe rectangle, derived from the drawing plus a
+two-heading-line / two-sub-line caption budget, and clamps the radius so no
+variant can cut inside it. Verified at zero stray ink pixels outside the paper
+across all five assets and all three boil variants.
+
+### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone
 line work has nothing behind it, and cream chalk on the bright print-room

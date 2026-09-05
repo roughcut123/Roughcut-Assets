@@ -121,12 +121,12 @@ export const RightSidesDemo: React.FC = () => {
   return (
     <>
       <g opacity={inA}>
-        <Keylined render={panel(PIVOT + 20, true)} />
+        <Keylined render={panel(PIVOT + 46, true)} />
       </g>
       {/* Lands slightly proud of the panel underneath, so the finished state
           reads as two layers face to face rather than one rectangle. */}
       <g
-        transform={`translate(${PIVOT} ${flip * -26}) scale(${sx} 1) translate(${-PIVOT} 0)`}
+        transform={`translate(${PIVOT} ${flip * -40}) scale(${sx} 1) translate(${-PIVOT} 0)`}
         opacity={inA}
       >
         <Keylined render={panel(PIVOT - 400, faceUp)} />

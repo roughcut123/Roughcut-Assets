@@ -21,7 +21,7 @@ const demo = (name: string, label: string, sub: string, Body: React.FC): DemoAss
   id: `RC-DEMO-${name}`,
   file: `RC_DEMO_${name}`,
   render: () => (
-    <DemoFrame label={label} sub={sub}>
+    <DemoFrame label={label} sub={sub} seed={name}>
       <Body />
     </DemoFrame>
   ),
