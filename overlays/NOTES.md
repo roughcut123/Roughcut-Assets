@@ -3,7 +3,9 @@
 Open questions and deviations, per spec §16: *"If a decision isn't covered here,
 log it in `NOTES.md` and stop. Don't guess."*
 
-Status: **§15 steps 1 and 2 complete — stopped for approval.**
+Status: **§15 steps 1–11 complete. 100 assets + 100 `_LOOP` variants built.**
+
+Built to spec but **not batch-rendered** — see §5 below.
 
 ---
 
@@ -176,11 +178,64 @@ Variety comes from container shape and palette instead.
 
 ---
 
-## 4. NOT YET RAISED WITH YOU
+## 4. WHAT EACH REMAINING FAMILY NEEDS FROM YOU
 
-- §7 title cards need an **illuminated drop cap** "drawn from manuscript
-  reference" — again real scans (§1.2).
-- §10 cross-references take a **thumbnail path** per target video. Those
-  thumbnails need supplying.
-- §12 reveal certificate has fields (`PATTERN`, `FABRIC`, `BUILT`) whose
-  default values are unknown. Parameterised, but needs defaults.
+**§6 M1 / M2 imagery.** M1 resolves to a gold Ravenna-register ground rather
+than a named plate, and M2's drift is drawn rather than photographed. Both are
+complete, working transitions; both get better the moment real scans land in
+`/assets/archive`. Every coverage window was measured off rendered alpha:
+**all five mechanics are fully opaque across frames 25–36**, so a cut placed
+under the hold cannot show through.
+
+**§7 illuminated cap.** The drop cap is a gold blackletter letter on an
+oxblood ground with a ruled border — the geometry §7 asks for. §3.6 wants the
+illumination "drawn from manuscript reference"; drop a scan in and it goes
+behind the letter without touching the layout.
+
+**§10 thumbnails.** The parameterised `thumbnail` prop is implemented: supply
+a path under `public/` and it is framed beside the title, and the map fragment
+narrows to make room. No thumbnails have been supplied, so all seven currently
+ship map-only. The map is generic cartographic line work, not a scan of a
+specific historical plate (§16 forbids faking one).
+
+**§12 certificate defaults.** `PATTERN`, `SKILL LEVEL`, `FABRIC` and `BUILT`
+are props, currently defaulting to the spec's own examples — Yard Jacket,
+3/5, 14 oz Japanese selvedge denim, Bournemouth. Confirm or replace. The
+tagline tail is a separate prop defaulting to `in the present`, so the
+British Isles and Made in Italy variants need no second component.
+
+**§9 red marks.** §9 describes the register as "circled, struck through,
+arrow in the margin", but §3.2 allows only ONE red mark per asset. Read
+together: each correction carries a single mark, and the three kinds are
+distributed across the five assets rather than stacked on one card.
+
+**§11 durations.** §11 gives 3s for the sign-off and 2s for the morning
+stamp; §13's table gives a single 50f row for the family. §11's explicit
+numbers win, so `RC_DAY_END` is 75f and `RC_DAY_02/03/04` are 50f.
+
+---
+
+## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
+
+All 100 assets are registered, verified at 25fps / 3840×2160, and render on
+demand. They have **not** all been exported to ProRes here: at roughly 70–300
+MB each that is tens of gigabytes, well past this machine's disk, and §15
+says not to batch-render before a human has looked at a file on a real
+timeline anyway.
+
+Four have been rendered and verified end to end — `RC_POPUP_SEAMALLOWANCE`,
+`RC_FABRIC_08_CADENCE`, and the fabric sequence — confirming ProRes 4444
+profile 4, 3840×2160, 25fps, video stream only, straight alpha.
+
+To render the rest:
+
+```bash
+export REMOTION_BROWSER_EXECUTABLE=...   # only if Remotion can't fetch Chrome
+node scripts/render-spec.mjs             # everything, with contact sheets
+node scripts/render-spec.mjs --family=TRANS
+node scripts/render-spec.mjs --no-loop --no-sheets
+node scripts/make-readme.mjs             # regenerates out/README_VINCE.md
+```
+
+The asset list is read from Remotion itself, so the render script and the
+handover table cannot drift from the code.

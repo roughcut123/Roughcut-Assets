@@ -31,6 +31,8 @@ export type FieldSheetProps = {
    * per asset, or none. A second red mark means one of them is wrong.
    */
   annotateLine?: number;
+  /** §8.2 skill level: a filled bar in --rc-gold. */
+  bar?: {value: number; max: number};
 };
 
 /** Ease-out only. §3.5 forbids anything that reads as UI springiness. */
@@ -79,6 +81,7 @@ export const FieldSheet: React.FC<FieldSheetProps> = ({
   variant,
   angle = 1.5,
   annotateLine,
+  bar,
 }) => {
   const frame = useCurrentFrame();
   const {in: inF, hold, out} = TIMING.popup;
@@ -98,7 +101,8 @@ export const FieldSheet: React.FC<FieldSheetProps> = ({
 
   // Height is derived from the wrapped content, so copy can never clip.
   const headH = PAD_TOP + 6 + 22 + LABEL_PX * 1.06 + 16 + 6 + 26;
-  const H = Math.round(headH + visual.length * LINE_H + PAD_BOTTOM);
+  const BAR_H = bar ? 96 : 0;
+  const H = Math.round(headH + visual.length * LINE_H + BAR_H + PAD_BOTTOM);
 
   const d = tornRectPath({w: W, h: H, variant, torn: ['right', 'bottom']});
 
@@ -182,6 +186,36 @@ export const FieldSheet: React.FC<FieldSheetProps> = ({
               />
             );
           })}
+
+          {/* §8.2 skill bar: segments filled in gold, drawn on one at a time. */}
+          {bar
+            ? (() => {
+                const y = yFirst + visual.length * LINE_H + 18;
+                const gap = 14;
+                const segW = (inner - gap * (bar.max - 1)) / bar.max;
+                return (
+                  <g>
+                    {Array.from({length: bar.max}).map((_, i) => {
+                      const on = i < bar.value;
+                      const p = drawOn(frame, 10 + i * 2 + (random(`bar-${i}`) - 0.5) * 2, 5);
+                      return (
+                        <rect
+                          key={i}
+                          x={PAD_X + i * (segW + gap)}
+                          y={y}
+                          width={segW}
+                          height={40}
+                          fill={on ? 'var(--rc-gold)' : 'none'}
+                          stroke="var(--rc-ink)"
+                          strokeWidth={4}
+                          opacity={p}
+                        />
+                      );
+                    })}
+                  </g>
+                );
+              })()
+            : null}
 
           {/* §3.2: exactly one red hand mark per asset. */}
           {annotateLine !== undefined ? (
