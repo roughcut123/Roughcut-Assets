@@ -424,13 +424,13 @@ export const M5Torn: React.FC<MechanicProps> = ({seed}) => {
 /* ------------------------------------------------------------------ M6 */
 
 /**
- * M6 — Bolt unroll. A roll of cloth crosses the frame and the fabric unspools
- * behind it until the screen is covered; it holds; then a second roll crosses
- * the same way and takes the cloth back up, revealing the next chapter.
+ * M6 — Bolt unroll. A roll of selvedge denim crosses the frame and the cloth
+ * unspools behind it until the screen is covered; it holds; then a second roll
+ * crosses the same way and takes the cloth back up, revealing the next chapter.
  *
  * The cloth already laid down never moves — which is what actually happens
  * when you unroll a bolt across a cutting table. Only the two edges travel, so
- * the weave and the fold lines stay put and the motion reads as cloth rather
+ * the twill and the selvedge stay put and the motion reads as cloth rather
  * than as a sliding rectangle.
  *
  * THE BOLT HAS TO TURN, or the whole thing is a wipe with a stripe on it. The
@@ -438,12 +438,15 @@ export const M5Torn: React.FC<MechanicProps> = ({seed}) => {
  * R sin(theta) — so they crowd towards the edges the way a cylinder's surface
  * does, and the phase is driven by distance travelled over circumference. It
  * rolls because it is rolling, not because it is sliding with lines on it.
+ * A cylinder is also darkest where it turns AWAY from you; shading it the
+ * other way round is what makes a roll read as a flat striped band.
  *
  * The contour is the sticker cut (see lib/papercut). It matters here more than
  * anywhere: for most of the shot the only thing the viewer sees against the
  * outgoing footage IS the leading edge, so that edge has to be a torn white
  * paper cut and not a straight line. Once the frame is covered the cut is
- * off-screen, which is the point — it does its work during the wipe.
+ * off-screen, which is the point — it does its work during the wipe. White on
+ * indigo is also the strongest reading the cut gets anywhere in the library.
  *
  * The filter region is absolute rather than a percentage of the bounding box.
  * At the start of the wipe the band is a few hundred pixels wide, and 14% of
@@ -469,25 +472,58 @@ const RUN_TO = CANVAS_W + 900;
 const TOP = CLOTH_TOP - 80;
 const BOT = CLOTH_BOTTOM + 80;
 
+/**
+ * Where two widths of denim meet. Selvedge denim comes off the loom about 32
+ * inches wide, so covering anything the shape of a screen means laying more
+ * than one width and overlapping them at the finished edges — which is the
+ * only honest way to get the selvedge ON SCREEN at all. Run the cloth as one
+ * piece and both its selvedges are off-frame by definition, because the cloth
+ * has to reach past the frame to cover it.
+ */
+const SELVEDGE_AT = [560, 1780];
+const SELVEDGE_W = 84;
+
+/**
+ * Right-hand twill, which is what denim is: the ridge climbs left to right at
+ * about 63 degrees. Drawn as a tiled pattern rather than a few hundred long
+ * diagonals, and in the weft's undyed thread — a denim ridge is pale because
+ * only the warp is dyed.
+ */
+const twill = (id: string) => (
+  <pattern id={id} patternUnits="userSpaceOnUse" width={20} height={40}>
+    <line x1={0} y1={40} x2={20} y2={0} stroke="var(--rc-paper)" strokeWidth={7} opacity={0.15} />
+    <line x1={-20} y1={40} x2={0} y2={0} stroke="var(--rc-paper)" strokeWidth={7} opacity={0.15} />
+    <line x1={0} y1={20} x2={20} y2={20} stroke="var(--rc-ink)" strokeWidth={3} opacity={0.1} />
+  </pattern>
+);
+
 /** Silhouette of the bolt — what the paper is cut around. */
 const boltBody = (cx: number, fill: string) => (
   <rect x={cx - ROLL_R} y={TOP} width={ROLL_R * 2} height={BOT - TOP} fill={fill} />
 );
 
 /** The bolt itself, turning. `travel` is how far it has rolled. */
-const bolt = (cx: number, travel: number, key: string) => {
+const bolt = (cx: number, travel: number, twillId: string, key: string) => {
   const phase = (travel / ROLL_CIRC) * Math.PI * 2;
-  // Evenly spaced in ANGLE, projected to x. They crowd towards both edges the
-  // way a cylinder's surface does, and the phase advances with the distance
-  // rolled — so it turns because it is turning, not because it is sliding
-  // with lines painted on it.
   const layers = Array.from({length: 44})
     .map((_, k) => phase + (k * Math.PI) / 22)
     .filter((t) => Math.cos(t) > 0.02);
 
   return (
     <g key={key}>
-      {boltBody(cx, 'var(--rc-paper-deep)')}
+      {boltBody(cx, 'var(--rc-indigo)')}
+      {boltBody(cx, `url(#${twillId})`)}
+      {/* A wound bolt is many layers deep, so it is darker than the single
+          thickness it is laying down. Without this the roll is the same
+          indigo as the cloth and simply disappears into it. */}
+      <rect
+        x={cx - ROLL_R}
+        y={TOP}
+        width={ROLL_R * 2}
+        height={BOT - TOP}
+        fill="var(--rc-ink)"
+        opacity={0.26}
+      />
       {layers.map((t, i) => (
         <line
           key={i}
@@ -497,24 +533,46 @@ const bolt = (cx: number, travel: number, key: string) => {
           y2={BOT}
           stroke="var(--rc-ink)"
           strokeWidth={3}
-          // A cylinder is darkest where it turns away, not in the middle.
-          // Getting this the wrong way round is what made the first version
-          // read as a flat striped band.
           opacity={0.05 + 0.42 * (1 - Math.cos(t))}
         />
       ))}
-      {/* the two edges of the cylinder, and the line the cloth leaves on */}
       <line x1={cx - ROLL_R} y1={TOP} x2={cx - ROLL_R} y2={BOT} stroke="var(--rc-ink)" strokeWidth={8} />
       <line x1={cx + ROLL_R} y1={TOP} x2={cx + ROLL_R} y2={BOT} stroke="var(--rc-ink)" strokeWidth={8} />
-      <line
-        x1={cx - ROLL_R + 26}
-        y1={TOP}
-        x2={cx - ROLL_R + 26}
-        y2={BOT}
-        stroke="var(--rc-ink)"
-        strokeWidth={4}
-        opacity={0.4}
-      />
+    </g>
+  );
+};
+
+/**
+ * The finished woven band where two widths overlap: the undyed edge, its
+ * regular tick marks (§3.4's "selvedge edge — the woven band, with its regular
+ * tick marks"), and the coloured ID line woven down it.
+ *
+ * The ID line is `--rc-terracotta`, NOT `--rc-annotation`. Red-line selvedge is
+ * the iconic one and the temptation is obvious, but §3.2 reserves the
+ * annotation red for exactly one mark per asset and a line running the width of
+ * the frame is not that mark.
+ */
+const selvedge = (y: number, key: string) => {
+  const ticks = Math.ceil((RUN_TO - RUN_FROM) / 40);
+  return (
+    <g key={key}>
+      <rect x={RUN_FROM} y={y - SELVEDGE_W} width={RUN_TO - RUN_FROM} height={SELVEDGE_W} fill="var(--rc-paper)" opacity={0.82} />
+      <line x1={RUN_FROM} y1={y - SELVEDGE_W} x2={RUN_TO} y2={y - SELVEDGE_W} stroke="var(--rc-ink)" strokeWidth={4} opacity={0.5} />
+      {/* the overlapped edge of the width lying on top */}
+      <line x1={RUN_FROM} y1={y} x2={RUN_TO} y2={y} stroke="var(--rc-ink)" strokeWidth={6} opacity={0.6} />
+      {Array.from({length: ticks}).map((_, i) => (
+        <line
+          key={i}
+          x1={RUN_FROM + i * 40}
+          y1={y - SELVEDGE_W + 8}
+          x2={RUN_FROM + i * 40}
+          y2={y - 8}
+          stroke="var(--rc-ink)"
+          strokeWidth={6}
+          opacity={0.42}
+        />
+      ))}
+      <line x1={RUN_FROM} y1={y - SELVEDGE_W * 0.5} x2={RUN_TO} y2={y - SELVEDGE_W * 0.5} stroke="var(--rc-terracotta)" strokeWidth={11} />
     </g>
   );
 };
@@ -524,6 +582,7 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
   const uncoverAt = useUncoverAt();
   const variant = useCutVariant();
   const fid = `unroll-${seed}-${variant}`;
+  const tid = `twill-${seed}`;
 
   // Constant speed, then a short settle — a bolt rolls at whatever speed you
   // push it, and stops when it runs out of push. drawOn's ease-out is right
@@ -545,11 +604,9 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
 
   // Fold lines are set ON THE CLOTH, not on the frame, so they stay put while
   // the edges travel. Seeded, so a variant is folded differently.
-  const folds = Array.from({length: 11}).map(
-    (_, i) => RUN_FROM + 420 + i * 372 + random(`${seed}-c${i}`) * 90,
+  const folds = Array.from({length: 9}).map(
+    (_, i) => RUN_FROM + 480 + i * 470 + random(`${seed}-c${i}`) * 110,
   );
-  const weave = Math.ceil((BOT - TOP) / 96);
-  const warp = Math.ceil((RUN_TO - RUN_FROM) / 96);
 
   return (
     <AbsoluteFill>
@@ -560,6 +617,7 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
         style={{position: 'absolute', inset: 0, overflow: 'visible'}}
       >
         <defs>
+          {twill(tid)}
           <PaperCutFilter
             id={fid}
             variant={variant}
@@ -586,80 +644,47 @@ export const M6Unroll: React.FC<MechanicProps> = ({seed}) => {
           {tailIn ? boltBody(tail, '#FFFFFF') : null}
         </g>
 
-        {/* PASS 2 — the cloth. Plain weave: warp and weft, both faint, which
-            is what makes it read as woven rather than as ruled paper. */}
+        {/* PASS 2 — the denim. */}
         <g transform={`rotate(${TILT} ${CANVAS_W / 2} ${CANVAS_H / 2})`}>
-        <rect
-          x={tail}
-          y={CLOTH_TOP}
-          width={clothW}
-          height={CLOTH_BOTTOM - CLOTH_TOP}
-          fill="var(--rc-paper)"
-        />
-        <g clipPath={`url(#${fid}-cloth)`}>
-          {Array.from({length: weave}).map((_, i) => (
-            <line
-              key={`w${i}`}
-              x1={tail}
-              y1={TOP + i * 96}
-              x2={head}
-              y2={TOP + i * 96}
-              stroke="var(--rc-ink)"
-              strokeWidth={3}
-              opacity={0.18}
+          <rect
+            x={tail}
+            y={CLOTH_TOP}
+            width={clothW}
+            height={CLOTH_BOTTOM - CLOTH_TOP}
+            fill="var(--rc-indigo)"
+          />
+          <g clipPath={`url(#${fid}-cloth)`}>
+            <rect
+              x={RUN_FROM}
+              y={CLOTH_TOP}
+              width={RUN_TO - RUN_FROM}
+              height={CLOTH_BOTTOM - CLOTH_TOP}
+              fill={`url(#${tid})`}
             />
-          ))}
-          {Array.from({length: warp}).map((_, i) => (
-            <line
-              key={`p${i}`}
-              x1={RUN_FROM + i * 96}
-              y1={CLOTH_TOP}
-              x2={RUN_FROM + i * 96}
-              y2={CLOTH_BOTTOM}
-              stroke="var(--rc-ink)"
-              strokeWidth={3}
-              opacity={0.12}
-            />
-          ))}
-          {/* Twill ticks — the house notation for cloth, and the thing that
-              stops a big flat field reading as a sheet of graph paper. */}
-          {Array.from({length: weave}).map((_, r) =>
-            Array.from({length: warp}).map((_, c) =>
-              (r + c) % 2 ? null : (
-                <line
-                  key={`t${r}-${c}`}
-                  x1={RUN_FROM + c * 96 + 22}
-                  y1={TOP + r * 96 + 70}
-                  x2={RUN_FROM + c * 96 + 74}
-                  y2={TOP + r * 96 + 26}
-                  stroke="var(--rc-ink)"
-                  strokeWidth={5}
-                  opacity={0.16}
+            {SELVEDGE_AT.map((y, i) => selvedge(y, `s${i}`))}
+            {/* The folds it was wound on, and the drape they leave: a wound
+                bolt does not come off flat, so the fold lines bow. Lighter
+                than the ground, because a crease in indigo is where the dye
+                has worn off the ridge. */}
+            {folds.map((x, i) => {
+              const bow = (random(`${seed}-b${i}`) - 0.5) * 150;
+              return (
+                <path
+                  key={`f${i}`}
+                  d={`M ${x} ${CLOTH_TOP} C ${x + bow} ${CLOTH_TOP + 700} ${x - bow} ${
+                    CLOTH_BOTTOM - 700
+                  } ${x + bow * 0.3} ${CLOTH_BOTTOM}`}
+                  fill="none"
+                  stroke="var(--rc-paper)"
+                  strokeWidth={9}
+                  opacity={0.11}
                 />
-              ),
-            ),
-          )}
-          {/* The folds it was wound on, and the drape they leave: a wound
-              bolt does not come off flat, so the fold lines bow. */}
-          {folds.map((x, i) => {
-            const bow = (random(`${seed}-b${i}`) - 0.5) * 150;
-            return (
-              <path
-                key={`f${i}`}
-                d={`M ${x} ${CLOTH_TOP} C ${x + bow} ${CLOTH_TOP + 700} ${x - bow} ${
-                  CLOTH_BOTTOM - 700
-                } ${x + bow * 0.3} ${CLOTH_BOTTOM}`}
-                fill="none"
-                stroke="var(--rc-ink)"
-                strokeWidth={10}
-                opacity={0.22}
-              />
-            );
-          })}
-        </g>
+              );
+            })}
+          </g>
 
-        {headIn ? bolt(head, head - RUN_FROM, 'H') : null}
-        {tailIn ? bolt(tail, tail - RUN_FROM, 'T') : null}
+          {headIn ? bolt(head, head - RUN_FROM, tid, 'H') : null}
+          {tailIn ? bolt(tail, tail - RUN_FROM, tid, 'T') : null}
         </g>
       </svg>
     </AbsoluteFill>

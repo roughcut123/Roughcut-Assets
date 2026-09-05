@@ -609,6 +609,38 @@ edge of the table, and off-square puts far more of the cut edge on screen for
 far longer. The cloth over-covers by 420px top and bottom to pay for it: 3840
 across at five degrees drops the far corner by 336px.
 
+### Blue denim, and how the selvedge got on screen
+
+The cloth is `--rc-indigo`, which §3.2 already carries and describes as "denim,
+selvedge accents", so no palette was added. The weave is a right-hand twill —
+what denim is — drawn as a tiled pattern rather than a few hundred long
+diagonals, and set in the weft's undyed thread, because a denim ridge is pale:
+only the warp is dyed.
+
+**Getting the selvedge on screen took a structural decision, not a texture.**
+The selvedge runs the length of the cloth, so on an unrolling bolt it is the
+top and bottom edge of what is laid down — and those are off-frame by
+definition, because the cloth has to reach past the frame to cover it. Run the
+piece as one width and the selvedge cannot be shown at all.
+
+The way out is the true one: selvedge denim comes off the loom about 32in
+wide, so covering anything the shape of a screen means laying more than one
+width and overlapping them at the finished edges. There are two of those joins
+across the frame, and each is the real article — the undyed band, its regular
+tick marks (§3.4's "selvedge edge — the woven band, with its regular tick
+marks"), the overlapped edge of the width lying on top, and the coloured ID
+line woven down it.
+
+**The ID line is `--rc-terracotta`, not `--rc-annotation`.** Red-line selvedge
+is the iconic one and the temptation is obvious, but §3.2 reserves the
+annotation red for exactly one mark per asset, and a line running the full
+width of the frame is not that mark.
+
+**The bolt needed to be told it is many layers deep.** Made indigo like the
+cloth it is laying, it vanished into it — same colour, same twill, no roll. It
+now carries an ink overlay at 26%, which is true as well as legible: a wound
+bolt is dozens of thicknesses and a laid piece is one.
+
 Verified on rendered frames: 100% opaque across the whole hold, both variants.
 
 ---
