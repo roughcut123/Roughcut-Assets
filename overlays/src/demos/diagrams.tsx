@@ -48,8 +48,8 @@ export const SeamAllowanceDemo: React.FC = () => {
             <path d={`M 40 70 L ${RAW} 70 L ${RAW} 490 L 40 490`} strokeWidth={7 + e} {...draw(1700, cloth)} />
             <line x1={RAW} y1={70} x2={RAW} y2={490} strokeWidth={11 + e} {...draw(420, cloth)} />
             {/* weave direction, so it reads as cloth not paper */}
-            {[0, 1, 2, 3, 4].map((i) => (
-              <line key={i} x1={70} y1={110 + i * 88} x2={RAW - 24} y2={110 + i * 88}
+            {Array.from({length: 8}).map((_, i) => (
+              <line key={i} x1={70} y1={110 + i * 52} x2={RAW - 24} y2={110 + i * 52}
                 strokeWidth={3 + e} opacity={0.5} {...draw(560, cloth)} />
             ))}
           </g>
@@ -111,8 +111,8 @@ export const RightSidesDemo: React.FC = () => {
     <g fill="none" stroke={s} strokeWidth={8 + e}>
       <rect x={x} y={120} width={380} height={320} />
       {showFace
-        ? [0, 1, 2, 3, 4, 5].map((i) => (
-            <line key={i} x1={x + 20 + i * 62} y1={430} x2={x + 90 + i * 62} y2={130} strokeWidth={4 + e} opacity={0.6} />
+        ? Array.from({length: 7}).map((_, i) => (
+            <line key={i} x1={x + 16 + i * 52} y1={430} x2={x + 86 + i * 52} y2={130} strokeWidth={4 + e} opacity={0.6} />
           ))
         : null}
     </g>
@@ -167,8 +167,10 @@ export const BackstitchDemo: React.FC = () => {
             <line x1={X0} y1={Y} x2={X1} y2={Y} strokeWidth={9 + e} strokeDasharray="30 20" {...wipe(fwd)} />
             <line x1={X0} y1={Y} x2={X2} y2={Y} strokeWidth={9 + e} strokeDasharray="30 20" {...wipe(run)} />
             {/* the cloth it sits on */}
-            <line x1={40} y1={Y + 150} x2={900} y2={Y + 150} strokeWidth={5 + e} opacity={0.45} {...draw(860, fwd)} />
-            <line x1={40} y1={Y - 150} x2={900} y2={Y - 150} strokeWidth={5 + e} opacity={0.45} {...draw(860, fwd)} />
+            {/* Close enough to the stitch run that the three lines cut out as
+                one piece of paper rather than three separate strips. */}
+            <line x1={40} y1={Y + 56} x2={900} y2={Y + 56} strokeWidth={5 + e} opacity={0.45} {...draw(860, fwd)} />
+            <line x1={40} y1={Y - 56} x2={900} y2={Y - 56} strokeWidth={5 + e} opacity={0.45} {...draw(860, fwd)} />
           </g>
         )}
       />
@@ -209,6 +211,13 @@ export const GrainlineDemo: React.FC = () => {
             {Array.from({length: 13}).map((_, i) => (
               <line key={i} x1={70} y1={88 + i * 32} x2={122} y2={88 + i * 32} strokeWidth={4 + e}
                 opacity={0.7} {...draw(52, cloth)} />
+            ))}
+            {/* Weave across the body. It says cloth rather than card, and it
+                gives the cut something to follow so the middle of the piece
+                is paper instead of a hole. */}
+            {Array.from({length: 7}).map((_, i) => (
+              <line key={`w${i}`} x1={160} y1={130 + i * 52} x2={846} y2={130 + i * 52} strokeWidth={3 + e}
+                opacity={0.4} {...draw(686, cloth)} />
             ))}
           </g>
         )}

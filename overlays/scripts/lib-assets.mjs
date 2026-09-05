@@ -18,6 +18,7 @@ const FAMILIES = [
   ['RC-TRANS-', 'A · chapter transition', 'full frame'],
   ['RC-TITLE-', 'B · chapter title card', 'lower-left third'],
   ['RC-POPUP-', 'C · popup', 'top-left'],
+  ['RC-DEMO-', 'C · demonstration popup', 'top-left'],
   ['RC-FABRIC-', '§5 · fabric segment', 'left, vertically centred'],
   ['RC-CORR-', 'D · correction', 'top-left'],
   ['RC-ASIDE-', 'D · aside', 'bottom-right'],

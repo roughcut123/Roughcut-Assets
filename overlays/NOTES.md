@@ -298,6 +298,84 @@ two-heading-line / two-sub-line caption budget, and clamps the radius so no
 variant can cut inside it. Verified at zero stray ink pixels outside the paper
 across all five assets and all three boil variants.
 
+### v3 — the sticker cut (current)
+
+v2 was rejected, and rightly. It generated a paper shape and then placed the
+drawing on it, so the two had nothing to do with each other — a symbol sitting
+on a wobbly blob. What you asked for is the cut going **around the outline of
+the artwork itself**, the way a die-cut sticker or a scissored-out photograph
+is bordered by its own subject.
+
+So the paper is no longer authored. It is **derived from the drawing**. Each
+demo renders twice: once as a silhouette that feeds an SVG filter, and once as
+the ink on top. Which pass a diagram is in travels by React context, so a
+diagram describes itself once and the two passes cannot drift apart.
+
+The filter is the whole trick, and it is three steps:
+
+1. **Flatten.** The drawing carries decorative opacities — the weave at 0.4,
+   the selvedge ticks at 0.7 — and paper is opaque whatever it was cut from.
+2. **Grow and merge.** Blur the alpha (σ 16) and threshold it low (0.035).
+   That puts the cut edge about 29px outside the ink and fuses anything
+   within ~65px of its neighbour into one piece of paper. Detail closer
+   together than that becomes one sticker; genuinely separate parts of the
+   drawing stay separately cut. That is what scissors do.
+3. **Tear.** Displace the boundary with turbulence, reseeded every four frames
+   across three variants, so the cut edge boils like a re-cut stop-motion
+   element rather than sitting still.
+
+### Two things that cost real time to find
+
+**feMorphology is unusable at 4K.** The first working version did the grow and
+shrink with `feMorphology` dilate/erode, which looks the same and costs **four
+seconds a frame** — measured, 95s for twenty frames against 18s without. That
+is twenty times the rest of the library, and it would have added roughly three
+hours to a full render for five assets. A Gaussian blur is three box passes
+and is free by comparison. If anyone reaches for feMorphology here again:
+don't.
+
+**A very wide stroke punches holes in thin glyphs.** The intermediate version
+grew the paper by stroking the silhouette 60px wide. Skia's stroker
+self-intersects when the stroke is much wider than the feature it is stroking,
+and the overlapping halves cancel — which opened a clean bowtie-shaped hole
+through the paper above and below every em dash in the captions. The stroke is
+now only 10px, enough to firm up the 3px weave lines so they survive the
+threshold, and the margin comes entirely from the blur.
+
+Consequences worth knowing:
+
+- The paper **grows with the drawing**. Lines draw on by dashoffset and the
+  cut follows the ink as it arrives, so there is no separate "paper in" beat
+  to time. Elements that fade in rather than draw on (the presser foot, the
+  iron) pop their paper in early, because the flattening step has to be
+  aggressive enough to ignore the decorative opacities.
+- The diagrams are drawn to the merge distance. The weave lines went from 88
+  to 52 apart, the hatching from 62 to 52, the backstitch guides from ±150 to
+  ±56, and the grain-line cloth gained a weave so the middle of the piece is
+  paper rather than a hole. The two caption lines were pulled from 26 apart to
+  12: at 26 a pinprick opened between them wherever both lines had a space in
+  the same column.
+- Each demo declares the **top and bottom of its ink** within the 940×560
+  authoring box, so the caption sits under the drawing rather than under the
+  empty part of the box. A shallow diagram no longer leaves its label
+  floating.
+- The finished overlay is scaled 1.25 as a whole, which lands it at **7–15% of
+  a 4K frame** against the ~15% asked for; it varies because the cut follows
+  the drawing and the drawings are not the same shape. Scaling the finished
+  overlay rather than the authoring sizes keeps the margin proportional, since
+  the filter lives inside the transformed SVG.
+- The safe-rectangle clamp from v2 is **gone, and cannot come back as a bug**:
+  there is no independent shape for the caption to fall off. The caption is
+  part of what the paper is cut from.
+
+Verified across all five assets at frames 20/45/70/100: zero enclosed holes in
+the paper, zero ink pixels within 3px of a transparent pixel, and every
+partial-alpha edge pixel holding RGB 255,255,255 — straight alpha, as §1
+requires.
+
+`src/demos/papercut.ts`, the v2 shape generator, is deleted rather than left
+lying around for someone to wire back in.
+
 ### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone
