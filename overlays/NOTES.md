@@ -742,12 +742,20 @@ not the picture, it is PROVING it covers — a pinhole for one frame shows the
 outgoing cut through it. So coverage is a property of the geometry rather than
 something to check afterwards:
 
-- **SWARM.** Objects ride in on chips of paper laid out on a 7x4 grid, each
-  chip a disc of radius equal to the cell's half-diagonal. Once every chip has
-  landed the frame is covered, whatever shape the pieces are and however they
-  are rotated. That is why the hardware does not have to be cell-sized: making
-  a rotated buckle cover a rectangular cell means drawing it enormous, whereas
-  a disc is the same in every orientation.
+- **SWARM.** Objects ride in on scraps of paper laid out on a 7x4 grid, each
+  scrap a square whose INSCRIBED circle is the cell's half-diagonal. Once every
+  scrap has landed the frame is covered, whatever shape the pieces are and
+  however they or the scraps are rotated. That is why the hardware does not
+  have to be cell-sized: making a rotated buckle cover a rectangular cell means
+  drawing it enormous, whereas the scrap covers at any angle.
+
+  The scrap was a disc for the first two passes, which is the same guarantee
+  and the wrong picture: mid-transition the frame filled with ecru coasters
+  with lens-shaped gaps between them, the one thing in the set that read as a
+  shape the animation had invented rather than as paper. A square, rotated a
+  few degrees per scrap, reads as torn paper, matches the cut, and packs
+  without the gaps. The coverage proof is unchanged, only tightened — the
+  square strictly contains the disc it replaced.
 - **SWEEP.** A boundary crosses from well off one edge to well off the other
   and the fill trails it.
 
@@ -820,6 +828,67 @@ floating card, so §3.4 still holds — and it is what the work actually looks
 like, since Jack marks cloth in chalk. Checked against both a dark bench and
 a blown-out white ground; the first attempt used a 55% keyline and vanished
 on the bright one.
+
+---
+
+## 4j. THE REALISM PASS ON THE JACKET SET
+
+Brief: *"the same kinda thing as last time — you can cartoon these panels but
+somehow we need to create transitions that look super professional."* Cartoon
+was never the problem. Flat was.
+
+Five changes, in order of how much each one bought:
+
+**1. The brass is cel-shaded now, and that is most of it.** Every rivet, button
+and buckle was a gold shape with a dark outline, and at 4K they read as coins.
+What says "turned metal" is not a gradient — §3.4 rules those out and one would
+fight the paper cut anyway — it is two flat crescents: the lit side and the
+side that is not, plus one short specular arc.
+
+Both crescents are made WITHOUT a clip path, because a clip needs a unique id
+and these draw several hundred times a frame. The disc is painted dark, then
+the brass is painted back over it offset a few per cent towards the light,
+which leaves the dark crescent standing on the far side. `Forged` does the same
+for hardware that is a frame rather than a disc. The light is up and to the
+left everywhere, including the cloth's `Lift` shadow, so a frame full of parts
+is lit consistently instead of each piece having its own sun.
+
+**2. A buckle needs a prong.** The first one was a square frame with a square
+hole and it read as a picture frame — that is genuinely what it was. Bent wire
+has round corners, and the prong is a tapered spike that OVERHANGS the front
+edge. That overhang is the entire silhouette; without it the shape is a
+rectangle no matter what is drawn inside it.
+
+**3. Cloth had no texture on the pieces.** The denim fill existed but only the
+backgrounds used it; `Piece.render` now takes the paint, so pockets, panels,
+straps and cuffs are twill-and-slub rather than flat indigo.
+
+**4. The chainstitch is a chain.** It was two dashed lines, i.e. a ruled page.
+A felled seam is a raised fold with a shadow under it, topstitch either side of
+the fold rather than on it, and interlocking loops underneath — the loop being
+the only reason a chainstitch is worth showing.
+
+**5. Indigo, three attempts.** A dip chart is a stack of flat tones with a hard
+line where each dip stopped. Getting there took two wrong turns worth writing
+down, both about the palette rather than the drawing:
+
+- Nine bands each running 600px past its own pitch stacked into near-black.
+  Bands are absolute now, not cumulative.
+- Lightening the pale end turned the frame grey — with `--rc-paper` (cream)
+  and then with `--rc-fresco`. Every light token in §3.2 is warm or
+  desaturated and none of them survives being laid over blue. The chart runs
+  in ONE direction now, from the indigo token undimmed down to ink, which is
+  also what dipping actually does.
+
+The shared denim paint is knocked back with warm ink so pockets read against
+paper; across a whole frame that same knock-back reads as slate, so the
+full-bleed mechanics restore the hue before they band it.
+
+### Verified
+
+All twenty (ten mechanics x A/B) measured at frame 0, the hold, and the last
+frame: nothing at either end, 100.00% opaque through the hold.
+
 
 ---
 

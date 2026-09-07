@@ -3,6 +3,7 @@ import {AbsoluteFill, interpolate, random, useCurrentFrame, useVideoConfig} from
 import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {drawOn} from '../lib/motion';
 import {PaperCutFilter, useCutVariant} from '../lib/papercut';
+import {DenimFill, DenimPatterns} from './denim';
 import {Adjuster, Buckle, Burr, Patch, Pocket, Rivet, TackButton} from './hardware';
 
 /**
@@ -50,8 +51,13 @@ const CELL_H = CANVAS_H / ROWS;
 const COVER_R = Math.hypot(CELL_W / 2, CELL_H / 2);
 
 type Piece = {
-  /** Drawn centred on the origin, and opaque out to at least COVER_R. */
-  render: (i: number, seed: string) => React.ReactNode;
+  /**
+   * Drawn centred on the origin. `cloth` is a paint reference to this
+   * instance's denim — passed in rather than imported, because the pattern id
+   * is per-render and a flat indigo fill is the difference between a piece
+   * that looks cut from cloth and one that looks like a sticker.
+   */
+  render: (i: number, seed: string, cloth: string) => React.ReactNode;
 };
 
 /**
@@ -80,6 +86,8 @@ const Swarm: React.FC<{
   const uncoverAt = useUncoverAt();
   const variant = useCutVariant();
   const fid = `swarm-${seed}-${variant}`;
+  /** Mechanics ask for 'denim' and get the tiled cloth for this instance. */
+  const groundPaint = ground === 'denim' ? `url(#${fid}-cloth)` : ground;
   const n = COLS * ROWS;
 
   // A seeded arrival order: no two variants fill the frame the same way, and
@@ -133,6 +141,8 @@ const Swarm: React.FC<{
       jitter: `translate(${(random(`${seed}-jx${i}`) - 0.5) * CELL_W * 0.5} ${
         (random(`${seed}-jy${i}`) - 0.5) * CELL_H * 0.5
       }) rotate(${rot})`,
+      /** Each scrap is torn off at its own angle, and keeps it as it flies. */
+      chipRot: (random(`${seed}-cr${i}`) - 0.5) * 28,
     };
   });
 
@@ -162,15 +172,31 @@ const Swarm: React.FC<{
       <g>
         {live.map((u) =>
           u.inT <= 0 ? null : (
-            <g key={`c${u.i}`} transform={u.at}>
-              <circle cx={0} cy={0} r={COVER_R + 8} fill={ground} />
+            <g key={`c${u.i}`} transform={`${u.at} rotate(${u.chipRot})`}>
+              {/* A SCRAP, not a disc.
+                  The chip used to be a circle, and mid-transition the frame
+                  filled with ecru coasters with lens-shaped gaps between them —
+                  the one thing in the set that read as a shape the animation
+                  had invented rather than as paper. A rotated square reads as a
+                  torn scrap, matches the paper-cut language the rest of the
+                  library is built on, and packs without gaps.
+                  Coverage still holds by construction: the square's INSCRIBED
+                  circle is COVER_R + 8, so whatever the rotation it still
+                  covers its whole cell. */}
+              <rect
+                x={-(COVER_R + 8)}
+                y={-(COVER_R + 8)}
+                width={(COVER_R + 8) * 2}
+                height={(COVER_R + 8) * 2}
+                fill={groundPaint}
+              />
             </g>
           ),
         )}
       </g>
       <g>
         {live.map((u) => (
-          <g key={`p${u.i}`} transform={`${u.at} ${u.jitter}`}>{piece.render(u.i, seed)}</g>
+          <g key={`p${u.i}`} transform={`${u.at} ${u.jitter}`}>{piece.render(u.i, seed, `url(#${fid}-cloth)`)}</g>
         ))}
       </g>
     </>
@@ -181,6 +207,8 @@ const Swarm: React.FC<{
       <svg width={CANVAS_W} height={CANVAS_H} viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
         style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
         <defs>
+          <DenimPatterns id={fid} />
+          <DenimFill id={fid} seed={seed} />
           <PaperCutFilter id={fid} variant={variant} blur={34} tear={48} userSpace
             region={{x: -600, y: -600, width: CANVAS_W + 1200, height: CANVAS_H + 1200}} />
         </defs>
@@ -202,7 +230,7 @@ const Swarm: React.FC<{
 const Sweep: React.FC<{
   seed: string;
   /** Drawn in a space where x runs RUN_FROM..RUN_TO and y spans the frame. */
-  fill: (x0: number, x1: number, seed: string) => React.ReactNode;
+  fill: (x0: number, x1: number, seed: string, cloth: string) => React.ReactNode;
   edge?: (x: number, seed: string) => React.ReactNode;
   tilt?: number;
 }> = ({seed, fill, edge, tilt = -4}) => {
@@ -228,7 +256,7 @@ const Sweep: React.FC<{
   const band = (
     <>
       <rect x={tail} y={-500} width={head - tail} height={CANVAS_H + 1000} fill={INDIGO} opacity={0} />
-      {fill(tail, head, seed)}
+      {fill(tail, head, seed, `url(#${fid}-cloth)`)}
     </>
   );
 
@@ -237,6 +265,8 @@ const Sweep: React.FC<{
       <svg width={CANVAS_W} height={CANVAS_H} viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
         style={{position: 'absolute', inset: 0, overflow: 'visible'}}>
         <defs>
+          <DenimPatterns id={fid} />
+          <DenimFill id={fid} seed={seed} />
           <PaperCutFilter id={fid} variant={variant} blur={38} tear={54} userSpace
             region={{x: -600, y: -600, width: CANVAS_W + 1200, height: CANVAS_H + 1200}} />
           <clipPath id={`${fid}-band`}>
