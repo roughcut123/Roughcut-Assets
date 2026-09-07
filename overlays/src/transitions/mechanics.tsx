@@ -4,6 +4,10 @@ import {CANVAS_H, CANVAS_W, TIMING} from '../lib/spec';
 import {drawOn} from '../lib/motion';
 import {TORN_VARIANTS, tornRectPath} from '../lib/masks';
 import {PaperCutFilter, useCutVariant} from '../lib/papercut';
+import {
+  ButtonsMech, ChainstitchMech, HardwareMech, IndigoMech, PanelsMech,
+  PatchMech, PocketsMech, RivetsMech, SelvedgeMech, ThreadMech,
+} from './jacketMechanics';
 
 /**
  * FAMILY A — chapter transitions. Spec §6.
@@ -768,6 +772,19 @@ export const MECHANICS = {
   M4: M4Stitch,
   M5: M5Torn,
   M6: M6Unroll,
+  // §6 has five mechanics for the general library. These ten are the heritage
+  // denim jacket set — same 62-frame contract, same sticker cut, built on two
+  // engines that make coverage a property of the geometry. See NOTES.md §4i.
+  J1: RivetsMech,
+  J2: ButtonsMech,
+  J3: HardwareMech,
+  J4: PocketsMech,
+  J5: PanelsMech,
+  J6: ChainstitchMech,
+  J7: IndigoMech,
+  J8: SelvedgeMech,
+  J9: ThreadMech,
+  J10: PatchMech,
 } as const;
 
 export type MechanicName = keyof typeof MECHANICS;

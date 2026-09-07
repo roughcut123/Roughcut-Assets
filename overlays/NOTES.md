@@ -730,6 +730,84 @@ rather than 255 is ProRes's DCT, not the alpha.
 
 ---
 
+## 4i. THE HERITAGE DENIM JACKET SET — TEN FULL-FRAME TRANSITIONS
+
+Built for the Keystone jacket / denim jacket course: `RC_TRANS_RIVETS`,
+`_BUTTONS`, `_BUCKLES`, `_PATCHPOCKETS`, `_PANELS`, `_CHAINSTITCH`, `_INDIGO`,
+`_SELVEDGE`, `_THREAD`, `_PATCH`. Same 62-frame contract as §6 (25 cover, 12
+hold, 25 uncover), same sticker cut, A and B variants each.
+
+**Two engines, ten skins.** The hard part of a cover-and-uncover transition is
+not the picture, it is PROVING it covers — a pinhole for one frame shows the
+outgoing cut through it. So coverage is a property of the geometry rather than
+something to check afterwards:
+
+- **SWARM.** Objects ride in on chips of paper laid out on a 7x4 grid, each
+  chip a disc of radius equal to the cell's half-diagonal. Once every chip has
+  landed the frame is covered, whatever shape the pieces are and however they
+  are rotated. That is why the hardware does not have to be cell-sized: making
+  a rotated buckle cover a rectangular cell means drawing it enormous, whereas
+  a disc is the same in every orientation.
+- **SWEEP.** A boundary crosses from well off one edge to well off the other
+  and the fill trails it.
+
+The cut is applied to the UNION of the pieces, not to each piece — one filter
+pass rather than forty. During the fly-in that reads exactly right: the ragged
+white edge is the boundary of whatever has landed so far.
+
+### Two bugs the endpoint checks caught, which the pretty frame did not
+
+Both were found by measuring frame 0, the hold, and the last frame rather than
+by looking at the middle of the shot.
+
+**The exits were too short.** Pieces left along the vector they arrived on, at
+the same distance — so a piece thrown in from close by left to somewhere still
+on screen. The patch swarm's bottom row travelled 1,620px when it needed 2,596,
+and the transition ended with paper sitting in the middle of frame. Exits now
+run 5,200px along the throw DIRECTION: the frame diagonal plus a chip radius,
+which no cell and no angle can defeat. Reusing the entry vector is a bet on
+where the piece started.
+
+**Chrome floods a white square when a filter's input goes empty.** Once every
+piece had left the filter's userSpaceOnUse region, the paper cut still painted
+a solid 126x126 white block at the origin — a white patch in the corner of the
+final frame of all six swarm transitions, which is exactly where the frame is
+supposed to be clear. The fix is to cull units that cannot touch the region, so
+the group is genuinely empty rather than merely invisible. It also stops
+anything off-screen being drawn and blurred, so the renders get cheaper.
+
+### Smaller things worth keeping
+
+- Chips are drawn in one pass and pieces in another. Drawn unit by unit, each
+  chip lands on top of the piece in the cell before it and takes a bite out of
+  it — the first attempt was a field of Pac-Men.
+- Chips stay on the grid; only the pieces are scattered within their cell. The
+  hardware looks thrown down and the paper underneath still tiles the frame.
+  Jittering the chips would break the coverage guarantee.
+- `RC_TRANS_HARDWARE` and `RC_TRANS_POCKETS` already exist in §6, so these are
+  `BUCKLES` and `PATCHPOCKETS`. Remotion rejects duplicate composition ids, and
+  the collision surfaced as a render failure rather than a silent overwrite —
+  worth knowing before naming anything new.
+- Pattern pieces are paper on a DEEPER ground. Pattern paper on pattern paper
+  left them readable only by their outlines, which is not enough at speed.
+- Hardware kinds are weighted, not uniform: a drawer is mostly buckles and
+  adjusters with a few rivets rolling about. An even split of four kinds made
+  the frame look like a tray of washers.
+
+### What would make two of these better
+
+`RC_TRANS_PANELS` draws generic denim-jacket pattern pieces — yoke, front,
+back, sleeve, cuff, collar, pocket flap — because the only pattern in the repo
+is THE KIT DUFFLE BAG, and a bag's pages in a jacket course would be wrong.
+Send the Keystone pattern PDF and `scripts/extract-pattern.py` lifts the real
+pieces the same way it did the duffle bag tiles.
+
+Photographs of the finished jacket would carry `RC_TRANS_PATCH` and could
+support a garment mechanic that does not exist yet. `assets/garments` is still
+empty.
+
+---
+
 ### Legibility: the problem the paper was solving (v1)
 
 A field-sheet block carries its own paper, so contrast is free. Standalone

@@ -37,6 +37,21 @@ const T: {name: string; mechanic: MechanicName; chapter: string}[] = [
   {name: 'WAISTBAND', mechanic: 'M4', chapter: 'waistband / hem'},
   {name: 'HARDWARE', mechanic: 'M5', chapter: 'rivets / buttons'},
   {name: 'REVEAL', mechanic: 'M1', chapter: 'final reveal'},
+
+  // The heritage denim jacket course — Keystone jacket / denim jacket tutorial.
+  {name: 'RIVETS', mechanic: 'J1', chapter: 'rivets and burrs'},
+  {name: 'BUTTONS', mechanic: 'J2', chapter: '20mm tack buttons'},
+  // §6 already has RC_TRANS_HARDWARE (M5, into rivets / buttons); this is the
+  // buckle-and-adjuster piece, not a replacement for it.
+  {name: 'BUCKLES', mechanic: 'J3', chapter: 'buckles and cinch backs'},
+  // §6 already has RC_TRANS_POCKETS (M1, into pockets).
+  {name: 'PATCHPOCKETS', mechanic: 'J4', chapter: 'patch pockets'},
+  {name: 'PANELS', mechanic: 'J5', chapter: 'cutting the panels'},
+  {name: 'CHAINSTITCH', mechanic: 'J6', chapter: 'felled seams'},
+  {name: 'INDIGO', mechanic: 'J7', chapter: 'indigo and dyeing'},
+  {name: 'SELVEDGE', mechanic: 'J8', chapter: 'selvedge widths'},
+  {name: 'THREAD', mechanic: 'J9', chapter: 'topstitch thread'},
+  {name: 'PATCH', mechanic: 'J10', chapter: 'the leather patch'},
 ];
 
 export const transitions: TransitionAsset[] = T.flatMap((t) =>
