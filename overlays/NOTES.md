@@ -892,6 +892,43 @@ frame: nothing at either end, 100.00% opaque through the hold.
 
 ---
 
+## 4k. DELIVERING ALPHA THROUGH A 30 MB PIPE
+
+Vince needs files he can drop over his footage, and the chat upload cap is
+30 MB. The 4K masters are 110-450 MB. So the question was what survives being
+made small enough to send.
+
+**It is bits_per_mb 500, at 1080p, and the answer was there all along.** An
+earlier pass concluded ProRes 4444 "floors at about 57 MB" and gave up on
+sending alpha at all — that number came from testing 1500 as the lowest value
+and reading the flatness between 1500, 2200 and 3000 as the codec refusing to
+go lower. It was not a floor, it was the top of the curve. 400 gives 17 MB and
+500 gives 19-22 MB across all twenty.
+
+Alternatives measured on the same clip, for the record: QuickTime PNG 48 MB,
+QTRLE 50 MB — both lossless and both far too big, because the twill and slub
+are high-frequency and neither codec has anything to throw away. VP9 in WebM
+came out at 1.0 MB and is the only genuinely small option, but alpha support
+in an NLE is unreliable in a way ProRes is not, and this is a working file
+rather than a web asset.
+
+### What 500 costs
+
+Measured against the master on the densest transition: composited PSNR 34 dB,
+alpha error at most 1/255, and the cut edge — the thing the whole design hangs
+on — holding a mean of 254 out of 255 across every partial-alpha pixel.
+
+A first check gated on the edge's single darkest pixel being 230 or better and
+failed four files at 201-207. That gate was wrong, not the files: below 240
+covers 0.03-0.14% of edge pixels on those four, which is isolated DCT ringing
+and not a fringe. The mean is what matters and it is 253.9-254.3 everywhere —
+the batch shipped before this one measured 254.8. A minimum over five thousand
+pixels is not a quality metric.
+
+The 4K masters remain the real deliverable and still render from the branch.
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on
