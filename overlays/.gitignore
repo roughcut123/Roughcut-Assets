@@ -1,4 +1,13 @@
 node_modules
-out
-!out/_previews
 .remotion
+
+# Renders are gigabytes and are rebuilt from source, so out/ stays out of the
+# repository — except the previews, which are the only viewable record of what
+# a delivered asset looks like.
+#
+# The negation has to be written against out/* rather than out/. Git does not
+# descend into an excluded DIRECTORY, so `out` followed by `!out/_previews`
+# silently kept ignoring everything: the reel that was already tracked went on
+# working and the two new ones next to it could not be added at all.
+out/*
+!out/_previews/
