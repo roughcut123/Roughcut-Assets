@@ -4,6 +4,8 @@ Builds the viewable reel: every transition played in situ, cutting between two
 real garment photographs, plus an alpha version on a checkerboard.
 
     python3 scripts/make-reel.py RC_TRANS_RIVETS_A [more...]
+    python3 scripts/make-reel.py --alpha --out=name RC_TRANS_RIVETS_A
+    python3 scripts/make-reel.py --plain --out=name RC_CHAPTER_00_CONTENTS
 
 WHY THIS EXISTS RATHER THAN SENDING THE FILES. The masters are 4K ProRes 4444
 at 110-450 MB. A 1080p ProRes 4444 proxy of one 62-frame transition floors at
@@ -23,7 +25,10 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 W, H = 1920, 1080
-FPS = 25
+
+# The frame rate is READ FROM THE SOURCE, never assumed. The §6 library runs at
+# 25 and the Keystone chapter cards at 30, and a reel hard-coded to either one
+# silently retimes the other.
 
 FONT = next(
     (f for f in [
@@ -82,10 +87,22 @@ def label(im: Image.Image, text: str) -> Image.Image:
     return im
 
 
+def source_fps(ids: list[str]) -> int:
+    rates = set()
+    for aid in ids:
+        with av.open(f'out/{aid}.mov') as c:
+            rates.add(round(float(c.streams.video[0].average_rate)))
+    if len(rates) > 1:
+        raise SystemExit(f'make-reel.py: mixed frame rates {sorted(rates)} — '
+                         'a single reel cannot carry both without retiming one.')
+    return rates.pop()
+
+
 def build(ids: list[str], dst: str, mode: str) -> None:
     shots = backdrops(len(ids)) if mode == 'garment' else None
+    fps = source_fps(ids)
     out = av.open(dst, 'w')
-    ost = out.add_stream('libx264', rate=FPS)
+    ost = out.add_stream('libx264', rate=fps)
     ost.width, ost.height, ost.pix_fmt = W, H, 'yuv420p'
     ost.options = {'crf': '20', 'preset': 'medium'}
 
@@ -101,6 +118,10 @@ def build(ids: list[str], dst: str, mode: str) -> None:
             fg, a = rgba[..., :3], rgba[..., 3:4] / 255.0
             if mode == 'garment':
                 bg4 = shots[k if i < cut else k + 1]
+            elif mode == 'plain':
+                # Opaque, full-frame cards: nothing to show behind them, so the
+                # only honest backdrop is the black they will be cut against.
+                bg4 = Image.new('RGB', (W, H), (0, 0, 0))
             else:
                 bg4 = None
             top = Image.fromarray(
@@ -122,7 +143,7 @@ def build(ids: list[str], dst: str, mode: str) -> None:
 
 if __name__ == '__main__':
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
-    mode = 'alpha' if '--alpha' in sys.argv else 'garment'
+    mode = 'alpha' if '--alpha' in sys.argv else 'plain' if '--plain' in sys.argv else 'garment'
     name = next((a.split('=')[1] for a in sys.argv[1:] if a.startswith('--out=')), 'reel')
     os.makedirs('out/_previews', exist_ok=True)
     build(args, f'out/_previews/{name}.mp4', mode)
