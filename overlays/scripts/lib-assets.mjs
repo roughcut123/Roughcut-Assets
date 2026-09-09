@@ -25,6 +25,9 @@ const FAMILIES = [
   ['RC-XREF-', 'E · cross-reference', 'lower-right'],
   ['RC-DAY-', 'F · day break', 'lower-left'],
   ['RC-REVEAL-', 'G · final reveal', 'centre / lower-left'],
+  // The Keystone chapter cards: a separate deliverable with its own brief,
+  // its own canvas (1920x1080) and its own frame rate (30fps).
+  ['RC-CHAPTER-', 'K · Keystone chapter card', 'full frame'],
 ];
 
 export const familyOf = (id) => {

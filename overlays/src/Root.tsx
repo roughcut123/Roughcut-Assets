@@ -28,6 +28,11 @@ import {crossrefs} from './crossrefs/crossrefs';
 import {DayEnd, DayStamp} from './daybreaks/DayBreak';
 import {RevealCert, RevealLower} from './reveal/Reveal';
 import {beatFrames} from './fabric/FabricBeat';
+import {chapterAssets} from './chapters';
+import {ChapterCard} from './chapters/ChapterCard';
+import {ContentsCard} from './chapters/ContentsCard';
+import {FPS as CHAPTER_FPS, H as CHAPTER_H, W as CHAPTER_W} from './chapters/design';
+import {TOTAL as CHAPTER_FRAMES} from './chapters/timing';
 import {
   PaperSweep,
   PaperStrips,
@@ -295,6 +300,31 @@ export const RemotionRoot: React.FC = () => (
       fps={SPEC_FPS}
       durationInFrames={SEQUENCE_FRAMES}
     />
+
+    {/* THE KEYSTONE CHAPTER CARDS. A separate deliverable from the overlay
+        library with its own brief, so its own canvas and its own frame rate:
+        1920x1080 at 30fps, not 3840x2160 at 25. Both numbers come from
+        chapters.json rather than from lib/spec, so the cards cannot silently
+        drift onto the library's clock. */}
+    {chapterAssets.map((a) => {
+      const Body: React.FC = () =>
+        a.card.type === 'contents' ? (
+          <ContentsCard card={a.card} />
+        ) : (
+          <ChapterCard card={a.card} />
+        );
+      return (
+        <Composition
+          key={a.id}
+          id={a.id}
+          component={Body}
+          width={CHAPTER_W}
+          height={CHAPTER_H}
+          fps={CHAPTER_FPS}
+          durationInFrames={CHAPTER_FRAMES}
+        />
+      );
+    })}
 
     <Composition
       id="Showreel"

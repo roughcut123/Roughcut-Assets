@@ -1,0 +1,250 @@
+{
+  "meta": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "selvedgeWidth": 92,
+    "palette": {
+      "indigo": "#172036",
+      "indigoDeep": "#111828",
+      "cream": "#F6F1E6",
+      "gold": "#D6A33C",
+      "red": "#C4312C",
+      "mute": "#96A0B6"
+    },
+    "font": "Helvetica Neue / Helvetica / Arial, bold"
+  },
+  "groups": {
+    "01": {
+      "name": "Universal pieces",
+      "colour": "#6FA8DC"
+    },
+    "02": {
+      "name": "Front route",
+      "colour": "#86C06A"
+    },
+    "03": {
+      "name": "Pocket",
+      "colour": "#E8894A"
+    },
+    "04": {
+      "name": "Back & yoke",
+      "colour": "#A98BD4"
+    },
+    "05": {
+      "name": "Collar",
+      "colour": "#E2695C"
+    },
+    "06": {
+      "name": "Waist adjuster",
+      "colour": "#4FC1C4"
+    },
+    "07": {
+      "name": "Lining",
+      "colour": "#D9B455"
+    }
+  },
+  "parts": [
+    {
+      "roman": "ONE",
+      "name": "BUILD THE PIECES"
+    },
+    {
+      "roman": "TWO",
+      "name": "ASSEMBLY"
+    },
+    {
+      "roman": "THREE",
+      "name": "FINISHING"
+    }
+  ],
+  "cards": [
+    {
+      "id": "00",
+      "type": "contents",
+      "title": "THE BUILD",
+      "sub": "Twelve chapters, in the order you make it.",
+      "file": "00-contents"
+    },
+    {
+      "id": "01",
+      "type": "chapter",
+      "part": 0,
+      "partName": "BUILD THE PIECES",
+      "title": "THE FRONT",
+      "sub": "Choose your route",
+      "line": "Four routes. Built flat on the table before anything else.",
+      "groups": [
+        "02",
+        "03",
+        "01"
+      ],
+      "pieces": "KSJ-001  ·  004  ·  005 006 007 008  ·  013 017 018",
+      "extra": "Pockets 029–041  ·  Front yoke 002  ·  Front facing 003",
+      "file": "01-the-front"
+    },
+    {
+      "id": "02",
+      "type": "chapter",
+      "part": 0,
+      "partName": "BUILD THE PIECES",
+      "title": "THE BACK",
+      "sub": "Plain or pleated",
+      "line": "Cut on the fold. Both carry the western yoke trim line.",
+      "groups": [
+        "04"
+      ],
+      "pieces": "KSJ-009  ·  012",
+      "extra": "",
+      "file": "02-the-back"
+    },
+    {
+      "id": "03",
+      "type": "chapter",
+      "part": 0,
+      "partName": "BUILD THE PIECES",
+      "title": "THE YOKE",
+      "sub": "Classic or western",
+      "line": "Flat-felled to front and back. Curved yokes get faced first.",
+      "groups": [
+        "04"
+      ],
+      "pieces": "KSJ-010  ·  011  ·  012.5",
+      "extra": "",
+      "file": "03-the-yoke"
+    },
+    {
+      "id": "04",
+      "type": "chapter",
+      "part": 0,
+      "partName": "BUILD THE PIECES",
+      "title": "THE COLLAR",
+      "sub": "Classic or western",
+      "line": "Leave the gap at the bottom. It is part of how it attaches.",
+      "groups": [
+        "05"
+      ],
+      "pieces": "KSJ-023  ·  024",
+      "extra": "Optional collar tips",
+      "file": "04-the-collar"
+    },
+    {
+      "id": "05",
+      "type": "chapter",
+      "part": 0,
+      "partName": "BUILD THE PIECES",
+      "title": "SLEEVES\n& CUFFS",
+      "sub": "Universal to every route",
+      "line": "Same sleeves whichever jacket you are building.",
+      "groups": [
+        "01"
+      ],
+      "pieces": "KSJ-019  ·  020  ·  021",
+      "extra": "",
+      "file": "05-sleeves-and-cuffs"
+    },
+    {
+      "id": "06",
+      "type": "chapter",
+      "part": 0,
+      "partName": "BUILD THE PIECES",
+      "title": "THE WAISTBAND",
+      "sub": "Universal to every route",
+      "line": "One piece. Buttonholes and side cinch marks are on it.",
+      "groups": [
+        "01"
+      ],
+      "pieces": "KSJ-022",
+      "extra": "",
+      "file": "06-the-waistband"
+    },
+    {
+      "id": "07",
+      "type": "chapter",
+      "part": 1,
+      "partName": "ASSEMBLY",
+      "title": "SHOULDERS\n& SIDE SEAMS",
+      "sub": "Flat-felled, both",
+      "line": "Shoulders join front to back. Then one seam cuff to hem.",
+      "groups": [],
+      "pieces": "",
+      "extra": "",
+      "file": "07-shoulders-and-side-seams"
+    },
+    {
+      "id": "08",
+      "type": "chapter",
+      "part": 1,
+      "partName": "ASSEMBLY",
+      "title": "SETTING\nTHE SLEEVES",
+      "sub": "In the round",
+      "line": "Jacket inside out. Sleeve into the armhole, then topstitch outside.",
+      "groups": [
+        "01"
+      ],
+      "pieces": "KSJ-019  ·  020",
+      "extra": "",
+      "file": "08-setting-the-sleeves"
+    },
+    {
+      "id": "09",
+      "type": "chapter",
+      "part": 1,
+      "partName": "ASSEMBLY",
+      "title": "WAISTBAND\n& COLLAR",
+      "sub": "Attaching both",
+      "line": "Waistband on. Collar to the neckline, then the facing.",
+      "groups": [
+        "01",
+        "05"
+      ],
+      "pieces": "KSJ-022  ·  023  ·  024",
+      "extra": "",
+      "file": "09-waistband-and-collar"
+    },
+    {
+      "id": "10",
+      "type": "chapter",
+      "part": 1,
+      "partName": "ASSEMBLY",
+      "title": "THE WAIST\nADJUSTER",
+      "sub": "Buckle, Roughcut or cinch",
+      "line": "Three ways to pull the waist in. Pick one.",
+      "groups": [
+        "06"
+      ],
+      "pieces": "KSJ-025 026  ·  027 028  ·  037",
+      "extra": "25mm buckle  ·  17mm tack buttons",
+      "file": "10-the-waist-adjuster"
+    },
+    {
+      "id": "11",
+      "type": "chapter",
+      "part": 2,
+      "partName": "FINISHING",
+      "title": "THE LINING",
+      "sub": "Optional",
+      "line": "Separate fabric. Sleeves come from the universal group.",
+      "groups": [
+        "07",
+        "01"
+      ],
+      "pieces": "KSJ-014  ·  015  ·  016",
+      "extra": "Sleeves cut ×4 mirrored",
+      "file": "11-the-lining"
+    },
+    {
+      "id": "12",
+      "type": "chapter",
+      "part": 2,
+      "partName": "FINISHING",
+      "title": "HARDWARE\n& FINISHING",
+      "sub": "Buttons, rivets, buttonholes",
+      "line": "Buttonholes, buttons, rivets at the pocket corners. Press it.",
+      "groups": [],
+      "pieces": "",
+      "extra": "9mm rivets ×8  ·  20mm tack buttons ×6–8",
+      "file": "12-hardware-and-finishing"
+    }
+  ]
+}

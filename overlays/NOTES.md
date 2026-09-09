@@ -929,6 +929,91 @@ The 4K masters remain the real deliverable and still render from the branch.
 
 ---
 
+## 4l. THE KEYSTONE CHAPTER CARDS
+
+Thirteen title cards — one contents, twelve chapters — from a client build
+brief with its own `chapters.json`. **They are not part of the §6 library** and
+do not follow ROUGHCUT_OVERLAY_SPEC: 1920x1080 at 30fps rather than 3840x2160
+at 25, a different palette, a different grid, a different type scale. Both
+numbers are read from `chapters.json` rather than `lib/spec`, so the cards
+cannot silently drift onto the library's clock.
+
+Built as ONE component driven by the JSON, because §5 of the brief asks for
+exactly that. Two things vary and both were read off the references rather
+than assumed: a title can be one line or two (card 05 fixes the step at
+exactly one font size, and everything below moves with it), and the right
+column drops whichever of its three sections a chapter does not use (cards 04,
+09, 10 and 12 fix what happens with one group, two, and none).
+
+### What arrived, and what did not
+
+The zip contained the PNGs, the brief and the JSON. It did NOT contain the
+SVGs the brief lists, which were to be the animatable source with an id on
+every element. Rebuilding from `chapters.json` is the brief's own alternative
+and the better one anyway — the contents card is generated from the same data
+as the chapters it lists, so it cannot fall out of step with them.
+
+### Measured, not assumed
+
+Everything was measured off the references and checked back by rendering and
+diffing. The brief's own layout constants all held exactly — the 92px
+selvedge, the 210 and 1220 columns, the footer rule at 948, and all eleven
+palette colours. What the brief does not give was read off the pixels:
+baselines (by subtracting the font's ink-top offset for each exact string, not
+by estimating cap heights), the right column's flow, two colours absent from
+the table, and the contents card's separate type scale — its kicker is 28 not
+26, its title 122 not 112, its sub 34 not 40.
+
+**The font was the one that mattered.** The references are real Helvetica.
+Nimbus Sans — URW's Helvetica clone — reproduces them exactly: '01' at 158px
+is 144x118 in both, 'THE FRONT' at 112px is 637x86 in both. Liberation Sans,
+the Arial clone that fontconfig substitutes for Helvetica on Linux, is 15%
+wider on digits and 8% shorter. So `"Nimbus Sans"` has to come FIRST in the
+stack, ahead of Helvetica itself: a stack that asks for Helvetica first never
+reaches Nimbus, because fontconfig has already answered with Liberation. That
+ordering is load-bearing, not cosmetic.
+
+### Three places the brief and the references disagree
+
+Each is a live question for the client rather than something to decide
+silently, so each is one constant:
+
+- **Letter-spacing.** The type table asks for 2px on labels and -2px on
+  titles. The references have none — fitted against Nimbus with zero tracking,
+  a 19-character kicker, a 42-character sub and a 29-character part label all
+  land within 1px, and 2px of tracking would put the label 56px wide.
+  `TRACKING` is `NO_TRACKING`; `BRIEF_TRACKING` is there to switch to.
+- **The ground.** The references are one flat colour across the whole frame,
+  and that colour is the exact channel-wise mean of `indigo` and `indigoDeep`.
+  The brief calls `indigoDeep` a vignette and lists `#bg` and `#bg-twill` as
+  animatable layers. Both are built and both are off. `GROUND.gradient` /
+  `GROUND.twill`.
+- **Whitespace.** The references are internally inconsistent and both
+  behaviours had to be reproduced. The part label, composed in code, keeps its
+  double spaces (measured 424 against 425 as-is, 411 collapsed). `pieces` and
+  `extra`, which come from the JSON with double spaces around every separator,
+  are collapsed (589 against 590 collapsed, 636 as-is — and the same on all
+  four samples). So whitespace is handled per field.
+
+### The selvedge is a twisted cord, not a line
+
+After everything else matched, one structural difference remained: an
+identical 4,080-pixel discrepancy on every card, all of it in columns 2 to 10.
+The selvedge's inner fold is not a straight rule — it oscillates between x=2
+and x=10 on an exact 9-row cycle, a twisted cord. Drawn from the measured
+table it goes to zero. The weft is a 1px pick every 3 rows on y % 3 === 0, the
+ID line is 9-on-5-off from y=0, and the outer edge is a straight 2px at 91..92.
+
+### Verified
+
+All thirteen rendered and diffed against their references: **zero non-edge
+differences and zero differences anywhere in the selvedge on every card.** The
+0.8-1.7% of pixels that do differ are entirely glyph antialiasing from a
+different rasteriser, which is why the check discounts a dilated band around
+every glyph rather than counting raw pixels.
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on

@@ -45,7 +45,10 @@ if (assets.length === 0) {
   process.exit(1);
 }
 
-console.log(`Rendering ${assets.length} asset(s) as ProRes 4444, 25fps, straight alpha, no audio.\n`);
+// Size and frame rate come from each composition, not from here: the §1
+// library is 3840x2160 at 25, and the Keystone chapter cards are 1920x1080 at
+// 30 because their own brief says so.
+console.log(`Rendering ${assets.length} asset(s) as ProRes 4444, straight alpha, no audio.\n`);
 
 let n = 0;
 for (const a of assets) {
