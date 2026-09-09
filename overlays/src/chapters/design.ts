@@ -37,6 +37,12 @@ export type Card = {
   groups?: string[];
   pieces?: string;
   extra?: string;
+  /** Stitches per second for the sewn number. See NOTES 4m for the arithmetic. */
+  stitchRate?: number;
+  /** Which rhythm the seam runs at — §2.6 of the stitch brief. */
+  stitchFeel?: 'steady' | 'hesitate' | 'burst' | 'staccato';
+  /** The seam this chapter teaches, in words. Documentation, not used. */
+  stitchNote?: string;
 };
 
 export const DATA = raw as unknown as {

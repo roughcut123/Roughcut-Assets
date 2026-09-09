@@ -81,7 +81,10 @@
       ],
       "pieces": "KSJ-001  ·  004  ·  005 006 007 008  ·  013 017 018",
       "extra": "Pockets 029–041  ·  Front yoke 002  ·  Front facing 003",
-      "file": "01-the-front"
+      "file": "01-the-front",
+      "stitchRate": 79,
+      "stitchFeel": "steady",
+      "stitchNote": "steady, unhurried — flat, careful detail work"
     },
     {
       "id": "02",
@@ -96,7 +99,10 @@
       ],
       "pieces": "KSJ-009  ·  012",
       "extra": "",
-      "file": "02-the-back"
+      "file": "02-the-back",
+      "stitchRate": 99,
+      "stitchFeel": "steady",
+      "stitchNote": "steady — same idea, larger panels"
     },
     {
       "id": "03",
@@ -111,7 +117,10 @@
       ],
       "pieces": "KSJ-010  ·  011  ·  012.5",
       "extra": "",
-      "file": "03-the-yoke"
+      "file": "03-the-yoke",
+      "stitchRate": 104,
+      "stitchFeel": "steady",
+      "stitchNote": "confident, even — the flat-felled reference tempo"
     },
     {
       "id": "04",
@@ -126,7 +135,10 @@
       ],
       "pieces": "KSJ-023  ·  024",
       "extra": "Optional collar tips",
-      "file": "04-the-collar"
+      "file": "04-the-collar",
+      "stitchRate": 81,
+      "stitchFeel": "steady",
+      "stitchNote": "slower, deliberate — precision on curves"
     },
     {
       "id": "05",
@@ -141,7 +153,10 @@
       ],
       "pieces": "KSJ-019  ·  020  ·  021",
       "extra": "",
-      "file": "05-sleeves-and-cuffs"
+      "file": "05-sleeves-and-cuffs",
+      "stitchRate": 128,
+      "stitchFeel": "steady",
+      "stitchNote": "faster, flowing — long straight runs"
     },
     {
       "id": "06",
@@ -156,7 +171,10 @@
       ],
       "pieces": "KSJ-022",
       "extra": "",
-      "file": "06-the-waistband"
+      "file": "06-the-waistband",
+      "stitchRate": 122,
+      "stitchFeel": "steady",
+      "stitchNote": "fast, even — one long straight seam"
     },
     {
       "id": "07",
@@ -169,7 +187,10 @@
       "groups": [],
       "pieces": "",
       "extra": "",
-      "file": "07-shoulders-and-side-seams"
+      "file": "07-shoulders-and-side-seams",
+      "stitchRate": 100,
+      "stitchFeel": "steady",
+      "stitchNote": "confident, driving — long flat-felled runs"
     },
     {
       "id": "08",
@@ -184,7 +205,10 @@
       ],
       "pieces": "KSJ-019  ·  020",
       "extra": "",
-      "file": "08-setting-the-sleeves"
+      "file": "08-setting-the-sleeves",
+      "stitchRate": 91,
+      "stitchFeel": "hesitate",
+      "stitchNote": "slower, with tiny hesitations at curves — in the round"
     },
     {
       "id": "09",
@@ -200,7 +224,10 @@
       ],
       "pieces": "KSJ-022  ·  023  ·  024",
       "extra": "",
-      "file": "09-waistband-and-collar"
+      "file": "09-waistband-and-collar",
+      "stitchRate": 102,
+      "stitchFeel": "steady",
+      "stitchNote": "measured — attaching, precise"
     },
     {
       "id": "10",
@@ -215,7 +242,10 @@
       ],
       "pieces": "KSJ-025 026  ·  027 028  ·  037",
       "extra": "25mm buckle  ·  17mm tack buttons",
-      "file": "10-the-waist-adjuster"
+      "file": "10-the-waist-adjuster",
+      "stitchRate": 91,
+      "stitchFeel": "burst",
+      "stitchNote": "short bursts, then pause — bar-tacked straps"
     },
     {
       "id": "11",
@@ -231,7 +261,10 @@
       ],
       "pieces": "KSJ-014  ·  015  ·  016",
       "extra": "Sleeves cut ×4 mirrored",
-      "file": "11-the-lining"
+      "file": "11-the-lining",
+      "stitchRate": 59,
+      "stitchFeel": "steady",
+      "stitchNote": "smooth, quiet — long smooth seams"
     },
     {
       "id": "12",
@@ -244,7 +277,10 @@
       "groups": [],
       "pieces": "",
       "extra": "9mm rivets ×8  ·  20mm tack buttons ×6–8",
-      "file": "12-hardware-and-finishing"
+      "file": "12-hardware-and-finishing",
+      "stitchRate": 88,
+      "stitchFeel": "staccato",
+      "stitchNote": "staccato, punctuated — hammering, not sewing"
     }
   ]
 }

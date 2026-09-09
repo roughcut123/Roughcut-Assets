@@ -19,7 +19,9 @@ import {
   Y,
 } from './design';
 import {collapse, Ground, Selvedge, T} from './Furniture';
-import {at, BEAT, outT, TOTAL} from './timing';
+import {at, BEAT, NUMBER_SEW, outT, secs, TOTAL} from './timing';
+import {StitchedNumber} from './StitchedNumber';
+import type {Feel} from './stitch';
 
 /**
  * A KEYSTONE CHAPTER CARD.
@@ -66,7 +68,6 @@ export const ChapterCard: React.FC<{card: Card; gradient?: boolean; twill?: bool
   const tSew = at(frame, BEAT.stitches[0], BEAT.stitches[1]);
   const tRule = at(frame, BEAT.rule[0], BEAT.rule[1]);
   const tPart = at(frame, BEAT.part[0], BEAT.part[1]);
-  const tNum = at(frame, BEAT.number[0], BEAT.number[1]);
   const tSub = at(frame, BEAT.sub[0], BEAT.sub[1]);
   const tLine = at(frame, BEAT.line[0], BEAT.line[1]);
   const tGhost = at(frame, BEAT.ghost[0], BEAT.ghost[1]);
@@ -108,12 +109,24 @@ export const ChapterCard: React.FC<{card: Card; gradient?: boolean; twill?: bool
           ) : null}
           <rect id="rule" x={LEFT_X} y={Y.rule} width={RULE_W * tRule} height={5} fill={C.gold} />
 
-          {/* Chapter number: fades in with a slight upward drift, max 20px. */}
-          <g id="number" style={rise(tNum, 18)}>
-            <T x={LEFT_X} y={Y.number} {...TYPE.number}>
-              {card.id}
-            </T>
-          </g>
+          {/*
+            THE HERO MOMENT. The chapter number is sewn on rather than faded
+            in: a run of discrete stitches along the numeral's outline, twin
+            rows with the second lagging, a needle at the leading edge. The
+            rhythm is the chapter's own — see stitchRate/stitchFeel in
+            chapters.json, which is where the tempo is tuned.
+          */}
+          <StitchedNumber
+            digits={card.id}
+            size={TYPE.number.size}
+            x={LEFT_X}
+            baseline={Y.number}
+            rate={card.stitchRate ?? 95}
+            feel={(card.stitchFeel ?? 'steady') as Feel}
+            seed={`ch${card.id}`}
+            startAt={NUMBER_SEW.start}
+            now={secs(frame)}
+          />
 
           {/* Title lines stagger up, 80ms apart, 24px travel. */}
           <g id="title">
