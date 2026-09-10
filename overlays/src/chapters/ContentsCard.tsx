@@ -16,7 +16,16 @@ import {
   Y,
 } from './design';
 import {Ground, Selvedge, T} from './Furniture';
-import {at, BEAT, outT} from './timing';
+
+/**
+ * Fast, because twelve of them have to land inside the card's opening. A
+ * contents row is a fifth the size of a chapter number, so its outline is
+ * about 50 stitches; at this rate each takes roughly a quarter of a second and
+ * the last one finishes just as the card settles.
+ */
+const CONTENTS_STITCH_RATE = 200;
+import {at, BEAT, outT, secs} from './timing';
+import {StitchedNumber} from './StitchedNumber';
 
 /**
  * THE CONTENTS CARD.
@@ -100,22 +109,49 @@ export const ContentsCard: React.FC<{card: Card; gradient?: boolean; twill?: boo
                     // Revealed one at a time, down each column in turn, so the
                     // eye reads the build order rather than the whole grid.
                     const idx = chapters.indexOf(c);
-                    const t = at(frame, 1.15 + idx * 0.055, 1.55 + idx * 0.055);
+                    // The title follows its own number onto the page.
+                    const t = at(
+                      frame,
+                      CONTENTS.rowsFrom + idx * CONTENTS.rowStagger + 0.18,
+                      CONTENTS.rowsFrom + idx * CONTENTS.rowStagger + 0.5,
+                    );
                     const y = CONTENTS.rowFirstBase + ri * CONTENTS.rowStep;
                     return (
-                      <g key={c.id} className="row" data-ch={c.id} style={rise(t, 12)}>
-                        <T x={x} y={y} size={CONTENTS.rowSize} weight={700} colour={C.rowNum}>
-                          {c.id}
-                        </T>
-                        <T
-                          x={x + CONTENTS.numToTitle}
-                          y={y}
+                      <g key={c.id} className="row" data-ch={c.id}>
+                        {/*
+                          §5: the chapter numbers stitch on in sequence, one
+                          after another down the columns, "like a seam running
+                          the length of the page". 60ms apart, and fast — this
+                          previews the device before a full chapter card uses
+                          it.
+
+                          The thread is gold, as it is everywhere else, and
+                          settles into the muted number the signed-off card
+                          shows. The seam is the moment; the list is not.
+                        */}
+                        <StitchedNumber
+                          digits={c.id}
                           size={CONTENTS.rowSize}
-                          weight={700}
-                          colour={C.cream}
-                        >
-                          {c.title.replace('\n', ' ')}
-                        </T>
+                          x={x}
+                          baseline={y}
+                          rate={CONTENTS_STITCH_RATE}
+                          feel="steady"
+                          seed={`row${c.id}`}
+                          startAt={CONTENTS.rowsFrom + idx * CONTENTS.rowStagger}
+                          now={secs(frame)}
+                          solidColour={C.rowNum}
+                        />
+                        <g style={rise(t, 12)}>
+                          <T
+                            x={x + CONTENTS.numToTitle}
+                            y={y}
+                            size={CONTENTS.rowSize}
+                            weight={700}
+                            colour={C.cream}
+                          >
+                            {c.title.replace('\n', ' ')}
+                          </T>
+                        </g>
                       </g>
                     );
                   })}

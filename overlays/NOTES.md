@@ -1014,6 +1014,75 @@ every glyph rather than counting raw pixels.
 
 ---
 
+## 4m. THE STITCH ANIMATION ON THE CHAPTER CARDS
+
+The chapter number is sewn on rather than faded in: discrete stitches along the
+numeral's outline, twin topstitch rows with the second lagging, a needle at the
+leading edge, a thread jump between digits and into each counter, a bar tack to
+finish. The contents card previews the device — its twelve row numbers stitch
+on in sequence down the columns.
+
+Tuning lives in `src/chapters/STITCH-TUNING.md`. What follows is only what a
+future reader needs and would not guess.
+
+### The outlines are baked, and that is not an optimisation
+
+`scripts/extract-digits.py` bakes the digit outlines from Nimbus Sans Bold into
+`glyphs.ts` as flattened polylines. The obvious route — draw the number as SVG
+text and walk it with `getPointAtLength` — cannot work: the outline of a
+`<text>` element is not exposed to script, and anything measured from the DOM
+during a render is asynchronous. Remotion renders frames independently and
+often out of order, so a stitch positioned from a measurement can land
+differently between two renders of the SAME frame. That strobes. A plan built
+from constants cannot.
+
+The same reasoning is why the per-stitch jitter is seeded rather than random.
+The brief calls that jitter "the single highest-value detail" and it is right —
+identical stitches look printed — but unseeded it would shimmer.
+
+### Two places the brief contradicts itself
+
+Both are constants rather than silent decisions.
+
+**The stitch rate cannot be 14-22/sec.** A number's outline is 620-1090px at
+158px type, so 62-109 stitches at the specified 10px pitch, and §4 gives it
+1.05 seconds. That needs ~91 stitches/second. At 18/sec the average number
+takes 5.3 seconds and is still sewing when the chips and piece codes arrive.
+§4 won because it states its own reason — "so it does not hold up the rest of
+the card" — and §2.6's relative tempo is preserved exactly: chapter 05 is 58%
+faster than chapter 04, as the table asks. For scale, 91/sec is 5,460
+stitches/minute, a fast industrial machine; 18/sec is a domestic one.
+
+**The end state cannot be both.** §3 says sew the outline and do not fill it.
+§6 says the last frame must look exactly like the supplied PNG, which is a
+solid numeral. The seam therefore HANDS OVER: stitches finish, the numeral
+rises under them, the thread fades. Verified — the hold frame still matches
+the reference with zero structural differences, on all thirteen. `RESOLVE`
+switches it.
+
+### The round-cap trap
+
+A stitch is drawn with round caps, and a round cap adds half the stroke width
+past EACH end. A 7px line at 3.2px stroke is 10.2px of visible capsule against
+a 10px pitch: the gaps close, and the seam becomes one continuous tube. That is
+precisely the failure §9 describes — "if it looks like a number being drawn,
+start again". The drawn length subtracts the stroke width so the capsule
+measures 7px. Change the thread weight and the gap changes with it.
+
+The same class of mistake, one scale down: everything inside a stitch — the
+shadow, the darker underside, the lit top — was originally offset by absolute
+pixels. Fine at 158px, wrong at 32px, where a 2px shadow under a 1.15px thread
+is wider than the thread it belongs to. The contents rows came out muddy until
+those offsets were made proportional.
+
+### Card duration changed
+
+165 frames to 173. §4's sequence finishes at 2.15s where the previous one
+finished at 1.9s, and the number now starts before the title rather than after
+it — "they should overlap, not queue".
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on

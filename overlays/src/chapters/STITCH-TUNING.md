@@ -110,7 +110,42 @@ That looks good, but the finished card no longer matches the PNG.
 
 ---
 
-## 3. Timing — `src/chapters/timing.ts`
+## 3. The contents card — `src/chapters/ContentsCard.tsx` and `design.ts`
+
+§5's variation: the twelve row numbers stitch on in sequence down the columns,
+"like a seam running the length of the page".
+
+| where | constant | value |
+|---|---|---|
+| `design.ts` → `CONTENTS` | `rowsFrom` | 1.05 — when the first row starts |
+| `design.ts` → `CONTENTS` | `rowStagger` | 0.06 — §5's "roughly 60ms apart" |
+| `ContentsCard.tsx` | `CONTENTS_STITCH_RATE` | 200 st/s |
+
+The thread is gold, as everywhere else, and settles into the muted grey the
+signed-off card shows — `solidColour` on the component does that.
+
+**The rows are a fifth the size of a chapter number**, so the stitch metrics
+scale with the type size and floor out rather than going sub-pixel: below about
+a 2.2px row separation the twin needle drops to a single row, because two rows
+one pixel apart are not two rows. See `metrics()` in `StitchedNumber.tsx`.
+
+Everything inside a stitch — the shadow, the darker underside, the lit top — is
+sized RELATIVE to the thread for the same reason. They were absolute at first,
+which is fine at 158px and wrong at 32px: a 2px shadow under a 1.15px thread is
+wider than the thread it belongs to, and the contents rows came out muddy
+rather than gold.
+
+**Honest note on this one.** At 32px the stitching is legible as a seam running
+down the page but the individual stitches are necessarily fine — it reads as a
+quick gold shimmer resolving into the list, not as the crisp topstitch the
+chapter numbers get. That is inherent to the size, not a tuning problem. If you
+would rather the contents rows simply faded in as before, delete the
+`StitchedNumber` block in `ContentsCard.tsx` and restore the `T` element next
+to it; nothing else depends on it.
+
+---
+
+## 4. Timing — `src/chapters/timing.ts`
 
 `BEAT` holds §4's beat sheet in seconds, exactly as written. `NUMBER_SEW.start`
 is when the needle drops. The handover is derived from the actual sewing
@@ -122,7 +157,7 @@ finishes at 2.15s where the old one finished at 1.9s.
 
 ---
 
-## 4. Regenerating the glyph outlines
+## 5. Regenerating the glyph outlines
 
 `src/chapters/glyphs.ts` is generated. Only needed if the type changes:
 

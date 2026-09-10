@@ -215,4 +215,7 @@ export const CONTENTS = {
   /** Three columns; the pitch is not uniform, so they are listed as measured. */
   cols: [210, 770, 1300],
   numToTitle: 64,
+  /** §5: the rows stitch on in sequence, roughly 60ms apart. */
+  rowsFrom: 1.05,
+  rowStagger: 0.06,
 };

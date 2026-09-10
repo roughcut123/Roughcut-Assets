@@ -41,7 +41,6 @@ const STITCH_LEN = 7;
  * than merging into a single fat rope at 4.5px apart.
  */
 const THREAD_W = 2.8;
-const DRAWN_LEN = STITCH_LEN - THREAD_W;
 /** §2.2: the two rows sit 4-5px apart and the second trails by 2-3 stitches. */
 const ROW_GAP = 5;
 const ROW_LAG = 2.5;
@@ -79,7 +78,34 @@ type Props = {
   now: number;
   /** Seconds over which the solid numeral takes over from the thread. */
   resolveAt?: number;
+  /** Thread colour. */
   colour?: string;
+  /** Colour of the numeral the seam becomes. Defaults to the thread colour. */
+  solidColour?: string;
+};
+
+/**
+ * Stitch metrics at a given type size.
+ *
+ * The constants above are for the 158px chapter number. The contents card sews
+ * the same digits at 32px, a fifth the size, where a proportional 2px pitch and
+ * a 0.6px thread would be sub-pixel and read as a grey smudge rather than as
+ * stitching. Everything therefore scales but with floors, and the twin row is
+ * dropped once the two rows would be closer than about two pixels — at that
+ * separation they are not two rows, they are one blurred one.
+ */
+const metrics = (size: number) => {
+  const k = size / 158;
+  const threadW = Math.max(1.15, THREAD_W * k);
+  const rowGap = ROW_GAP * k;
+  return {
+    pitch: Math.max(3.2, PITCH * k),
+    threadW,
+    drawnLen: Math.max(0.6, STITCH_LEN * k - threadW),
+    rowGap,
+    twin: rowGap >= 2.2,
+    needle: k,
+  };
 };
 
 export const StitchedNumber: React.FC<Props> = ({
@@ -94,11 +120,13 @@ export const StitchedNumber: React.FC<Props> = ({
   now,
   resolveAt,
   colour = C.gold,
+  solidColour,
 }) => {
+  const M = metrics(size);
   // The plan is pure geometry and depends on nothing that changes per frame.
   const plan = React.useMemo(
-    () => buildPlan(digits, size, x, baseline, PITCH),
-    [digits, size, x, baseline],
+    () => buildPlan(digits, size, x, baseline, M.pitch),
+    [digits, size, x, baseline, M.pitch],
   );
   const times = React.useMemo(
     () => timeline(eventDurations(plan, rate, feel)),
@@ -157,7 +185,7 @@ export const StitchedNumber: React.FC<Props> = ({
     // Seeded jitter: +/-3% on length, +/-1.5 degrees of rotation.
     const j1 = random(`${seed}-l${i}`) - 0.5;
     const j2 = random(`${seed}-r${i}`) - 0.5;
-    const len = DRAWN_LEN * (1 + j1 * 0.06);
+    const len = M.drawnLen * (1 + j1 * 0.06);
     const ang = s.a + j2 * 3;
     const rad = (ang * Math.PI) / 180;
     const hx = (Math.cos(rad) * len) / 2;
@@ -165,7 +193,7 @@ export const StitchedNumber: React.FC<Props> = ({
 
     if (i < laid) {
       rowA.push(
-        <Stitch key={`a${i}`} x={s.x} y={s.y} hx={hx} hy={hy} colour={colour} />,
+        <Stitch key={`a${i}`} x={s.x} y={s.y} hx={hx} hy={hy} colour={colour} w={M.threadW} />,
       );
       if (i === laid - 1) head.at = {x: s.x, y: s.y};
       // §2.5: the cloth gathers very slightly where the thread pulls through.
@@ -176,7 +204,7 @@ export const StitchedNumber: React.FC<Props> = ({
           cx={s.x}
           cy={s.y}
           rx={len * 0.9}
-          ry={2.2}
+          ry={2.2 * M.needle}
           transform={`rotate(${ang} ${s.x} ${s.y})`}
           fill="#000000"
           opacity={0.05}
@@ -184,11 +212,11 @@ export const StitchedNumber: React.FC<Props> = ({
       );
     }
     // The second row trails, and sits one gap inboard of the first.
-    if (i < laid - ROW_LAG) {
-      const bx = s.x + s.nx * ROW_GAP;
-      const by = s.y + s.ny * ROW_GAP;
+    if (M.twin && i < laid - ROW_LAG) {
+      const bx = s.x + s.nx * M.rowGap;
+      const by = s.y + s.ny * M.rowGap;
       rowB.push(
-        <Stitch key={`b${i}`} x={bx} y={by} hx={hx} hy={hy} colour={colour} />,
+        <Stitch key={`b${i}`} x={bx} y={by} hx={hx} hy={hy} colour={colour} w={M.threadW} />,
       );
     }
   });
@@ -201,7 +229,7 @@ export const StitchedNumber: React.FC<Props> = ({
         {jump}
         {rowB}
         {rowA}
-        {!done && head.at ? <Needle x={head.at.x} y={head.at.y} t={t} rate={rate} /> : null}
+        {!done && head.at ? <Needle x={head.at.x} y={head.at.y} t={t} rate={rate} k={M.needle} /> : null}
       </g>
 
       {/* The signed-off numeral, which the seam becomes. */}
@@ -212,7 +240,7 @@ export const StitchedNumber: React.FC<Props> = ({
           fontFamily={FONT}
           fontSize={size}
           fontWeight={700}
-          fill={colour}
+          fill={solidColour ?? colour}
           opacity={solid}
           style={{whiteSpace: 'pre'}}
         >
@@ -229,6 +257,11 @@ const clamp = (v: number) => Math.max(0, Math.min(1, v));
  * One stitch. Four strokes: the shadow it throws on the denim, the thread, the
  * darker underside where it rolls away from the light, and the lit top. That
  * is what stops it being a flat gold dash.
+ *
+ * Every one of them is sized RELATIVE to the thread. They were absolute at
+ * first, which is fine at 158px and wrong at 32px: a 2px shadow under a 1.15px
+ * thread is wider than the thread it belongs to, and the contents rows came
+ * out muddy and washed instead of gold.
  */
 const Stitch: React.FC<{
   x: number;
@@ -236,38 +269,42 @@ const Stitch: React.FC<{
   hx: number;
   hy: number;
   colour: string;
-}> = ({x, y, hx, hy, colour}) => (
+  w: number;
+}> = ({x, y, hx, hy, colour, w}) => {
+  const o = w / 2.8; // offsets scale with the thread, never with the frame
+  return (
   <g strokeLinecap="round">
     <line
       x1={x - hx}
-      y1={y - hy + 1}
+      y1={y - hy + o}
       x2={x + hx}
-      y2={y + hy + 1}
+      y2={y + hy + o}
       stroke="#000000"
-      strokeWidth={THREAD_W + 0.9}
+      strokeWidth={w * 1.35}
       opacity={0.3}
     />
-    <line x1={x - hx} y1={y - hy} x2={x + hx} y2={y + hy} stroke={colour} strokeWidth={THREAD_W} />
+    <line x1={x - hx} y1={y - hy} x2={x + hx} y2={y + hy} stroke={colour} strokeWidth={w} />
     <line
       x1={x - hx}
-      y1={y - hy + 0.55}
+      y1={y - hy + o * 0.55}
       x2={x + hx}
-      y2={y + hy + 0.55}
+      y2={y + hy + o * 0.55}
       stroke={GOLD_DARK}
-      strokeWidth={0.85}
+      strokeWidth={w * 0.3}
       opacity={0.8}
     />
     <line
       x1={x - hx}
-      y1={y - hy - 0.6}
+      y1={y - hy - o * 0.6}
       x2={x + hx}
-      y2={y + hy - 0.6}
+      y2={y + hy - o * 0.6}
       stroke={GOLD_LIT}
-      strokeWidth={0.7}
+      strokeWidth={w * 0.25}
       opacity={0.6}
     />
   </g>
-);
+  );
+};
 
 /**
  * §2.4: "A minimal needle presence... Do not model a sewing machine."
@@ -275,20 +312,27 @@ const Stitch: React.FC<{
  * A slim bar with a bright point where the thread enters the cloth, bobbing
  * 2-3px in time with the stitch rate. It leads — the stitch appears behind it.
  */
-const Needle: React.FC<{x: number; y: number; t: number; rate: number}> = ({x, y, t, rate}) => {
-  const bob = Math.abs(Math.sin(t * rate * Math.PI)) * 3;
+const Needle: React.FC<{x: number; y: number; t: number; rate: number; k: number}> = ({
+  x,
+  y,
+  t,
+  rate,
+  k,
+}) => {
+  const sc = Math.max(0.45, k);
+  const bob = Math.abs(Math.sin(t * rate * Math.PI)) * 3 * sc;
   return (
     <g opacity={0.9}>
       <line
         x1={x}
-        y1={y - 26 - bob}
+        y1={y - 26 * sc - bob}
         x2={x}
-        y2={y - 6 - bob}
+        y2={y - 6 * sc - bob}
         stroke="#C9D2E4"
-        strokeWidth={2.2}
+        strokeWidth={2.2 * sc}
         strokeLinecap="round"
       />
-      <circle cx={x} cy={y - 4 - bob * 0.4} r={2.1} fill="#F6F1E6" opacity={0.95} />
+      <circle cx={x} cy={y - 4 * sc - bob * 0.4} r={2.1 * sc} fill="#F6F1E6" opacity={0.95} />
     </g>
   );
 };
