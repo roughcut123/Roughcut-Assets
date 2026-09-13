@@ -1083,6 +1083,61 @@ it — "they should overlap, not queue".
 
 ---
 
+## 4n. THE CHAPTER ORDER CHANGED
+
+The editor's cut runs in a different order to the one the cards were built to.
+Two swaps, from his message: 06 and 07 exchange, and 08 and 09 exchange.
+
+    was  06 WAISTBAND            now  06 SHOULDERS & SIDE SEAMS
+         07 SHOULDERS & SIDE SEAMS    07 THE WAISTBAND
+         08 SETTING THE SLEEVES       08 WAISTBAND & COLLAR
+         09 WAISTBAND & COLLAR        09 SETTING THE SLEEVES
+
+The sequence now reads: join the shoulders and side seams, make the waistband,
+attach the waistband and collar, set the sleeves in the round.
+
+### The part groupings had to move with it, and that was not in the request
+
+Part ONE used to be 01-06 and ended on THE WAISTBAND. Under the new numbering
+SHOULDERS & SIDE SEAMS is 06 and THE WAISTBAND is 07, so keeping each chapter's
+existing part would leave Part ONE as 01,02,03,04,05,07 and Part TWO as
+06,08,09,10 — a viewer would go PART TWO, PART ONE, PART TWO across three
+consecutive cards, and the contents card, which groups by part in three
+columns, would list them out of numeric order.
+
+So the parts follow the numbering: ONE is 01-05, TWO is 06-10, THREE is 11-12.
+The one content consequence is that **THE WAISTBAND now reads PART TWO —
+ASSEMBLY** where it used to read PART ONE. That is defensible in the new
+sequence, because the waistband is made immediately before it is attached,
+inside the assembly run — but it is a content change made to keep the deck
+coherent, not something the editor asked for, and it is the thing to reverse
+if he disagrees.
+
+### What travels with the content and what does not
+
+The stitch rhythm belongs to the seam a chapter teaches, so `stitchFeel` moves
+WITH the chapter, not with its number: SETTING THE SLEEVES keeps its
+hesitations at 09, THE WAIST ADJUSTER keeps its bursts. `stitchRate` had to be
+recomputed, because it is derived from the outline length of the digits and
+'06' is not the same length of seam as '07'.
+
+`file` carries the number too, so a clip in the bin matches the card it is.
+The four renamed files replace the old ones and the old names must be deleted,
+or the bin holds two cards claiming to be 06.
+
+### Only five cards were re-rendered
+
+01-05 and 10-12 are byte-identical in content, number and part, so they were
+left alone. That was checked field by field rather than assumed.
+
+### The order sheet
+
+`scripts/make-order-sheet.py` generates `out/_previews/ORDER.md` and a contact
+sheet, both from chapters.json, so "which card goes where" is answered by a
+file that regenerates rather than by a message in a chat thread.
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on

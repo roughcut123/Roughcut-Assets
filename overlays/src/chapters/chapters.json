@@ -161,24 +161,6 @@
     {
       "id": "06",
       "type": "chapter",
-      "part": 0,
-      "partName": "BUILD THE PIECES",
-      "title": "THE WAISTBAND",
-      "sub": "Universal to every route",
-      "line": "One piece. Buttonholes and side cinch marks are on it.",
-      "groups": [
-        "01"
-      ],
-      "pieces": "KSJ-022",
-      "extra": "",
-      "file": "06-the-waistband",
-      "stitchRate": 122,
-      "stitchFeel": "steady",
-      "stitchNote": "fast, even — one long straight seam"
-    },
-    {
-      "id": "07",
-      "type": "chapter",
       "part": 1,
       "partName": "ASSEMBLY",
       "title": "SHOULDERS\n& SIDE SEAMS",
@@ -187,31 +169,31 @@
       "groups": [],
       "pieces": "",
       "extra": "",
-      "file": "07-shoulders-and-side-seams",
-      "stitchRate": 100,
+      "file": "06-shoulders-and-side-seams",
+      "stitchRate": 117,
       "stitchFeel": "steady",
       "stitchNote": "confident, driving — long flat-felled runs"
     },
     {
-      "id": "08",
+      "id": "07",
       "type": "chapter",
       "part": 1,
       "partName": "ASSEMBLY",
-      "title": "SETTING\nTHE SLEEVES",
-      "sub": "In the round",
-      "line": "Jacket inside out. Sleeve into the armhole, then topstitch outside.",
+      "title": "THE WAISTBAND",
+      "sub": "Universal to every route",
+      "line": "One piece. Buttonholes and side cinch marks are on it.",
       "groups": [
         "01"
       ],
-      "pieces": "KSJ-019  ·  020",
+      "pieces": "KSJ-022",
       "extra": "",
-      "file": "08-setting-the-sleeves",
-      "stitchRate": 91,
-      "stitchFeel": "hesitate",
-      "stitchNote": "slower, with tiny hesitations at curves — in the round"
+      "file": "07-the-waistband",
+      "stitchRate": 105,
+      "stitchFeel": "steady",
+      "stitchNote": "fast, even — one long straight seam"
     },
     {
-      "id": "09",
+      "id": "08",
       "type": "chapter",
       "part": 1,
       "partName": "ASSEMBLY",
@@ -224,10 +206,28 @@
       ],
       "pieces": "KSJ-022  ·  023  ·  024",
       "extra": "",
-      "file": "09-waistband-and-collar",
-      "stitchRate": 102,
+      "file": "08-waistband-and-collar",
+      "stitchRate": 103,
       "stitchFeel": "steady",
       "stitchNote": "measured — attaching, precise"
+    },
+    {
+      "id": "09",
+      "type": "chapter",
+      "part": 1,
+      "partName": "ASSEMBLY",
+      "title": "SETTING\nTHE SLEEVES",
+      "sub": "In the round",
+      "line": "Jacket inside out. Sleeve into the armhole, then topstitch outside.",
+      "groups": [
+        "01"
+      ],
+      "pieces": "KSJ-019  ·  020",
+      "extra": "",
+      "file": "09-setting-the-sleeves",
+      "stitchRate": 90,
+      "stitchFeel": "hesitate",
+      "stitchNote": "slower, with tiny hesitations at curves — in the round"
     },
     {
       "id": "10",
