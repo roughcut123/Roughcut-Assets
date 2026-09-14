@@ -36,6 +36,8 @@ import {
   TOTAL as BANNER_FRAMES,
   W as BANNER_W,
 } from './banners/PatternDrop';
+import {WhatsAppDrop} from './banners/WhatsAppDrop';
+import {DM, GROUP} from './banners/qr';
 import {ChapterCard} from './chapters/ChapterCard';
 import {ContentsCard} from './chapters/ContentsCard';
 import {FPS as CHAPTER_FPS, H as CHAPTER_H, W as CHAPTER_W} from './chapters/design';
@@ -343,6 +345,31 @@ export const RemotionRoot: React.FC = () => (
         <Composition
           key={v}
           id={`RC-BANNER-PATTERN-${v}`}
+          component={Body}
+          width={BANNER_W}
+          height={BANNER_H}
+          fps={BANNER_FPS}
+          durationInFrames={BANNER_FRAMES}
+        />
+      );
+    })}
+
+    {/* THE HELP REMINDERS. Two separate assets on opposite corners rather than
+        two codes side by side: a phone camera seeing both at once is a coin
+        toss over which it grabs, and they do different things. */}
+    {[
+      {id: 'DM', qr: DM, side: 'left' as const, sub: 'Message me directly on WhatsApp',
+       caption: 'SCAN TO CHAT'},
+      {id: 'GROUP', qr: GROUP, side: 'right' as const,
+       sub: 'Join the community and ask for help', caption: 'SCAN TO JOIN'},
+    ].map((b) => {
+      const Body: React.FC = () => (
+        <WhatsAppDrop qr={b.qr} side={b.side} sub={b.sub} caption={b.caption} seed={b.id} />
+      );
+      return (
+        <Composition
+          key={b.id}
+          id={`RC-BANNER-WHATSAPP-${b.id}`}
           component={Body}
           width={BANNER_W}
           height={BANNER_H}

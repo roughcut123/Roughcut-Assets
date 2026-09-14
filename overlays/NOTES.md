@@ -1194,6 +1194,72 @@ serves any other pattern without a code change.
 
 ---
 
+## 4p. THE BANNER SHELL, REAL CLOTH, AND THE QR CODES
+
+The unrolling banner became a shell (`banners/Banner.tsx`) once there was a
+second one: the physics and the furniture live there, and a reminder is now a
+block of text and a colour rather than a second copy of the whole thing. Three
+assets on it — the universal pattern reminder and the two WhatsApp ones.
+
+### The pattern banner is universal now
+
+It named the garment across the top, which would have meant a re-render for
+every tutorial it was ever used in. The name is gone and the headline got
+bigger for the room.
+
+### What actually makes cloth look like cloth
+
+The first version was flat indigo with diagonal lines over it, which reads as a
+blue rectangle. In order of how much each one buys:
+
+1. **Folds.** Soft vertical bands of light and shade. Nothing else comes close.
+2. **Warp streak** — denim is rope-dyed and never evenly toned down its length.
+3. **Grain** — a fine turbulence over everything, which is what stops flat
+   areas looking printed.
+4. The **twill**, which matters least and wants to be nearly invisible: about
+   190 wales across a banner this wide, so it is a texture and not stripes.
+
+Folds took two goes. Five of them at full strength produced a pleated curtain;
+three, much softer and wider, produce cloth with weight.
+
+### The QR codes: three findings, two of them counter-intuitive
+
+**They are generated from the URL, not traced from a screenshot.** A traced
+code has to be resampled to land on the banner, and soft module edges are the
+thing decoders are worst at. `scripts/make-qr.py` builds the matrix and then
+DECODES IT BACK with OpenCV before emitting — a code pointing somewhere
+unintended is worse than no code.
+
+**Error correction M beats H.** Higher correction buys redundancy by adding
+modules, and more modules in a fixed patch means smaller ones, which is exactly
+what kills a screen scan. Measured on a realistic invite URL at 260px, halved:
+M reads, Q fails, H fails.
+
+**Half-pixel padding on the modules broke one of the codes.** Dividing the
+patch by the module count gives a fractional module size, and padding each rect
+by half a pixel to close anti-aliasing gaps makes every dark module larger than
+every light one. A decoder estimating module size from run lengths gets it
+wrong: the longer community code would not read out of a full-size render at
+all while the shorter direct one did. Whole-pixel modules tile exactly, need no
+padding, and both read — verified out of the rendered frame from 1920 down to
+854 wide.
+
+**The codes keep dark-on-light.** Knocking the white out and letting the cloth
+show through was the request and is the one change that reliably breaks a QR:
+scanners expect dark modules on a light ground, inverted codes are a coin toss
+across readers, and green-on-green loses the contrast besides. They are
+integrated as printed labels patched onto the cloth and topstitched down
+instead, which is a real thing on a garment and gives the quiet zone — four
+modules, a specification and not a margin — somewhere to live.
+
+### Two assets, not one
+
+The direct-message code drops top-left and the community code top-right, as
+separate files. Two codes inside a phone camera's view at once is a coin toss
+over which it grabs, and the two do very different things.
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on
