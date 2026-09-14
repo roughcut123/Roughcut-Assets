@@ -8,6 +8,7 @@ import {
   ButtonsMech, ChainstitchMech, HardwareMech, IndigoMech, PanelsMech,
   PatchMech, PocketsMech, RivetsMech, SelvedgeMech, ThreadMech,
 } from './jacketMechanics';
+import {W1Woodblock} from './woodblock';
 
 /**
  * FAMILY A — chapter transitions. Spec §6.
@@ -785,6 +786,10 @@ export const MECHANICS = {
   J8: SelvedgeMech,
   J9: ThreadMech,
   J10: PatchMech,
+
+  /* FAMILY W — a different art direction entirely, for the final reveal.
+     See woodblock.tsx: the sheet is not moved, it is PRINTED. */
+  W1: W1Woodblock,
 } as const;
 
 export type MechanicName = keyof typeof MECHANICS;

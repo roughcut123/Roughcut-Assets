@@ -52,6 +52,11 @@ const T: {name: string; mechanic: MechanicName; chapter: string}[] = [
   {name: 'SELVEDGE', mechanic: 'J8', chapter: 'selvedge widths'},
   {name: 'THREAD', mechanic: 'J9', chapter: 'topstitch thread'},
   {name: 'PATCH', mechanic: 'J10', chapter: 'the leather patch'},
+
+  // The alternate reveal. RC_TRANS_REVEAL (M1) is the mosaic one and stays —
+  // this is the same cut in a different art direction, for when the finished
+  // garment deserves more than a chapter change.
+  {name: 'UNVEILING', mechanic: 'W1', chapter: 'final garment reveal (woodblock)'},
 ];
 
 export const transitions: TransitionAsset[] = T.flatMap((t) =>

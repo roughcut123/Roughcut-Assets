@@ -1375,3 +1375,82 @@ node scripts/make-readme.mjs             # regenerates out/README_VINCE.md
 
 The asset list is read from Remotion itself, so the render script and the
 handover table cannot drift from the code.
+
+
+## 4r. W1 — THE BLOCK, A DIFFERENT ART DIRECTION FOR THE REVEAL
+
+`RC_TRANS_UNVEILING_A/B`. Asked for as "medieval, Japanese woodblock, old
+scroll, old English text in a book" for the final garment reveal.
+
+Those are not four references, they are four corners of one idea: an object
+made by hand and printed from a carved surface. A Fraktur page and an ukiyo-e
+print are the same technology four hundred years apart — cut away everything
+that is not the picture, ink what is left, press paper onto it. So the
+transition does not decorate itself to look like those things. It performs the
+process that made them.
+
+The palette needed no invention. `lib/theme.ts` already describes the Roughcut
+board as "the gilt Roman lettering on the oxblood relic cover, the washed paper
+of the Dürer and manuscript scans, the tea-stained map, and the deep end of the
+oil paintings and ukiyo-e prints", and carries verdigris as "the teal of the
+woodblock waves" and rose as "the pink of the woodblock sky". The brief and the
+existing design system are the same thing. UnifrakturMaguntia and Cinzel were
+already vendored in `public/fonts`.
+
+### The 25 cover frames are five passes of the baren
+
+Mokuhanga is printed one block per colour. You lay damp paper on the inked
+block and rub it with a baren, and the image arrives under your hand in a sweep
+rather than all at once; then you re-ink the next block, register it and pull
+again. So the cover is five staggered passes in the order a printer works in —
+key block, deep sea, mid water, sky, then bole and gold over it — each with its
+own soft-edged sweep, alternating direction because that is how a hand moves
+and because five identical sweeps would read as a loading bar.
+
+White is not a colour here. The foam is unprinted paper: no block carries it.
+That is how the medium works and it is why the foam reads as bright as it does.
+
+Registration is deliberately imperfect. Every colour lands a few pixels off and
+settles; the sky stays off. A print with every block exactly registered is a
+print made by a machine.
+
+### Three things that had to be rebuilt
+
+**The foam was a tangle.** The first finger generator placed a tip and two side
+curves directly and produced self-intersecting scribbles. A hook is a path that
+CURVES — it is walked out as a centreline that turns as it goes, and the
+outline is offset from that. Same for the key lines: a knife cut swells where
+the blade enters and tapers where it leaves, so lines are filled shapes built
+from a width profile, not strokes. Stroked, they looked like a pen drawing.
+
+**The sea had a hole in it.** The wave was authored as crest, then underside,
+then the bottom corners — which closes across itself, and the fill rule punched
+a wedge of bare paper through the middle of the print. A silhouette that doubles
+back has to be one boundary walked in one direction.
+
+**The peel folded flat.** Reflecting the lifted part about the fold line is
+geometrically correct and useless: the folded half covers the half still on the
+block, so the frame never clears. The lift is foreshortened instead (`FORE`),
+which is both what paper actually does coming off a block and what makes the
+frame empty out. Narrow reads better than wide — a broad flap looks like the
+corner has been cut off, a narrow one looks like paper lifting.
+
+### Coverage
+
+Fully opaque frames 11–41, against a required hold window of 25–37, so there
+are fourteen frames of margin on each side. Frame 0 and the last frame are
+measured empty.
+
+Getting frame 0 to actually empty took one fix: the sweep gradient's two stops
+both clamp into 0..1 and collapse onto the same offset before the pass starts,
+and a gradient whose stops coincide is undefined at that seam. It left a
+hairline of ink down the first column — 0.02% coverage on a frame that has to be
+zero. The pass now emits a flat gradient explicitly when it has not started or
+has finished.
+
+### Open
+
+The cartouche reads "Behold / THE FINISHED PIECE". Both are props
+(`gothic`, `roman` on `W1Woodblock`), so the wording is a one-line change and a
+re-render. Fraktur is read as a shape rather than letter by letter, so the
+blackletter line wants to stay short.
