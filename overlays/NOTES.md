@@ -1301,6 +1301,17 @@ sized for the longest code the pair carries; the shorter one gets 9px modules in
 the same square and scans better for it. A longer future URL grows the label
 rather than shrinking the module, so the 8px floor cannot be breached.
 
+### Compression turned out not to matter
+
+Every decode test above was on stills, which left the obvious worry untested:
+the encode is where fine detail usually dies. It does not here. The community
+code was rendered, encoded as ProRes 4444 at 700, 400 and 260 bits/mb, and
+decoded back out of the video under the same blur-and-tilt conditions. All three
+matched the uncompressed master exactly, down to the same single failure at 854
+with heavy blur. Flat high-contrast blocks are the easiest thing a codec ever
+has to carry, so the banners can be delivered at whatever size is convenient
+without weakening the code.
+
 ### The SAMPLE overprint
 
 Codes are baked into the frames, so a banner rendered before the real links
