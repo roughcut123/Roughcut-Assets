@@ -14,7 +14,9 @@ verifiable, which a traced one is not.
 Every code written here is DECODED BACK with OpenCV before it is emitted. A QR
 that points somewhere unintended is worse than no QR at all, and a silent
 mis-encode is exactly the kind of failure nobody notices until it is printed on
-a two-hour video.
+a two-hour video. A URL that says PLACEHOLDER or REPLACE in its own text is
+flagged as such in the output, and the banner overprints those so an unfinished
+render cannot be mistaken for a finished one.
 
 ERROR CORRECTION IS M, NOT H, AND THAT IS THE OPPOSITE OF THE OBVIOUS CHOICE.
 
@@ -39,6 +41,18 @@ import numpy as np
 import segno
 
 OUT = 'src/banners/qr.ts'
+
+
+def is_placeholder(url: str) -> bool:
+    """A stand-in URL, not a real destination.
+
+    Codes are baked into the render, so a banner built before the real links
+    arrive would otherwise look completely finished while pointing nowhere —
+    the exact failure nobody catches until it is out in a two-hour video. Any
+    URL saying so in its own text is flagged here, and the banner overprints
+    itself so it cannot be mistaken for a deliverable.
+    """
+    return 'PLACEHOLDER' in url.upper() or 'REPLACE' in url.upper()
 
 
 def matrix(url: str):
@@ -76,11 +90,13 @@ def main():
         name, url = a.split('=', 1)
         m, ver = matrix(url)
         ok = verify(m, url)
+        ph = is_placeholder(url)
         print(f'  {name}: version {ver}, {len(m)}x{len(m)} modules, '
-              f'{"decoded OK" if ok else "FAILED"}  <- {url}')
+              f'{"decoded OK" if ok else "FAILED"}'
+              f'{"  [PLACEHOLDER]" if ph else ""}  <- {url}')
         if not ok:
             sys.exit('refusing to emit a QR that does not decode back to its URL')
-        out[name] = (url, m)
+        out[name] = (url, m, ph)
 
     with open(OUT, 'w') as f:
         f.write('/**\n')
@@ -93,11 +109,13 @@ def main():
         f.write(' *\n')
         f.write(' * 1 is a dark module. Draw dark-on-light and keep the quiet zone.\n')
         f.write(' */\n')
-        f.write('export type Qr = {url: string; modules: number[][]};\n\n')
-        for name, (url, m) in out.items():
+        f.write('export type Qr = {url: string; modules: number[][]; '
+                'placeholder?: boolean};\n\n')
+        for name, (url, m, ph) in out.items():
             rows = ','.join('[' + ','.join(str(v) for v in r) + ']' for r in m)
-            f.write(f'/** {url} */\n')
-            f.write(f'export const {name.upper()}: Qr = {{url: {url!r}, modules: [{rows}]}};\n\n')
+            f.write(f'/** {url}{"  -- PLACEHOLDER, not a real destination" if ph else ""} */\n')
+            f.write(f'export const {name.upper()}: Qr = {{url: {url!r}, '
+                    f'modules: [{rows}]{", placeholder: true" if ph else ""}}};\n\n')
     print(f'\nwrote {OUT}')
 
 

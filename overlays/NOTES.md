@@ -1260,6 +1260,65 @@ over which it grabs, and the two do very different things.
 
 ---
 
+
+## 4q. SIZING THE QR OFF THE MODULE, NOT THE PATCH
+
+The first WhatsApp pair fixed the label at 260px square and let the module size
+fall out of dividing that by the code's module count. That is backwards, and it
+hid something.
+
+A `wa.me` link is a short payload — version 2, 25 modules — so it landed on 7px
+modules. A community invite is a 22-character code on a longer host, which is
+version 4, 33 modules, and the same 260px label squeezed it to 6px. Two codes
+that look identical at a glance, one a third finer than the other, with nothing
+in the design saying so. The placeholder used while the real links were
+outstanding was shorter still, so it never showed the problem.
+
+**The old one was not broken.** Decoded with ZBar — which is the lineage phone
+scanners are built on — it read at every width tested. OpenCV's detector, which
+is stricter, failed the invite below 1280. The real fault was that the module
+size was an accident of the URL: a longer link on a future tutorial would have
+shrunk it further with no warning.
+
+So MODULE is now fixed at 8px and the label and banner are sized from it.
+Measured out of a rendered frame put through what a phone camera does to a
+screen (rescaled, softened, tilted 12°, sensor noise):
+
+| | 1920 | 1280 | 960 | 854 |
+|---|---|---|---|---|
+| invite, old | OK | FAIL | FAIL | FAIL |
+| invite, new | OK | OK | OK | FAIL |
+| direct, old | OK | OK | FAIL | FAIL |
+| direct, new | OK | OK | OK | FAIL |
+
+Both hold to 960 — someone watching in a windowed player — in poor conditions,
+and to 640 in fair ones. Below that a phone cannot usefully scan a screen.
+
+**The label is the same size on both, and the module floats up.** Sizing each
+banner to its own code made the two visibly different objects, which is wrong
+for something meant to read as one recurring piece of furniture. The label is
+sized for the longest code the pair carries; the shorter one gets 9px modules in
+the same square and scans better for it. A longer future URL grows the label
+rather than shrinking the module, so the 8px floor cannot be breached.
+
+### The SAMPLE overprint
+
+Codes are baked into the frames, so a banner rendered before the real links
+arrive looks completely finished and points nowhere — the exact failure nobody
+catches until it is out in a two-hour video. `make-qr.py` now flags any URL that
+says PLACEHOLDER or REPLACE in its own text, and the banner stamps a red SAMPLE
+— NOT A REAL CODE panel over the label. It deliberately covers the finder
+patterns: verified that neither ZBar nor OpenCV can read a stamped one, because
+a sample that still scanned would be worse than one that does not.
+
+Replacing the placeholders is one command and a re-render:
+
+```bash
+python3 scripts/make-qr.py "dm=<wa.me link>" "group=<chat.whatsapp.com invite>"
+```
+
+The stamp disappears on its own once the URLs are real.
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on

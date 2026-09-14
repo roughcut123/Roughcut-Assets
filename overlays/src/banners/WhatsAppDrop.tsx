@@ -1,6 +1,6 @@
 import React from 'react';
 import {C, FONT} from '../chapters/design';
-import {Banner, BannerSide} from './Banner';
+import {Banner, BannerSide, PAD} from './Banner';
 import {Qr} from './qr';
 
 export {FPS, H, TOTAL, W} from './Banner';
@@ -30,8 +30,16 @@ export {FPS, H, TOTAL, W} from './Banner';
  * code back before it is allowed into the build.
  */
 
-const BAN_W = 920;
-const BAN_H = 360;
+/**
+ * The text column is fixed and the banner is sized around it: the longest line
+ * ("Join the community and ask for help" at 28px) measures just under 480, and
+ * a sub-heading that wraps or collides with the label is worse than a banner
+ * that is 60px wider on one of the two.
+ */
+const TEXT_COL = 480;
+const GAP = 28;
+/** Rule to caption descender, measured off the layout below. */
+const TEXT_H = 266;
 
 /** WhatsApp's own greens, so it reads as WhatsApp at a glance. */
 const CLOTH = '#0B5F52';
@@ -43,14 +51,74 @@ const CARD = '#F3EEE2';
 const INK = '#08312B';
 
 /**
- * 260px, and that number is measured rather than chosen.
+ * THE MODULE IS 8 SCREEN PIXELS, AND THE BANNER IS SIZED FROM THAT.
  *
- * At 216px the code decoded fine from a full 1080p frame and FAILED once the
- * frame was halved — so anyone watching in a small window or on a phone could
- * not scan it, which defeats the point of putting it there. 260px with error
- * correction M is the smallest combination that still reads at half size.
+ * The first version fixed the patch at 260px square and let the module size
+ * fall out of the division, which is backwards. A wa.me link is a short
+ * payload — version 2, 25 modules — so it landed on 7px modules. The community
+ * invite is a 22-character code on a longer host, which is version 4, 33
+ * modules, and the same 260px patch squeezed it to 6px. Two codes that look
+ * identical at a glance, one of them a third finer than the other, and nothing
+ * in the design saying so.
+ *
+ * That is the real problem here: not that the old one failed — decoded with
+ * ZBar, which is what phone scanners are built on, it read at every size tested
+ * — but that the module size was an accident of the URL. A longer link on a
+ * future tutorial would have quietly shrunk it further with no warning.
+ *
+ * Fixing the MODULE and letting the patch and banner grow to suit removes that
+ * whole class of bug, and measurably helps besides. Decoded out of a rendered
+ * frame put through what a phone camera actually does to a screen — rescaled,
+ * softened, tilted, with sensor noise:
+ *
+ *                            1920  1280   960   854
+ *     invite, old   soft+12°   OK  FAIL  FAIL  FAIL
+ *     invite, new   soft+12°   OK    OK    OK  FAIL
+ *     direct, old   soft+12°   OK    OK  FAIL  FAIL
+ *     direct, new   soft+12°   OK    OK    OK  FAIL
+ *
+ * Both now hold to 960 — someone watching in a windowed player — in poor
+ * conditions, and to 640 in fair ones. Below that a phone cannot usefully scan
+ * a screen anyway.
+ *
+ * 8px is the measured floor for that, not a number rounded up for comfort.
+ *
+ * THE LABEL IS THE SAME SIZE ON BOTH, and the module floats UP from 8 rather
+ * than down. Sizing each banner to its own code made the two visibly different
+ * objects, which is wrong for what is meant to read as one recurring piece of
+ * furniture. So the label is sized for the LONGEST code the pair carries and
+ * the shorter one simply gets fatter modules in the same square — 9px instead
+ * of 8 for the direct link, which scans better still. If a future tutorial ever
+ * needs a longer URL than today's community invite, the label grows with it and
+ * the 8px floor holds; it can never be squeezed below.
  */
-const QR_SIZE = 260;
+const MODULE = 8;
+const QUIET = 4;
+
+/**
+ * The longest code the pair carries: the community invite, version 4. Sizing
+ * off this rather than off each code is what keeps the two banners identical.
+ */
+const PAIR_N = 33;
+
+/** Cream round the code, outside the quiet zone, for the topstitching to sit on. */
+const PATCH_PAD = 16;
+/** Room above and below the patch inside the cloth. */
+const V_MARGIN = 44;
+
+/** The code, its quiet zone, and the cream border: the whole label. */
+const patchSize = (n: number) =>
+  (Math.max(n, PAIR_N) + QUIET * 2) * MODULE + PATCH_PAD * 2;
+
+/** Whole pixels, never below the floor, and as large as the label allows. */
+const moduleFor = (n: number) =>
+  Math.max(MODULE, Math.floor((patchSize(n) - PATCH_PAD * 2) / (n + QUIET * 2)));
+
+/**
+ * Tall enough for the label, and never shorter than the text column beside it
+ * (which bottoms out at 318 from the top of the cloth).
+ */
+export const bannerHeight = (qr: Qr) => Math.max(360, patchSize(qr.modules.length) + V_MARGIN * 2);
 
 type Props = {
   qr: Qr;
@@ -63,6 +131,9 @@ type Props = {
   seed?: string;
 };
 
+export const bannerWidth = (qr: Qr) =>
+  PAD * 2 + TEXT_COL + GAP + patchSize(qr.modules.length);
+
 export const WhatsAppDrop: React.FC<Props> = ({
   qr,
   headline = ['STUCK ON', 'YOUR BUILD?'],
@@ -70,55 +141,64 @@ export const WhatsAppDrop: React.FC<Props> = ({
   caption = 'SCAN TO CHAT',
   side = 'left',
   seed = 'W',
-}) => (
-  <Banner side={side} width={BAN_W} height={BAN_H} base={CLOTH} deep={DEEP} seed={seed}>
-    {({x, y, w}) => {
-      const cardX = x + w - QR_SIZE - 4;
-      const cardY = y + 52;
-      return (
-        <>
-          <rect x={x} y={y + 52} width={70} height={5} fill={BRIGHT} />
+}) => {
+  const patch = patchSize(qr.modules.length);
+  const BAN_W = bannerWidth(qr);
+  const BAN_H = bannerHeight(qr);
 
-          {headline.map((l, i) => (
-            <text
-              key={i}
-              x={x}
-              y={y + 124 + i * 56}
-              fontFamily={FONT}
-              fontSize={52}
-              fontWeight={700}
-              fill={C.cream}
-            >
-              {l}
+  return (
+    <Banner side={side} width={BAN_W} height={BAN_H} base={CLOTH} deep={DEEP} seed={seed}>
+      {({x, y, w}) => {
+        /* Both blocks are centred on the cloth rather than hung from its top,
+           because the two banners are now different heights and a fixed top
+           offset would sit them differently on each. */
+        const t0 = y + Math.round((BAN_H - TEXT_H) / 2);
+        const py = y + Math.round((BAN_H - patch) / 2);
+        return (
+          <>
+            <rect x={x} y={t0} width={70} height={5} fill={BRIGHT} />
+
+            {headline.map((l, i) => (
+              <text
+                key={i}
+                x={x}
+                y={t0 + 72 + i * 56}
+                fontFamily={FONT}
+                fontSize={52}
+                fontWeight={700}
+                fill={C.cream}
+              >
+                {l}
+              </text>
+            ))}
+
+            <text x={x} y={t0 + 192} fontFamily={FONT} fontSize={28} fontWeight={400} fill={SUBT}>
+              {sub}
             </text>
-          ))}
 
-          <text x={x} y={y + 244} fontFamily={FONT} fontSize={28} fontWeight={400} fill={SUBT}>
-            {sub}
-          </text>
+            {/* The chat mark, beside the caption rather than inside the code —
+                a logo in the middle of a QR is survivable at this error
+                correction level, but not worth the risk when it can sit here. */}
+            <ChatMark x={x + 2} y={t0 + 238} s={28} colour={BRIGHT} />
+            <text
+              x={x + 40}
+              y={t0 + 258}
+              fontFamily={FONT}
+              fontSize={24}
+              fontWeight={700}
+              letterSpacing={2}
+              fill={BRIGHT}
+            >
+              {caption}
+            </text>
 
-          {/* The chat mark, beside the caption rather than inside the code —
-              a logo in the middle of a QR is survivable at this error
-              correction level, but not worth the risk when it can sit here. */}
-          <ChatMark x={x + 2} y={y + 290} s={28} colour={BRIGHT} />
-          <text
-            x={x + 40}
-            y={y + 310}
-            fontFamily={FONT}
-            fontSize={24}
-            fontWeight={700}
-            letterSpacing={2}
-            fill={BRIGHT}
-          >
-            {caption}
-          </text>
-
-          <QrPatch qr={qr} x={cardX} y={cardY} size={QR_SIZE} />
-        </>
-      );
-    }}
-  </Banner>
-);
+            <QrPatch qr={qr} x={x + w - patch} y={py} />
+          </>
+        );
+      }}
+    </Banner>
+  );
+};
 
 /**
  * The code, on a label stitched to the cloth.
@@ -127,42 +207,34 @@ export const WhatsAppDrop: React.FC<Props> = ({
  * not a stylistic margin — a code crowded to its edge is a code that fails to
  * read. The label is sized from it rather than the other way round.
  */
-const QrPatch: React.FC<{qr: Qr; x: number; y: number; size: number}> = ({qr, x, y, size}) => {
+const QrPatch: React.FC<{qr: Qr; x: number; y: number}> = ({qr, x, y}) => {
   const n = qr.modules.length;
-  const QUIET = 4;
-  /**
-   * The module is a WHOLE NUMBER of pixels, and the code is centred on whatever
-   * that leaves over.
-   *
-   * The first version divided the patch by the module count and got a
-   * fractional size, then padded each rect by half a pixel to stop hairline
-   * gaps opening between them under anti-aliasing. That padding makes every
-   * dark module fractionally larger than every light one, and a decoder that
-   * estimates module size from run lengths gets it wrong: the community code
-   * would not read out of a full-size render at all, while the shorter direct
-   * one did. On whole pixels the modules tile exactly, no padding is needed,
-   * and both read.
-   */
-  const m = Math.max(1, Math.floor(size / (n + QUIET * 2)));
-  const drawn = m * (n + QUIET * 2);
-  const ox = x + Math.round((size - drawn) / 2);
-  const oy = y + Math.round((size - drawn) / 2);
-  const pad = 16;
+  const side = patchSize(n);
+  /* The modules land on whole pixels by construction now: MODULE is an integer
+     and the patch is built up from it, so nothing has to be padded to close
+     hairline gaps. That padding was itself a bug once — it made every dark
+     module fractionally larger than every light one, and a decoder estimating
+     module size from run lengths got it wrong. */
+  const m = moduleFor(n);
+  /* A shorter code does not fill the fixed label exactly, so centre what it
+     does use on whatever whole pixels are left over. */
+  const inset = Math.round((side - (n + QUIET * 2) * m) / 2);
+  const ox = x + inset + QUIET * m;
+  const oy = y + inset + QUIET * m;
 
   return (
     <g>
       {/* the patch, with its shadow on the cloth */}
-      <rect x={x - pad + 3} y={y - pad + 5} width={size + pad * 2} height={size + pad * 2} rx={8}
-        fill="#000000" opacity={0.3} />
-      <rect x={x - pad} y={y - pad} width={size + pad * 2} height={size + pad * 2} rx={8} fill={CARD} />
+      <rect x={x + 3} y={y + 5} width={side} height={side} rx={8} fill="#000000" opacity={0.3} />
+      <rect x={x} y={y} width={side} height={side} rx={8} fill={CARD} />
       {/* Topstitched down, the way a label is. It sits OUTSIDE the code's quiet
           zone — the quiet zone is four modules of plain light ground and is
           part of the specification, not a margin to decorate. */}
       <rect
-        x={x - pad + 6}
-        y={y - pad + 6}
-        width={size + pad * 2 - 12}
-        height={size + pad * 2 - 12}
+        x={x + 6}
+        y={y + 6}
+        width={side - 12}
+        height={side - 12}
         rx={4}
         fill="none"
         stroke={INK}
@@ -176,8 +248,8 @@ const QrPatch: React.FC<{qr: Qr; x: number; y: number; size: number}> = ({qr, x,
             v ? (
               <rect
                 key={`${rx}-${ry}`}
-                x={ox + (rx + QUIET) * m}
-                y={oy + (ry + QUIET) * m}
+                x={ox + rx * m}
+                y={oy + ry * m}
                 width={m}
                 height={m}
               />
@@ -185,9 +257,49 @@ const QrPatch: React.FC<{qr: Qr; x: number; y: number; size: number}> = ({qr, x,
           ),
         )}
       </g>
+      {qr.placeholder ? <NotReal x={x} y={y} side={side} /> : null}
     </g>
   );
 };
+
+/**
+ * Stamped across a code that points nowhere yet.
+ *
+ * The codes are baked into the frames, so a banner rendered before the real
+ * links arrive looks utterly finished and is not. This is the only thing
+ * standing between that and an editor dropping it into the cut, so it is
+ * deliberately ugly and deliberately covers the code: a sample that still
+ * scanned would be worse than one that does not.
+ */
+const NotReal: React.FC<{x: number; y: number; side: number}> = ({x, y, side}) => (
+  <g>
+    <rect x={x} y={y} width={side} height={side} rx={8} fill="#B3261E" opacity={0.82} />
+    <text
+      x={x + side / 2}
+      y={y + side / 2 - 10}
+      textAnchor="middle"
+      fontFamily={FONT}
+      fontSize={40}
+      fontWeight={700}
+      letterSpacing={2}
+      fill="#FFFFFF"
+    >
+      SAMPLE
+    </text>
+    <text
+      x={x + side / 2}
+      y={y + side / 2 + 34}
+      textAnchor="middle"
+      fontFamily={FONT}
+      fontSize={22}
+      fontWeight={700}
+      letterSpacing={1}
+      fill="#FFFFFF"
+    >
+      NOT A REAL CODE
+    </text>
+  </g>
+);
 
 /** A speech bubble. The universal "talk to someone" mark. */
 const ChatMark: React.FC<{x: number; y: number; s: number; colour: string}> = ({x, y, s, colour}) => (
