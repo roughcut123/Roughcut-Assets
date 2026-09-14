@@ -1322,6 +1322,27 @@ says PLACEHOLDER or REPLACE in its own text, and the banner stamps a red SAMPLE
 patterns: verified that neither ZBar nor OpenCV can read a stamped one, because
 a sample that still scanned would be worse than one that does not.
 
+### The real links
+
+Baked in 2026-09-14. The direct link is the `api.whatsapp.com/message/...` short
+link WhatsApp itself issues, kept exactly as supplied including its
+`?autoload=1&app_absent=0` tail — that tail costs a QR version (v5 rather than
+v3) but rewriting someone's link to save modules is not a call worth making
+silently, and at 8px modules it changes nothing that matters.
+
+`MAX_MODULES` is now emitted by make-qr.py alongside the codes, so the pair
+sizes itself off whichever code is longest instead of a hand-set constant. That
+constant would have been wrong immediately: it was set to 33 for the community
+invite, and the direct link arrived at 37.
+
+Verified out of the delivered files, not just the stills: both decode to exactly
+the right URL across nine rescale/blur/tilt combinations and every sampled hold
+frame, and never to a different one.
+
+The destinations themselves could not be checked from here — the proxy blocks
+whatsapp.com — so the codes are known to carry the right strings, and whether
+those strings point where intended is for a scan on a real phone to confirm.
+
 Replacing the placeholders is one command and a re-render:
 
 ```bash

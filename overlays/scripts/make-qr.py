@@ -116,6 +116,14 @@ def main():
             f.write(f'/** {url}{"  -- PLACEHOLDER, not a real destination" if ph else ""} */\n')
             f.write(f'export const {name.upper()}: Qr = {{url: {url!r}, '
                     f'modules: [{rows}]{", placeholder: true" if ph else ""}}};\n\n')
+        # The banners size their label off the LONGEST code in the pair so the
+        # two read as one recurring object rather than two different ones.
+        # Emitting it here means that stays true whatever links are baked in —
+        # it was a hand-set constant once, and a hand-set constant is exactly
+        # what goes stale the first time a URL changes length.
+        f.write('/** Modules across the longest code here: the pair is sized '
+                'off this. */\n')
+        f.write(f'export const MAX_MODULES = {max(len(m) for _, m, _ in out.values())};\n')
     print(f'\nwrote {OUT}')
 
 

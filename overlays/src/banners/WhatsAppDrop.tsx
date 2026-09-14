@@ -1,7 +1,7 @@
 import React from 'react';
 import {C, FONT} from '../chapters/design';
 import {Banner, BannerSide, PAD} from './Banner';
-import {Qr} from './qr';
+import {MAX_MODULES, Qr} from './qr';
 
 export {FPS, H, TOTAL, W} from './Banner';
 
@@ -96,10 +96,12 @@ const MODULE = 8;
 const QUIET = 4;
 
 /**
- * The longest code the pair carries: the community invite, version 4. Sizing
- * off this rather than off each code is what keeps the two banners identical.
+ * The longest code the pair carries, emitted by make-qr.py alongside the codes
+ * themselves. Sizing off this rather than off each code is what keeps the two
+ * banners identical; deriving it rather than writing it down is what stops it
+ * going stale the first time a link changes length.
  */
-const PAIR_N = 33;
+const PAIR_N = MAX_MODULES;
 
 /** Cream round the code, outside the quiet zone, for the topstitching to sit on. */
 const PATCH_PAD = 16;
