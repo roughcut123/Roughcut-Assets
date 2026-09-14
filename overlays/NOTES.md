@@ -1138,6 +1138,62 @@ file that regenerates rather than by a message in a chat thread.
 
 ---
 
+## 4o. THE PATTERN REMINDER
+
+A bolt of denim that unrolls from the top-left corner, says the pattern is
+available, and winds back up. Dropped four or five times across the two-hour
+build to catch anyone watching without having downloaded it. `RC_BANNER_
+PATTERN_A` and `_B`, 1920x1080 at 30fps to match the chapter cards it shares a
+cut with, alpha throughout because unlike those it is an overlay.
+
+Deliberately not built like the chapter cards:
+
+**The text is printed on the cloth.** Everything else in the library fades or
+stitches its type in on its own schedule. Here the unroll IS the reveal, which
+is what unrolling a printed bolt does, and it is the single thing that makes it
+read as an object rather than as a lower third.
+
+**It has weight.** The chapter cards were told "nothing bouncy" and that was
+right for a title page. A bolt dropping off a bar overshoots, rebounds, swings,
+and its loose bottom edge lags the rest — so the drop is a spring rather than
+an ease, and the edge is driven by the drop's VELOCITY rather than its
+position, which is the difference between cloth and cardboard.
+
+### The swing is a shear, not a rotation
+
+Rotating the whole group was the obvious move and wrong twice over: it tilted
+the roller, which is screwed to a wall and cannot tilt, and it swung the
+cloth's top corners away from the bar, opening a gap of up to thirteen pixels
+on one side. A `skewX` about the bar's own height offsets every point in
+proportion to how far below the bar it is — zero at the bar, most at the loose
+edge. That is how a hanging cloth moves and it keeps the top pinned for free.
+
+### It has to leave the frame, not stop existing
+
+The first version popped a roller into being on frame 1 and cut one away
+mid-air at the end — measured, the last frame still carried 2.35% coverage. The
+bar now drops in from above the frame before the cloth can unroll from it, and
+lifts back out after the cloth has wound up. Frame 0 and the last frame are
+both completely empty, which is what an overlay has to be.
+
+### The fray took three goes
+
+A raw cut edge, not a hem — it has just come off the roll. Evenly spaced plumb
+threads read as a comb; adding a per-thread lean and a uniform length
+distribution turned it into grass. What works is a squared distribution, so
+most fibres are short and a few pull long, at a higher count — plus roughly a
+third of them drawn as the dark warp rather than the pale weft, because a raw
+denim edge sheds both yarns.
+
+### Copy
+
+"THE KEYSTONE JACKET" / "PATTERN AVAILABLE TO DOWNLOAD" / "Check the
+description for the link", with a bobbing arrow pointing down, because the
+description IS down. All four are props with defaults, so the same component
+serves any other pattern without a code change.
+
+---
+
 ## 5. THE LIBRARY IS BUILT BUT NOT BATCH-RENDERED
 
 All 100 assets are registered, verified at 25fps / 3840×2160, and render on

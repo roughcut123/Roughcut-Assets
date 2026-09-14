@@ -29,6 +29,13 @@ import {DayEnd, DayStamp} from './daybreaks/DayBreak';
 import {RevealCert, RevealLower} from './reveal/Reveal';
 import {beatFrames} from './fabric/FabricBeat';
 import {chapterAssets} from './chapters';
+import {
+  PatternDrop,
+  FPS as BANNER_FPS,
+  H as BANNER_H,
+  TOTAL as BANNER_FRAMES,
+  W as BANNER_W,
+} from './banners/PatternDrop';
 import {ChapterCard} from './chapters/ChapterCard';
 import {ContentsCard} from './chapters/ContentsCard';
 import {FPS as CHAPTER_FPS, H as CHAPTER_H, W as CHAPTER_W} from './chapters/design';
@@ -322,6 +329,25 @@ export const RemotionRoot: React.FC = () => (
           height={CHAPTER_H}
           fps={CHAPTER_FPS}
           durationInFrames={CHAPTER_FRAMES}
+        />
+      );
+    })}
+
+    {/* THE PATTERN REMINDER. An overlay, not a card: alpha throughout, dropped
+        four or five times across the build. Two variants so a repeat does not
+        land pixel-identical. Same canvas and frame rate as the chapter cards,
+        since it sits in the same cut. */}
+    {(['A', 'B'] as const).map((v) => {
+      const Body: React.FC = () => <PatternDrop seed={v} />;
+      return (
+        <Composition
+          key={v}
+          id={`RC-BANNER-PATTERN-${v}`}
+          component={Body}
+          width={BANNER_W}
+          height={BANNER_H}
+          fps={BANNER_FPS}
+          durationInFrames={BANNER_FRAMES}
         />
       );
     })}
