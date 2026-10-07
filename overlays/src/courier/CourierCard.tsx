@@ -1,7 +1,8 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
 import {StitchedNumber} from '../chapters/StitchedNumber';
-import {BEAT, NUMBER_SEW, TOTAL, at, outT, secs} from '../chapters/timing';
+import {BEAT, NUMBER_SEW, TOTAL, at, secs} from '../chapters/timing';
+import {envelope} from './envelope';
 import {C, Card, FONT, GRID, GROUPS, H, MarkerMode, STRIP, TYPE, W, partOf} from './design';
 import {HothDefs, HothGround} from './Hoth';
 
@@ -34,7 +35,7 @@ export const CourierCard: React.FC<{card: Card; marker?: MarkerMode}> = ({card, 
   const lines = card.title.split('\n');
 
   return (
-    <AbsoluteFill style={{opacity: 1 - outT(frame)}}>
+    <AbsoluteFill style={{opacity: envelope(frame)}}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>
         <defs>
           <HothDefs id={id} />

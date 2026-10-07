@@ -1,6 +1,7 @@
 import React from 'react';
 import {AbsoluteFill, useCurrentFrame} from 'remotion';
-import {BEAT, at, outT, secs} from '../chapters/timing';
+import {BEAT, at, secs} from '../chapters/timing';
+import {envelope} from './envelope';
 import {C, CARDS, FONT, GRID, H, MarkerMode, STRIP, TYPE, W} from './design';
 import {HothDefs, HothGround} from './Hoth';
 
@@ -24,7 +25,7 @@ export const CourierContents: React.FC<{marker?: MarkerMode}> = ({marker = 'lett
   const rows = CARDS.filter((c) => c.type === 'chapter');
 
   return (
-    <AbsoluteFill style={{opacity: 1 - outT(frame)}}>
+    <AbsoluteFill style={{opacity: envelope(frame)}}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>
         <defs>
           <HothDefs id={id} />

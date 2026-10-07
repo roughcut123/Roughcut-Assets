@@ -1454,3 +1454,98 @@ The cartouche reads "Behold / THE FINISHED PIECE". Both are props
 (`gothic`, `roman` on `W1Woodblock`), so the wording is a one-line change and a
 re-render. Fraktur is read as a shape rather than letter by letter, so the
 blackletter line wants to stay short.
+
+
+## 4s. THE COURIER BAG CHAPTER CARDS
+
+Nine cards — a contents card and eight chapters — for the Courier Bag tutorial.
+Same furniture as the Keystone chapter cards so the two sets cut together, on a
+cold grey ground instead of indigo.
+
+### Three documents, and only two of them agree
+
+The build supplied an A0 pattern, a colour-coded A0, a brief for Gio, and the
+tutorial transcript. They do not tell the same story, so this is what was
+checked and what was believed.
+
+**The Gio brief and the transcript agree completely.** The brief's "eight
+categories" and what Jack says on camera match group for group, in the same
+order, with the same contents. From the transcript: *"by the end of working
+through a all the way to h"*; *"this is category a and this is the bag out of
+front and then all of the panels within this are to create the utility
+pocket"*; *"we just tackled A, which was the utility pocket, the front panel,
+the bottom Cobra clip. Now we're going to focus in on B"*; *"this is F in
+letters"*; *"the final letter is G"*; *"assembly and binding is the letter H"*.
+Every description on every card is checked against both.
+
+**The colour-coded A0 does not agree.** Its legend reads A = BODY SHELL,
+B = BODY LINING, C = SIDE POCKETS, D = EXTERIOR ZIP POCKETS, E = LAPTOP SLEEVE,
+F = UTILITY ORGANISER, G = STRAP & SHOULDER PAD, H = CLOSURE & STRAPS. That is
+a different grouping of the same pieces: it calls the utility organiser F,
+where the video calls it A. Checked piece by piece — TCB-013 is marked A there
+and belongs to B in the brief; TCB-029 is marked B there and belongs to F. It
+is treated as superseded, and it was reported, because a maker sorting by that
+sheet will be sorting into the wrong piles.
+
+**The final A0 carries no category markers at all** — no letters, no numbers,
+only TCB codes. The piece lists on the cards therefore come from the brief's
+index rather than off the sheet.
+
+### Letters on camera, numbers on the cards
+
+The build asked for numbers 1-7; the audio says letters A-H. Those cannot both
+be right on screen and the audio is the one that cannot be re-cut, so it was
+put to the client with both rendered side by side. **The call was numbers 1-8** —
+renumbered end to end so assembly and binding becomes 8 rather than being left
+without a marker.
+
+The lettered set stays registered (`RC-COURIER-L-*`) alongside the numbered one
+(`RC-COURIER-N-*`). Every card carries both a `letter` and a `number` and the
+component takes a `MarkerMode`, so switching back is a prop, not a rebuild.
+
+### Where the palette came from
+
+roughcutpatterns.com is blocked by this machine's egress proxy, so the colours
+are not invented. They are sampled off the Courier Bag brief PDF, which is set
+in the current roughcutpatterns.com system and carries that domain in its own
+footer. Pixel frequencies off page 2: `#2A2A30` page ground (33%), `#2F2F36`
+panel (55%), `#22C55E` accent (0.7%), `#3B3B42`/`#4B4B53` rules,
+`#D6D6DB`/`#F5F5F7` type. The house style was already a cool near-black grey
+with one bright green, which is most of "grey space theme" before anything is
+designed.
+
+Hoth is added as COLD rather than blue — low horizon, thin ice haze, sparse
+twinkling stars, wind-driven spindrift — because the Keystone cards are indigo
+and a blue Courier card is a Keystone card with different words on it.
+
+The left strip is webbing rather than selvedge: the jacket was about cloth, a
+bag is about straps. Continuous dashed edge-stitching down its length with bar
+tacks at intervals. The first pass put isolated green dashes at intervals and
+they read as tally marks — it is the continuity that makes it look like a strap.
+
+### Two defects caught by measuring the render
+
+Both came from reusing the Keystone timing helpers for a whole-frame opacity,
+and both would have shipped invisible in a still:
+
+**The fade in was a hard cut.** `at()` uses the brief's entrance curve,
+cubic-bezier(0.22, 1, 0.36, 1), which spends almost all its travel in the first
+few percent. Over 0.3s that put the card at 45% alpha one frame in and 72% by
+the second — a cut with one soft frame in front of it.
+
+**The fade out never reached zero.** `outT` ramps across [TOTAL - OUT, TOTAL],
+but the last frame rendered is TOTAL - 1, so the clip ended at 11% alpha and
+popped off somebody's footage.
+
+`courier/envelope.ts` replaces both with an eased ramp that lands on exactly
+zero at the final rendered frame. It is deliberately local to this set rather
+than a fix in `chapters/timing.ts`, because the Keystone cards are already
+delivered against those helpers.
+
+### Delivery
+
+ProRes 4444, 1920x1080, 30fps, 173 frames (5.77s), straight alpha, no audio.
+Masters run ~240MB each; the delivered files are re-encoded at 150 bits/mb,
+which is close to the prores_ks floor — 120 and below are rejected by the
+encoder outright. At that setting alpha is bit-exact against the master and RGB
+error averages 1/255 (PSNR 37.7 dB), with no visible ringing on the type.
