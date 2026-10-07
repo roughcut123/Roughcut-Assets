@@ -42,6 +42,15 @@ import {ChapterCard} from './chapters/ChapterCard';
 import {ContentsCard} from './chapters/ContentsCard';
 import {FPS as CHAPTER_FPS, H as CHAPTER_H, W as CHAPTER_W} from './chapters/design';
 import {TOTAL as CHAPTER_FRAMES} from './chapters/timing';
+import {CourierCard} from './courier/CourierCard';
+import {CourierContents} from './courier/CourierContents';
+import {
+  CARDS as COURIER_CARDS,
+  FPS as COURIER_FPS,
+  H as COURIER_H,
+  W as COURIER_W,
+  type MarkerMode,
+} from './courier/design';
 import {
   PaperSweep,
   PaperStrips,
@@ -387,5 +396,29 @@ export const RemotionRoot: React.FC = () => (
       fps={FPS}
       durationInFrames={SHOWREEL_DURATION}
     />
+
+    {/* THE COURIER BAG CHAPTER CARDS. Eight chapters, A-H, in the order the
+        tutorial builds them. Registered TWICE — once lettered, once numbered —
+        because the build brief asked for numbers and the tutorial audio says
+        letters, and only one of those can be changed after the fact. Pick a
+        set and the other can be deleted; see courier/design.ts. */}
+    {(['letter', 'number'] as MarkerMode[]).flatMap((mode) =>
+      COURIER_CARDS.map((c) => {
+        const id = `RC-COURIER-${mode === 'letter' ? 'L' : 'N'}-${c.id}`;
+        const Body: React.FC = () =>
+          c.type === 'contents' ? <CourierContents marker={mode} /> : <CourierCard card={c} marker={mode} />;
+        return (
+          <Composition
+            key={id}
+            id={id}
+            component={Body}
+            width={COURIER_W}
+            height={COURIER_H}
+            fps={COURIER_FPS}
+            durationInFrames={CHAPTER_FRAMES}
+          />
+        );
+      }),
+    )}
   </>
 );
